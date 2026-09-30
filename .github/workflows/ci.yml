@@ -109,6 +109,10 @@ jobs:
     needs: [analyze, test, build-apk]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    # По умолчанию токен в CI только читает, и публикация релиза
+    # заканчивается ошибкой 403 «Resource not accessible by integration».
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
