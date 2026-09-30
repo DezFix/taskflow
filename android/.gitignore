@@ -1,0 +1,18 @@
+# Обёртка Gradle в репозитории: без неё сборка в CI невоспроизводима
+# и зависит от того, пересоздаёт ли её инструмент на сервере.
+# Файлы небольшие и относятся к исходникам проекта.
+!gradle-wrapper.jar
+!/gradlew
+!/gradlew.bat
+
+/.gradle
+/captures/
+/local.properties
+GeneratedPluginRegistrant.java
+.cxx/
+
+# Remember to never publicly share your keystore.
+# See https://flutter.dev/to/reference-keystore
+key.properties
+**/*.keystore
+**/*.jks

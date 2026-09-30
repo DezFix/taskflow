@@ -1,0 +1,55 @@
+name: taskflow
+description: TaskFlow — задачи, сотрудники и чат IT-отдела. Один код для Android и веб.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Состояние приложения: Riverpod даёт простые контроллеры без кодогенерации
+  # и юнит-тестируется обычными вызовами, без моков.
+  flutter_riverpod: ^2.6.1
+
+  # Сеть и multipart-загрузка файлов/голосовых.
+  dio: ^5.7.0
+
+  # Канал реалтайма: чат, задачи, статусы расшифровки.
+  web_socket_channel: ^3.0.1
+
+  # Хранение адреса сервера, токенов и настроек на устройстве.
+  shared_preferences: ^2.3.3
+
+  # Запись голосовых сообщений на Android и в браузере.
+  record: 7.1.1
+
+  # Выбор фото и файлов: работает и на Android, и в браузере.
+  image_picker: ^1.1.2
+  file_picker: 13.1.0
+
+  # Сохранение выгрузок: папка «Загрузки» на Android, файл в браузере.
+  path_provider: ^2.1.4
+
+  # Скачивание файла в браузере. На других платформах не подключается.
+  web: ^1.1.0
+
+  # Открытие ссылок (сервер в браузере, справка) в системном окне.
+  url_launcher: ^6.3.1
+
+  # Иконки и разделители полей ввода пароля.
+  cupertino_icons: ^1.0.8
+  file_saver: ^0.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+  fonts: []

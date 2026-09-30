@@ -1,0 +1,39 @@
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+*.iml
+
+# Android
+android/local.properties
+android/.gradle/
+android/captures/
+android/app/debug/
+android/app/profile/
+android/app/release/
+# Секреты подписи: никогда не попадают в репозиторий.
+android/key.properties
+android/*.jks
+android/*.keystore
+
+# Служебные файлы сборки в корне проекта
+/build.log
+/build.done
+
+# Веб
+web/index.html.bak
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# ОС
+.DS_Store
+Thumbs.db
+
+# Временные файлы анализатора
+analyze.txt
+testout.txt

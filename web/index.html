@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    index.html для TaskFlow.
+
+    Flutter собирает приложение в статику: сервер отдаёт эти файлы сам.
+    Параметры ниже задают тему загрузки и заголовок окна.
+
+    base href и content security policy выставляются командой
+    flutter build web; здесь они только для локальной разработки.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="TaskFlow — задачи, сотрудники и чат IT-отдела">
+  <meta name="theme-color" content="#2563EB">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TaskFlow">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>TaskFlow</title>
+  <style>
+    /* Пока грузится движок Flutter, показываем свой экран:
+       сотрудник не видит белой страницы. */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #F8FAFC;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    .tf-loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 16px;
+    }
+    .tf-logo {
+      width: 76px;
+      height: 76px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #2563EB, #1D4ED8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tf-logo svg { width: 40px; height: 40px; }
+    .tf-title { font-size: 24px; font-weight: 700; color: #0F172A; }
+    .tf-sub { font-size: 14px; color: #64748B; }
+    .tf-bar {
+      width: 140px;
+      height: 3px;
+      border-radius: 2px;
+      background: #E2E8F0;
+      overflow: hidden;
+    }
+    .tf-bar::after {
+      content: "";
+      display: block;
+      width: 40%;
+      height: 100%;
+      background: #2563EB;
+      animation: tf-slide 1.1s ease-in-out infinite;
+    }
+    @keyframes tf-slide {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+  </style>
+</head>
+<body>
+  <div class="tf-loader">
+    <div class="tf-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+      </svg>
+    </div>
+    <div class="tf-title">TaskFlow</div>
+    <div class="tf-sub">Загрузка…</div>
+    <div class="tf-bar"></div>
+  </div>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

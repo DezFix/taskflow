@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Правила сетевой безопасности TaskFlow.
+
+  Приложение подключается к серверу офиса, адрес которого сотрудник
+  вводит сам: это может быть домен с нормальным сертификатом, адрес
+  во внутренней сети или VPN без TLS. Поэтому:
+
+  - системные корневые сертификаты проверяются как обычно;
+  - для пользовательских сертификатов (корпоративный CA офиса)
+    добавлено доверие — это безопаснее, чем отключать проверку;
+  - cleartext (http://) разрешён: сервер в локальной сети может
+    работать без TLS, иначе приложение просто не подключится.
+
+  Для публичного сервера с доменом лучше использовать https.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system"/>
+            <certificates src="user"/>
+        </trust-anchors>
+    </base-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Доменное имя офисного сервера: заполните под свой адрес. -->
+        <domain includeSubdomains="true">taskflow.example.com</domain>
+    </domain-config>
+</network-security-config>

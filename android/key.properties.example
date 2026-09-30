@@ -1,0 +1,8 @@
+# Keystore для подписи release-сборок Android.
+# Файл создаётся скриптом tool/generate_keystore.ps1 и не попадает
+# в репозиторий: пароли не должны храниться в открытом виде.
+
+key.store=upload-keystore.jks
+key.alias=upload
+key.store.password=ВСТАВЬТЕ_ПАРОЛЬ_ХРАНИЛИЩА
+key.key.password=ВСТАВЬТЕ_ПАРОЛЬ_КЛЮЧА
