@@ -150,6 +150,9 @@ jobs:
       - name: Опубликовать релиз
         uses: softprops/action-gh-release@v2
         with:
+          # Тег указываем явно: без него публикация прерывается с
+          # «GitHub Releases requires a tag».
+          tag_name: v1.0.${{ github.run_number }}
           files: build/app/outputs/flutter-apk/app-release.apk
           generate_release_notes: true
           body: |
