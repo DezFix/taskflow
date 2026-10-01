@@ -61,6 +61,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             identifier: _identifierController.text,
             password: _passwordController.text,
           );
+      if (!mounted) return;
+      // Экран входа существует в двух местах: как содержимое home,
+      // где за состояние отвечает _StageRouter, и как именованный
+      // маршрут /login, лежащий поверх него. Во втором случае
+      // _StageRouter под этим экраном уже превратился в рабочее
+      // пространство, но сам экран входа остался сверху и больше
+      // не закрывался: спиннер крутился вечно. Поэтому убираем
+      // себя со стека, если нас туда положили.
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
     } on ApiException catch (error) {
       if (!mounted) return;
       setState(() {
@@ -74,6 +85,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final serverUrl = ref.watch(serverUrlProvider);
+
+    // Экран входа открывается по адресу /#/login и переживает вход:
+    // после перезагрузки страницы хеш снова указывает на вход, хотя
+    // сессия уже есть. Без этой проверки сотрудник видел бы форму
+    // входа вместо рабочего пространства. Переход откладываем до
+    // конца кадра — навигация во время сборки недопустима.
+    final alreadySignedIn = ref.watch(appStageProvider) == AppStage.ready;
+    if (alreadySignedIn) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
