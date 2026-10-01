@@ -13,7 +13,6 @@ import '../../state/controllers.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../theme.dart';
 import '../widgets.dart';
-import '../language_selector.dart';
 import '../workspace_tab.dart';
 import 'chat_list_screen.dart';
 import 'profile_screen.dart';
@@ -108,10 +107,9 @@ class _WorkspaceShellState extends ConsumerState<WorkspaceShell> {
               )
               .toList(),
         ),
-        // Переключатель языка внизу справа: он нужен на всех вкладках,
-        // а шапки у вложенных экранов свои.
-        floatingActionButton: const LanguageSelector(compact: true),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+        // Переключатель языка живёт в профиле, а не поверх экрана:
+        // плавающая кнопка перекрывала содержимое и выглядела
+        // как случайный элемент интерфейса.
         bottomNavigationBar: NavigationBar(
           selectedIndex: tabs.contains(_tab) ? tabs.indexOf(_tab) : 0,
           onDestinationSelected: (index) {

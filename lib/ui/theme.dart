@@ -175,7 +175,22 @@ class AppTheme {
         side: BorderSide(
           color: isDark ? const Color(0xFF334155) : AppColors.border,
         ),
-        labelStyle: const TextStyle(fontSize: 12),
+        // Цвет фона и текста задаём явно. Без них Material подставляет
+        // тёмный фон, а текст оставляет без цвета — получался чёрный
+        // текст на тёмной плашке, например в профиле и в отчёте.
+        backgroundColor:
+            isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+        selectedColor:
+            isDark ? const Color(0xFF1D4ED8) : const Color(0xFFDBEAFE),
+        checkmarkColor: isDark ? Colors.white : AppColors.primary,
+        labelStyle: TextStyle(
+          fontSize: 12,
+          color: isDark ? Colors.white : AppColors.textPrimary,
+        ),
+        secondaryLabelStyle: TextStyle(
+          fontSize: 12,
+          color: Colors.white,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       ),
       dividerTheme: DividerThemeData(

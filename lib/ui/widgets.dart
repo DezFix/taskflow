@@ -480,23 +480,35 @@ class StatTile extends StatelessWidget {
                   const Spacer(),
                 ],
               ),
-              const SizedBox(height: Insets.sm),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
+              const SizedBox(height: Insets.xs),
+              // Значение и подпись защищены Flexible: при узком экране
+              // колонка иначе переполнялась, подпись уезжала за плитку
+              // и налезала на следующую карточку.
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
+              Flexible(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -750,7 +762,9 @@ class InfoRow extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: valueColor ?? AppColors.textPrimary,
+                // Цвет из темы: константа textPrimary тёмно-синяя и на
+                // тёмном фоне профиля значения не читались.
+                color: valueColor ?? Theme.of(context).colorScheme.onSurface,
                 fontFamily: monospace ? 'monospace' : null,
               ),
             ),

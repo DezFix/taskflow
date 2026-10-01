@@ -427,5 +427,9 @@
   "labelClient": "Клиент",
   "labelRefinement": "Доработка",
   "labelRelease": "Релиз",
-  "labelRefactoring": "Рефакторинг"
+  "labelRefactoring": "Рефакторинг",
+  "teamCopyAll": "Скопировать всё",
+  "teamCopiedAll": "Логин и пароль скопированы",
+  "teamCopyPassword": "Скопировать пароль",
+  "teamCopiedPassword": "Пароль скопирован"
 }

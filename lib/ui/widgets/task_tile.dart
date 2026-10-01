@@ -76,7 +76,10 @@ class TaskTile extends StatelessWidget {
                                 done ? TextDecoration.lineThrough : null,
                             color: done
                                 ? AppColors.textSecondary
-                                : AppColors.textPrimary,
+                                // Цвет из темы, а не константа:
+                                // заголовок задачи должен читаться
+                                // и в тёмной теме.
+                                : Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),

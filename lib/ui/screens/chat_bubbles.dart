@@ -39,7 +39,9 @@ class MessageBubble extends ConsumerWidget {
         ? AppColors.textMuted
         : isMine
             ? Colors.white
-            : AppColors.textPrimary;
+            // Цвет берём из темы, а не константу: тёмно-синий AppColors
+            // нечитаем на тёмном фоне, и чужие сообщения пропадали.
+            : scheme.onSurface;
 
     return Padding(
       padding: EdgeInsets.only(top: grouped ? 2 : Insets.sm),
@@ -193,6 +195,9 @@ class VoiceBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final transcript = message.transcript;
+    // Цвет из темы, а не константа: тёмно-синий AppColors на
+    // тёмном фоне расшифровки нечитался.
+    final scheme = Theme.of(context).colorScheme;
     final text = message.transcriptText ?? transcript?.text;
     final pending = transcript?.isPending ?? false;
     final accent = isMine ? Colors.white : AppColors.primary;
@@ -245,7 +250,9 @@ class VoiceBubble extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 13,
                   height: 1.4,
-                  color: isMine ? Colors.white : AppColors.textPrimary,
+                  // Цвет из темы: у чужих сообщений тёмный фон, и
+                  // тёмно-синий текст на нём не читался.
+                  color: isMine ? Colors.white : scheme.onSurface,
                 ),
               ),
             ),

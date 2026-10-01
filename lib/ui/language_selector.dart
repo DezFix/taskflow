@@ -89,10 +89,16 @@ class LanguageSelector extends ConsumerWidget {
     final current = controller.current;
 
     if (compact) {
-      return IconButton(
-        tooltip: l10n.languageTitle,
-        onPressed: controller.cycle,
-        icon: Text(current?.flag ?? '🌐', style: const TextStyle(fontSize: 20)),
+      // Отступ справа: без него флаг и соседняя иконка примыкали к краю
+      // экрана и читались как одна кнопка.
+      return Padding(
+        padding: const EdgeInsets.only(right: Insets.xs),
+        child: IconButton(
+          tooltip: l10n.languageTitle,
+          onPressed: controller.cycle,
+          icon:
+              Text(current?.flag ?? '🌐', style: const TextStyle(fontSize: 20)),
+        ),
       );
     }
 

@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models.dart';
@@ -601,8 +602,13 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
                 const SizedBox(height: Insets.md),
                 DropdownButtonFormField<String?>(
                   initialValue: _positionId,
-                  decoration:
-                      InputDecoration(labelText: l10n.teamPositionFromList),
+                  decoration: InputDecoration(
+                    labelText: l10n.teamPositionFromList,
+                    // Метка всегда всплывает над рамкой. Иначе при
+                    // пустом значении она остаётся внутри поля и
+                    // налезает на текст «Не назначена».
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
                   items: [
                     DropdownMenuItem<String?>(
                       value: null,
@@ -700,6 +706,19 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
 
         // Временный пароль показываем один раз: сотрудник его запомнит.
         final l10n = AppLocalizations.of(context);
+        final username = result.user.username;
+        final password = result.temporaryPassword;
+        final credentials = '${l10n.teamLoginLabel}: $username\n'
+            '${l10n.teamPasswordLabel}: ${password ?? "—"}';
+
+        Future<void> copy(String value, String message) async {
+          await Clipboard.setData(ClipboardData(text: value));
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message)),
+          );
+        }
+
         await showDialog<void>(
           context: context,
           builder: (dialogContext) => AlertDialog(
@@ -711,13 +730,32 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
                 Text(l10n.teamShareCredentialsHint),
                 const SizedBox(height: Insets.md),
                 SelectableText(
-                  '${l10n.teamLoginLabel}: ${result.user.username}\n'
-                  '${l10n.teamPasswordLabel}: '
-                  '${result.temporaryPassword ?? "—"}',
+                  credentials,
                   style: const TextStyle(
                     fontFamily: 'monospace',
                     fontSize: 14,
                   ),
+                ),
+                const SizedBox(height: Insets.sm),
+                // Раньше данные приходилось выделять вручную: на телефоне
+                // это почти невозможно, и пароль терялся.
+                Wrap(
+                  spacing: Insets.sm,
+                  runSpacing: Insets.sm,
+                  children: [
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.copy_all_outlined, size: 18),
+                      label: Text(l10n.teamCopyAll),
+                      onPressed: () => copy(credentials, l10n.teamCopiedAll),
+                    ),
+                    if (password != null)
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.key_outlined, size: 18),
+                        label: Text(l10n.teamCopyPassword),
+                        onPressed: () =>
+                            copy(password, l10n.teamCopiedPassword),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: Insets.md),
                 Text(

@@ -51,7 +51,9 @@ class ReportsScreen extends ConsumerWidget {
             crossAxisCount: 2,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 1.9,
+            // Плитки выше, чем были: при узком экране подписи не
+            // помещались и уезжали на следующую карточку.
+            childAspectRatio: 1.5,
             crossAxisSpacing: Insets.sm,
             mainAxisSpacing: Insets.sm,
             children: [
@@ -287,7 +289,11 @@ class _StatusBreakdown extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: ratio,
                     minHeight: 6,
-                    backgroundColor: AppColors.border,
+                    // Дорожка берётся из темы: светло-серая на тёмном
+                    // фоне выглядела заполненной, и пустой отдел
+                    // читался как «всё выполнено».
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                     color: AppColors.statusColor(status.wire),
                   ),
                 ),
@@ -497,16 +503,12 @@ class _ExportCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     return SectionCard(
       title: l10n.reportsExportTitle,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              l10n.reportsExportDescription,
-              style: const TextStyle(fontSize: 12, height: 1.4),
-            ),
-          ),
-          const SizedBox(width: Insets.sm),
-          OutlinedButton.icon(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Рядом текст и кнопка умещаются только на широком экране.
+          // На телефоне раскладываем по вертикали: иначе тексту
+          // остаётся ширина в один символ и он встаёт столбиком.
+          final button = OutlinedButton.icon(
             onPressed: () async {
               final messenger = ScaffoldMessenger.of(context);
               try {
@@ -532,8 +534,30 @@ class _ExportCard extends ConsumerWidget {
             },
             icon: const Icon(Icons.download_outlined, size: 18),
             label: Text(l10n.reportsExportDownload),
-          ),
-        ],
+          );
+          final text = Text(
+            l10n.reportsExportDescription,
+            style: const TextStyle(fontSize: 12, height: 1.4),
+          );
+
+          if (constraints.maxWidth < 380) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                text,
+                const SizedBox(height: Insets.md),
+                Align(alignment: Alignment.centerRight, child: button),
+              ],
+            );
+          }
+          return Row(
+            children: [
+              Expanded(child: text),
+              const SizedBox(width: Insets.md),
+              button,
+            ],
+          );
+        },
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../language_selector.dart';
 import '../../state/app_state.dart';
 import '../theme.dart';
 import '../widgets.dart';
@@ -105,6 +106,25 @@ class ProfileScreen extends ConsumerWidget {
                 onTap: () => _changePassword(context, ref),
               ),
               const Divider(height: 1),
+              // Язык интерфейса — здесь, а не плавающей кнопкой поверх
+              // экрана: кнопка закрывала содержимое и путалась с
+              // действиями конкретного экрана.
+              _ActionRow(
+                icon: Icons.translate,
+                title: l10n.languageTitle,
+                subtitle: languageLabel(
+                  ref.read(localeControllerProvider).current ??
+                      AppLanguage.fromCode(ref.read(localeCodeProvider)) ??
+                      (l10n.localeName == 'ru'
+                          ? AppLanguage.russian
+                          : l10n.localeName == 'uk'
+                              ? AppLanguage.ukrainian
+                              : AppLanguage.english),
+                  l10n,
+                ),
+                onTap: () => _pickLanguage(context, ref),
+              ),
+              const Divider(height: 1),
               if (user.can('settings.view'))
                 _ActionRow(
                   icon: Icons.tune,
@@ -159,6 +179,58 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  /// Показывает список языков и применяет выбранный.
+  Future<void> _pickLanguage(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final controller = ref.read(localeControllerProvider);
+    final current = controller.current;
+
+    final chosen = await showModalBottomSheet<AppLanguage?>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // RadioGroup вместо устаревших groupValue и onChanged у
+            // RadioListTile: Flutter 3.32 помечил их deprecated, и
+            // analyze с --fatal-infos в CI перестал бы проходить.
+            RadioGroup<AppLanguage>(
+              groupValue: current,
+              onChanged: (value) => Navigator.of(sheetContext).pop(value),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final language in AppLanguage.values)
+                    RadioListTile<AppLanguage>(
+                      value: language,
+                      title: Text(languageLabel(language, l10n)),
+                      secondary: Text(
+                        language.flag,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: Text(l10n.languageSystem),
+              trailing: current == null
+                  ? const Icon(Icons.check)
+                  : const SizedBox.shrink(),
+              onTap: () => Navigator.of(sheetContext).pop(),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (chosen != null) await controller.select(chosen);
+    // null означает «язык системы» — восстанавливаем его.
+    if (chosen == null && current != null) await controller.select(null);
   }
 
   Future<void> _editProfile(BuildContext context, WidgetRef ref) async {
@@ -337,10 +409,15 @@ class _ActionRow extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.onTap,
+    this.subtitle,
   });
 
   final IconData icon;
   final String title;
+
+  /// Второ�� строка: показывает текущее значение, например язык.
+  final String? subtitle;
+
   final VoidCallback onTap;
 
   @override
@@ -348,6 +425,7 @@ class _ActionRow extends StatelessWidget {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
+      subtitle: subtitle == null ? null : Text(subtitle!),
       trailing: const Icon(Icons.chevron_right),
       onTap: onTap,
       dense: true,

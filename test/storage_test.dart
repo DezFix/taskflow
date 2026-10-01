@@ -56,6 +56,33 @@ void main() {
       );
     });
 
+    test('путь страницы отбрасывается', () {
+      // Пользователь вставлял адрес из адресной строки браузера вместе
+      // с /login. Оставшийся путь давал 200 с HTML вместо JSON, и
+      // вход зависал на бесконечной загрузке.
+      expect(
+        AppStorage.normalizeServerUrl('http://localhost:8080/login'),
+        'http://localhost:8080',
+      );
+      expect(
+        AppStorage.normalizeServerUrl('localhost:8080/login?next=/tasks'),
+        'http://localhost:8080',
+      );
+      expect(
+        AppStorage.normalizeServerUrl(
+          'https://taskflow.company.ru/login/api/v1/auth/me#x',
+        ),
+        'https://taskflow.company.ru',
+      );
+    });
+
+    test('IPv6-адрес сохраняет скобки', () {
+      expect(
+        AppStorage.normalizeServerUrl('http://[::1]:8080/login'),
+        'http://[::1]:8080',
+      );
+    });
+
     test('пробелы обрезаются', () {
       expect(
         AppStorage.normalizeServerUrl('  https://a.example.com  '),

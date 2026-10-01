@@ -82,6 +82,11 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
         if (mounted) _urlController.text = 'http://$typed';
       }
       if (!mounted) return;
+      // Показываем адрес, который реально сохранился: приложение могло
+      // само поправить схему и убрать путь, а сотрудник должен видеть
+      // рабочий адрес, а не тот, что он вводил.
+      final normalized = ref.read(serverUrlProvider);
+      if (normalized.isNotEmpty) _urlController.text = normalized;
       setState(() {
         _serverInfo = info;
         _isChecking = false;

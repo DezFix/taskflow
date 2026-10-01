@@ -118,111 +118,143 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
       ),
       body: Form(
         key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(Insets.md),
-          children: [
-            TextFormField(
-              controller: _titleController,
-              autofocus: !_isEditing,
-              maxLength: 300,
-              decoration: InputDecoration(
-                labelText: l10n.taskFormTitleLabel,
-                counterText: '',
+        child: Builder(
+          builder: (context) => ListView(
+            // Нижний отступ равен высоте клавиатуры: иначе при открытой
+            // клавиатуре кнопку «Создать» было не прокрутить и она
+            // оставалась срезанной нижней панелью.
+            padding: EdgeInsets.fromLTRB(
+              Insets.md,
+              Insets.md,
+              Insets.md,
+              Insets.md + MediaQuery.viewInsetsOf(context).bottom,
+            ),
+            children: [
+              TextFormField(
+                controller: _titleController,
+                autofocus: !_isEditing,
+                maxLength: 300,
+                decoration: InputDecoration(
+                  labelText: l10n.taskFormTitleLabel,
+                  counterText: '',
+                ),
+                validator: (value) => (value ?? '').trim().length < 3
+                    ? l10n.taskFormTitleShort
+                    : null,
               ),
-              validator: (value) => (value ?? '').trim().length < 3
-                  ? l10n.taskFormTitleShort
-                  : null,
-            ),
-            const SizedBox(height: Insets.md),
-            TextFormField(
-              controller: _descriptionController,
-              maxLines: 5,
-              maxLength: 20000,
-              decoration: InputDecoration(
-                labelText: l10n.taskFormDetailsLabel,
-                alignLabelWithHint: true,
+              const SizedBox(height: Insets.md),
+              TextFormField(
+                controller: _descriptionController,
+                maxLines: 5,
+                maxLength: 20000,
+                // Встроенный счётчик вылезал из поля и выглядел как
+                // отдельная кнопка. Показываем количество символов
+                // отдельной строкой под полем — предсказуемо и понятно,
+                // к какому полю относится.
+                decoration: InputDecoration(
+                  labelText: l10n.taskFormDetailsLabel,
+                  alignLabelWithHint: true,
+                  counterText: '',
+                ),
               ),
-            ),
-            const SizedBox(height: Insets.sm),
-            Text(
-              l10n.taskFormPriorityLabel,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: Insets.sm),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: TaskPriority.values.map((priority) {
-                return ChoiceChip(
-                  label: Text(priority.title(l10n)),
-                  selected: _priority == priority,
-                  onSelected: (_) => setState(() => _priority = priority),
-                  avatar: _priority == priority
-                      ? null
-                      : Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: AppColors.priorityColor(priority.wire),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: Insets.md),
-            if (canAssign && !_isEditing) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _descriptionController,
+                    builder: (context, value, _) => Text(
+                      '${value.text.characters.length}/20000',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Insets.sm),
               Text(
-                l10n.taskAssigneeLabel,
+                l10n.taskFormPriorityLabel,
                 style:
                     const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: Insets.sm),
-              _AssigneeField(
-                selectedId: _assigneeId,
-                selectedName: _assigneeName,
-                onChanged: (id, name) => setState(() {
-                  _assigneeId = id;
-                  _assigneeName = name;
-                }),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: TaskPriority.values.map((priority) {
+                  return ChoiceChip(
+                    label: Text(priority.title(l10n)),
+                    selected: _priority == priority,
+                    onSelected: (_) => setState(() => _priority = priority),
+                    avatar: _priority == priority
+                        ? null
+                        : Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: AppColors.priorityColor(priority.wire),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: Insets.md),
-            ],
-            Text(
-              l10n.taskDueLabel,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: Insets.sm),
-            _DueField(
-              dueAt: _dueAt,
-              onChanged: (value) => setState(() => _dueAt = value),
-            ),
-            const SizedBox(height: Insets.md),
-            Text(
-              l10n.taskFormTagsLabel,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: Insets.sm),
-            _TagsField(tags: _tags, onChanged: () => setState(() {})),
-            const SizedBox(height: Insets.md),
-            if (_error != null) ...[
+              if (canAssign && !_isEditing) ...[
+                Text(
+                  l10n.taskAssigneeLabel,
+                  style: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: Insets.sm),
+                _AssigneeField(
+                  selectedId: _assigneeId,
+                  selectedName: _assigneeName,
+                  onChanged: (id, name) => setState(() {
+                    _assigneeId = id;
+                    _assigneeName = name;
+                  }),
+                ),
+                const SizedBox(height: Insets.md),
+              ],
               Text(
-                _error!,
-                style: const TextStyle(
-                  color: AppColors.danger,
-                  fontSize: 13,
+                l10n.taskDueLabel,
+                style:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: Insets.sm),
+              _DueField(
+                dueAt: _dueAt,
+                onChanged: (value) => setState(() => _dueAt = value),
+              ),
+              const SizedBox(height: Insets.md),
+              Text(
+                l10n.taskFormTagsLabel,
+                style:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: Insets.sm),
+              _TagsField(tags: _tags, onChanged: () => setState(() {})),
+              const SizedBox(height: Insets.md),
+              if (_error != null) ...[
+                Text(
+                  _error!,
+                  style: const TextStyle(
+                    color: AppColors.danger,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: Insets.md),
+              ],
+              FilledButton(
+                onPressed: _isSaving ? null : _save,
+                child: Text(
+                  _isEditing ? l10n.commonSave : l10n.taskFormCreateButton,
                 ),
               ),
-              const SizedBox(height: Insets.md),
             ],
-            FilledButton(
-              onPressed: _isSaving ? null : _save,
-              child: Text(
-                _isEditing ? l10n.commonSave : l10n.taskFormCreateButton,
-              ),
-            ),
-            const SizedBox(height: Insets.lg),
-          ],
+          ),
         ),
       ),
     );

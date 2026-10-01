@@ -283,13 +283,6 @@ class AppStorage {
     var url = input.trim();
     if (url.isEmpty) return url;
 
-    if (!url.contains('://')) {
-      final host = url.split(':').first;
-      if (host == '0.0.0.0' || host == '::') {
-        url = url.replaceFirst(host, '127.0.0.1');
-      }
-    }
-
     // Схема по умолчанию: голый адрес в офисной сети обычно без TLS.
     if (!url.contains('://')) {
       final isLocal = url.startsWith('192.168.') ||
@@ -297,6 +290,8 @@ class AppStorage {
           url.startsWith('127.') ||
           url.startsWith('localhost') ||
           url.startsWith('[::1]') ||
+          url.startsWith('0.0.0.0') ||
+          url.startsWith('::') ||
           RegExp(r'^172\.(1[6-9]|2\d|3[01])\.').hasMatch(url);
       url = '${isLocal ? 'http' : 'https'}://$url';
     }
@@ -304,7 +299,25 @@ class AppStorage {
     while (url.endsWith('/')) {
       url = url.substring(0, url.length - 1);
     }
-    return url;
+
+    // Путь, запрос и якорь убираем: адрес сервера — это только
+    // схема, хост и порт. Иначе запросы уходят на /login/api/v1/...,
+    // сервер отдаёт вместо них страницу приложения с кодом 200,
+    // клиент ждёт JSON и зависает на входе.
+    final uri = Uri.tryParse(url);
+    if (uri == null || !uri.hasScheme || uri.host.isEmpty) return url;
+
+    // 0.0.0.0 — адрес, на котором сервер слушает, но подключиться к
+    // нему нельзя. Считаем намерением указать «этот компьютер».
+    final host =
+        (uri.host == '0.0.0.0' || uri.host == '::') ? '127.0.0.1' : uri.host;
+
+    // IPv6-адрес без скобок невалиден: Uri.host отдаёт «::1», а в
+    // URL хост IPv6 обязан быть в квадратных скобках.
+    final hostText =
+        host.contains(':') && !host.startsWith('[') ? '[$host]' : host;
+    final port = uri.hasPort ? ':${uri.port}' : '';
+    return '${uri.scheme}://$hostText$port';
   }
 
   /// Была ли схема указана сотрудником явно.

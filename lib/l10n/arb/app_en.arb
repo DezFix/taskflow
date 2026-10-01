@@ -494,5 +494,9 @@
   "labelClient": "Client",
   "labelRefinement": "Refinement",
   "labelRelease": "Release",
-  "labelRefactoring": "Refactoring"
+  "labelRefactoring": "Refactoring",
+  "teamCopyAll": "Copy all",
+  "teamCopiedAll": "Login and password copied",
+  "teamCopyPassword": "Copy password",
+  "teamCopiedPassword": "Password copied"
 }
