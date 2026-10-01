@@ -43,7 +43,6 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
           controller: _tabs,
           tabs: [
             Tab(text: l10n.teamTabStaff),
-            Tab(text: l10n.teamTabPositions),
             Tab(text: l10n.teamTabRoles),
           ],
         ),
@@ -58,23 +57,17 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
       floatingActionButton: canManage
           ? AnimatedBuilder(
               animation: _tabs,
-              builder: (context, _) => switch (_tabs.index) {
-                0 => FloatingActionButton.extended(
-                    onPressed: _showCreateUser,
-                    icon: const Icon(Icons.person_add_alt),
-                    label: Text(l10n.teamAddStaff),
-                  ),
-                1 => FloatingActionButton.extended(
-                    onPressed: _showCreatePosition,
-                    icon: const Icon(Icons.badge_outlined),
-                    label: Text(l10n.teamAddPosition),
-                  ),
-                _ => FloatingActionButton.extended(
-                    onPressed: () => _showRoleEditor(context, null),
-                    icon: const Icon(Icons.shield_outlined),
-                    label: Text(l10n.teamAddRole),
-                  ),
-              },
+              builder: (context, _) => _tabs.index == 0
+                  ? FloatingActionButton.extended(
+                      onPressed: _showCreateUser,
+                      icon: const Icon(Icons.person_add_alt),
+                      label: Text(l10n.teamAddStaff),
+                    )
+                  : FloatingActionButton.extended(
+                      onPressed: () => _showRoleEditor(context, null),
+                      icon: const Icon(Icons.shield_outlined),
+                      label: Text(l10n.teamAddRole),
+                    ),
             )
           : null,
       body: directory.isLoading && directory.users.isEmpty
@@ -83,7 +76,6 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
               controller: _tabs,
               children: [
                 _UsersTab(directory: directory),
-                _PositionsTab(directory: directory, canManage: canManage),
                 _RolesTab(directory: directory, canManage: canManage),
               ],
             ),
@@ -96,27 +88,8 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (_) => _UserFormSheet(
-        positions: directory.positions,
-        roles: directory.roles,
-      ),
+      builder: (_) => _UserFormSheet(roles: directory.roles),
     );
-  }
-
-  Future<void> _showCreatePosition() async {
-    final l10n = AppLocalizations.of(context);
-    final title = await showInputDialog<String>(
-      context,
-      title: l10n.teamNewPositionTitle,
-      label: l10n.teamPositionNameLabel,
-      hint: l10n.teamPositionNameHint,
-      confirmText: l10n.teamCreate,
-      validator: (value) => (value ?? '').trim().length < 2
-          ? l10n.teamPositionNameRequired
-          : null,
-    );
-    if (title == null || !mounted) return;
-    await ref.read(directoryProvider.notifier).createPosition(title.trim());
   }
 
   Future<void> _showRoleEditor(BuildContext context, Role? role) async {
@@ -213,7 +186,7 @@ class _UserTile extends ConsumerWidget {
     required this.user,
   });
 
-  final UserBrief user;
+  final AppUser user;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -241,7 +214,13 @@ class _UserTile extends ConsumerWidget {
           ],
         ],
       ),
-      subtitle: Text('${user.subtitle} · @${user.username}'),
+      // Под именем — роль, а не должность: должности убрали, их задачу
+      // выполняют роли. Логин оставлен для однозначной идентификации.
+      subtitle: Text(
+        '${user.subtitleWith(l10n)} · @${user.username}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       trailing: canEdit
           ? PopupMenuButton<String>(
               onSelected: (action) => _handle(context, ref, action),
@@ -287,7 +266,6 @@ class _UserTile extends ConsumerWidget {
                 showDragHandle: true,
                 builder: (_) => _UserFormSheet(
                   existing: full,
-                  positions: directory.positions,
                   roles: directory.roles,
                 ),
               );
@@ -366,48 +344,6 @@ class _UserTile extends ConsumerWidget {
   }
 }
 
-class _PositionsTab extends ConsumerWidget {
-  const _PositionsTab({
-    required this.directory,
-    required this.canManage,
-  });
-
-  final DirectoryState directory;
-  final bool canManage;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    if (directory.positions.isEmpty) {
-      return EmptyState(
-        icon: Icons.badge_outlined,
-        title: l10n.teamEmptyPositionsTitle,
-        message: l10n.teamEmptyPositionsMessage,
-      );
-    }
-
-    return ListView.separated(
-      itemCount: directory.positions.length,
-      separatorBuilder: (_, __) => const Divider(height: 1),
-      itemBuilder: (context, index) {
-        final position = directory.positions[index];
-        final count =
-            directory.users.where((u) => u.position?.id == position.id).length;
-
-        return ListTile(
-          leading: const Icon(Icons.badge_outlined),
-          title: Text(position.localizedTitle(l10n)),
-          subtitle: Text(
-            count == 0
-                ? l10n.teamPositionNoStaff
-                : '${l10n.teamPositionStaffCount}: $count',
-          ),
-        );
-      },
-    );
-  }
-}
-
 class _RolesTab extends ConsumerWidget {
   const _RolesTab({
     required this.directory,
@@ -477,12 +413,10 @@ class _RolesTab extends ConsumerWidget {
 class _UserFormSheet extends ConsumerStatefulWidget {
   const _UserFormSheet({
     this.existing,
-    required this.positions,
     required this.roles,
   });
 
   final AppUser? existing;
-  final List<Position> positions;
   final List<Role> roles;
 
   @override
@@ -500,11 +434,7 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
   late final _phoneController = TextEditingController(
     text: widget.existing?.phone ?? '',
   );
-  late final _jobTitleController = TextEditingController(
-    text: widget.existing?.jobTitle ?? '',
-  );
 
-  late String? _positionId = widget.existing?.position?.id;
   late final Set<String> _roleIds = {
     ...widget.existing?.roles.map((r) => r.id) ?? <String>{},
   };
@@ -517,7 +447,6 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
     _usernameController.dispose();
     _fullNameController.dispose();
     _phoneController.dispose();
-    _jobTitleController.dispose();
     super.dispose();
   }
 
@@ -593,37 +522,6 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
                   decoration: InputDecoration(labelText: l10n.teamPhoneLabel),
                 ),
                 const SizedBox(height: Insets.md),
-                TextFormField(
-                  controller: _jobTitleController,
-                  decoration: InputDecoration(
-                    labelText: l10n.teamFreeformJobTitleLabel,
-                  ),
-                ),
-                const SizedBox(height: Insets.md),
-                DropdownButtonFormField<String?>(
-                  initialValue: _positionId,
-                  decoration: InputDecoration(
-                    labelText: l10n.teamPositionFromList,
-                    // Метка всегда всплывает над рамкой. Иначе при
-                    // пустом значении она остаётся внутри поля и
-                    // налезает на текст «Не назначена».
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                  items: [
-                    DropdownMenuItem<String?>(
-                      value: null,
-                      child: Text(l10n.teamPositionUnassigned),
-                    ),
-                    ...widget.positions.map(
-                      (position) => DropdownMenuItem<String?>(
-                        value: position.id,
-                        child: Text(position.localizedTitle(l10n)),
-                      ),
-                    ),
-                  ],
-                  onChanged: (value) => setState(() => _positionId = value),
-                ),
-                const SizedBox(height: Insets.md),
                 Text(
                   l10n.teamRolesAndPermissions,
                   style: const TextStyle(
@@ -684,10 +582,6 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
               widget.existing!.id,
               fullName: _fullNameController.text.trim(),
               phone: _phoneController.text.trim(),
-              jobTitle: _jobTitleController.text.trim(),
-              // Пустое поле должно снимать должность, а не оставлять её.
-              positionId: _positionId,
-              clearPosition: _positionId == null,
               roleIds: _roleIds.toList(),
             );
         if (!mounted) return;
@@ -699,8 +593,6 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
           fullName: _fullNameController.text.trim(),
           roleIds: _roleIds.toList(),
           phone: _phoneController.text.trim(),
-          jobTitle: _jobTitleController.text.trim(),
-          positionId: _positionId,
         );
         if (!mounted || result == null) return;
 

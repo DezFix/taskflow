@@ -124,27 +124,6 @@ class Attachment {
   }
 }
 
-/// Должность сотрудника.
-class Position {
-  const Position({required this.id, required this.title});
-
-  final String id;
-  final String title;
-
-  /// Название должности на языке интерфейса.
-  ///
-  /// Базовые должности создаются при первом запуске и лежат в базе
-  /// по-русски, поэтому узнаём их по имени. Своя должность,
-  /// добавленная администратором, показывается как есть.
-  String localizedTitle(AppLocalizations l10n) =>
-      DataLabels.seededLabel(title, l10n);
-
-  factory Position.fromJson(Map<String, dynamic> json) => Position(
-        id: Json.text(json['id']),
-        title: Json.text(json['title']),
-      );
-}
-
 /// Роль с набором прав.
 class Role {
   const Role({
@@ -190,29 +169,21 @@ class UserBrief {
     required this.id,
     required this.username,
     required this.fullName,
-    this.jobTitle,
     this.avatarUrl,
-    this.position,
     this.isActive = true,
   });
 
   final String id;
   final String username;
   final String fullName;
-  final String? jobTitle;
   final String? avatarUrl;
-  final Position? position;
   final bool isActive;
 
   /// Имя для показа: сначала ФИО, при его отсутствии — логин.
   String get displayName => fullName.isNotEmpty ? fullName : username;
 
-  /// Подпись в списке сотрудников: должность или логин.
-  String get subtitle {
-    if (position != null && position!.title.isNotEmpty) return position!.title;
-    if (jobTitle != null && jobTitle!.isNotEmpty) return jobTitle!;
-    return '@$username';
-  }
+  /// Подпись под именем. В полной карточке переопределяется на роль.
+  String get subtitle => '@$username';
 
   /// Инициалы для кружка аватара.
   String get initials {
@@ -223,14 +194,11 @@ class UserBrief {
   }
 
   factory UserBrief.fromJson(Map<String, dynamic> json) {
-    final position = Json.object(json['position']);
     return UserBrief(
       id: Json.text(json['id']),
       username: Json.text(json['username']),
       fullName: Json.text(json['full_name']),
-      jobTitle: Json.string(json['job_title']),
       avatarUrl: Json.string(json['avatar_url']),
-      position: position == null ? null : Position.fromJson(position),
       isActive: Json.flag(json['is_active'], true),
     );
   }
@@ -246,9 +214,7 @@ class AppUser extends UserBrief {
     required super.id,
     required super.username,
     required super.fullName,
-    super.jobTitle,
     super.avatarUrl,
-    super.position,
     super.isActive,
     this.email,
     this.phone,
@@ -280,15 +246,20 @@ class AppUser extends UserBrief {
   bool can(String permission) =>
       isSuperuser || permissions.contains(permission);
 
+  /// Подпись под именем: роль вместо убранной должности.
+  ///
+  /// Показываем все роли, а не только первую: у сотрудника их может
+  /// быть несколько, и одна не описывает его работу.
+  String subtitleWith(AppLocalizations l10n) {
+    if (roles.isEmpty) return '@$username';
+    return roles.map((role) => role.localizedTitle(l10n)).join(', ');
+  }
+
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
         id: Json.text(json['id']),
         username: Json.text(json['username']),
         fullName: Json.text(json['full_name']),
-        jobTitle: Json.string(json['job_title']),
         avatarUrl: Json.string(json['avatar_url']),
-        position: Json.object(json['position']) == null
-            ? null
-            : Position.fromJson(Json.object(json['position'])!),
         isActive: Json.flag(json['is_active'], true),
         email: Json.string(json['email']),
         phone: Json.string(json['phone']),

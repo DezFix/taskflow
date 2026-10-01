@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskflow/data/models.dart';
+import 'package:taskflow/l10n/generated/app_localizations_ru.dart';
 import 'package:taskflow/l10n/l10n_scope.dart';
 
 void main() {
@@ -96,7 +97,6 @@ void main() {
       'username': 'ivan',
       'full_name': 'Иван Иванов',
       'email': 'ivan@example.com',
-      'job_title': 'Инженер',
       'is_active': true,
       'permissions': ['tasks.view', 'tasks.create', 'users.create'],
       'roles': [
@@ -107,7 +107,6 @@ void main() {
           'permissions': ['tasks.view']
         },
       ],
-      'position': {'id': 'p1', 'title': 'Системный инженер'},
     };
 
     test('права читаются и проверяются', () {
@@ -139,16 +138,12 @@ void main() {
       );
     });
 
-    test('подпись показывает должность, иначе логин', () {
-      final withPosition = AppUser.fromJson(json);
-      expect(withPosition.subtitle, 'Системный инженер');
+    test('подпись показывает роль, без ролей — логин', () {
+      final withRoles = AppUser.fromJson(json);
+      expect(withRoles.subtitleWith(AppLocalizationsRu()), 'Сотрудник');
 
-      final without = AppUser.fromJson({
-        ...json,
-        'position': null,
-        'job_title': null,
-      });
-      expect(without.subtitle, '@ivan');
+      final without = AppUser.fromJson({...json, 'roles': []});
+      expect(without.subtitleWith(AppLocalizationsRu()), '@ivan');
     });
   });
 

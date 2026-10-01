@@ -360,7 +360,6 @@ final taskDetailProvider =
 class DirectoryState {
   const DirectoryState({
     this.users = const [],
-    this.positions = const [],
     this.roles = const [],
     this.isLoading = false,
     this.error,
@@ -368,7 +367,6 @@ class DirectoryState {
   });
 
   final List<AppUser> users;
-  final List<Position> positions;
   final List<Role> roles;
   final bool isLoading;
   final String? error;
@@ -376,7 +374,6 @@ class DirectoryState {
 
   DirectoryState copyWith({
     List<AppUser>? users,
-    List<Position>? positions,
     List<Role>? roles,
     bool? isLoading,
     Object? error = _sentinel,
@@ -384,7 +381,6 @@ class DirectoryState {
   }) =>
       DirectoryState(
         users: users ?? this.users,
-        positions: positions ?? this.positions,
         roles: roles ?? this.roles,
         isLoading: isLoading ?? this.isLoading,
         error: identical(error, _sentinel) ? this.error : error as String?,
@@ -409,11 +405,9 @@ class DirectoryNotifier extends StateNotifier<DirectoryState> {
     );
     try {
       final users = await _repo.users(search: search ?? state.search);
-      final positions = await _repo.positions();
       final roles = await _repo.roles();
       state = state.copyWith(
         users: users,
-        positions: positions,
         roles: roles,
         isLoading: false,
       );
@@ -427,8 +421,6 @@ class DirectoryNotifier extends StateNotifier<DirectoryState> {
     required String fullName,
     required List<String> roleIds,
     String? phone,
-    String? jobTitle,
-    String? positionId,
   }) async {
     try {
       final result = await _repo.createUser(
@@ -436,8 +428,6 @@ class DirectoryNotifier extends StateNotifier<DirectoryState> {
         fullName: fullName,
         roleIds: roleIds,
         phone: phone,
-        jobTitle: jobTitle,
-        positionId: positionId,
       );
       await load();
       return result;
@@ -459,17 +449,6 @@ class DirectoryNotifier extends StateNotifier<DirectoryState> {
     } on ApiException catch (error) {
       _ref.read(appErrorBusProvider).show(error.message);
       return false;
-    }
-  }
-
-  Future<Position?> createPosition(String title) async {
-    try {
-      final position = await _repo.createPosition(title);
-      await load();
-      return position;
-    } on ApiException catch (error) {
-      _ref.read(appErrorBusProvider).show(error.message);
-      return null;
     }
   }
 
@@ -831,9 +810,7 @@ class MessagesNotifier extends StateNotifier<MessagesState> {
                 id: myId ?? '',
                 username: me.username,
                 fullName: me.fullName,
-                jobTitle: me.jobTitle,
                 avatarUrl: me.avatarUrl,
-                position: me.position,
               ),
         createdAt: DateTime.now(),
       ),

@@ -124,14 +124,12 @@ class DirectoryRepository {
   Future<List<AppUser>> users({
     String search = '',
     bool? isActive,
-    String? positionId,
   }) async {
     final data = await client.getList(
       '/api/v1/users',
       query: {
         'search': search.isEmpty ? null : search,
         'is_active': isActive,
-        'position_id': positionId,
       },
     );
     return data
@@ -151,8 +149,6 @@ class DirectoryRepository {
     required List<String> roleIds,
     String? email,
     String? phone,
-    String? jobTitle,
-    String? positionId,
   }) async {
     final data = await client.post(
       '/api/v1/users',
@@ -162,8 +158,6 @@ class DirectoryRepository {
         'role_ids': roleIds,
         if (email != null && email.isNotEmpty) 'email': email,
         if (phone != null && phone.isNotEmpty) 'phone': phone,
-        if (jobTitle != null && jobTitle.isNotEmpty) 'job_title': jobTitle,
-        if (positionId != null) 'position_id': positionId,
       },
     );
     return (
@@ -173,18 +167,11 @@ class DirectoryRepository {
   }
 
   /// Обновляет сотрудника.
-  ///
-  /// [clearPosition] нужен, чтобы снять должность: простое отсутствие
-  /// значения в [positionId] означало бы «не трогать», и снять
-  /// должность было бы невозможно.
   Future<AppUser> updateUser(
     String id, {
     String? fullName,
     String? email,
     String? phone,
-    String? jobTitle,
-    String? positionId,
-    bool clearPosition = false,
     List<String>? roleIds,
     bool? isActive,
   }) async {
@@ -194,11 +181,6 @@ class DirectoryRepository {
         if (fullName != null) 'full_name': fullName,
         if (email != null) 'email': email,
         if (phone != null) 'phone': phone,
-        if (jobTitle != null) 'job_title': jobTitle,
-        if (clearPosition)
-          'position_id': null
-        else if (positionId != null)
-          'position_id': positionId,
         if (roleIds != null) 'role_ids': roleIds,
         if (isActive != null) 'is_active': isActive,
       },
@@ -229,31 +211,6 @@ class DirectoryRepository {
   Future<AppUser> activateUser(String id) async {
     final data = await client.post('/api/v1/users/$id/activate');
     return AppUser.fromJson(data);
-  }
-
-  // --- Должности ---
-
-  Future<List<Position>> positions() async {
-    final data = await client.getList('/api/v1/positions');
-    return data
-        .map((e) => Position.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
-
-  Future<Position> createPosition(String title, {String? description}) async {
-    final data = await client.post(
-      '/api/v1/positions',
-      body: {
-        'title': title.trim(),
-        if (description != null && description.isNotEmpty)
-          'description': description,
-      },
-    );
-    return Position.fromJson(data);
-  }
-
-  Future<void> deletePosition(String id) async {
-    await client.delete('/api/v1/positions/$id');
   }
 
   // --- Роли ---

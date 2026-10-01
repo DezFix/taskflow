@@ -20,20 +20,13 @@ abstract final class DataLabels {
     };
   }
 
-  /// Должности и метки, созданные при первом запуске.
+  /// Метки, созданные при первом запуске.
   ///
   /// Сопоставление по точному названию: если администратор переименовал
-  /// должность, совпадения не будет и покажется его название.
+  /// метку, совпадения не будет и покажется его название.
   static String? seededName(String? title, AppLocalizations l10n) {
     if (title == null || title.isEmpty) return null;
     return switch (title) {
-      'Руководитель IT-отдела' => l10n.positionItHead,
-      'Системный администратор' => l10n.positionSysadmin,
-      'Системный программист' => l10n.positionDeveloper,
-      'Инженер' => l10n.positionEngineer,
-      'Тестировщик' => l10n.positionTester,
-      'Технический писатель' => l10n.positionTechWriter,
-      // Метки задач
       'Срочно' => l10n.labelUrgent,
       'Ждёт ответа' => l10n.labelWaiting,
       'Клиент' => l10n.labelClient,

@@ -9,6 +9,7 @@ import '../language_selector.dart';
 import '../../state/app_state.dart';
 import '../theme.dart';
 import '../widgets.dart';
+import 'server_settings_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -39,13 +40,8 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                user.position?.title ?? user.subtitle,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
-                ),
-              ),
+              // Должность убрана, её роль теперь играет. Строка с ней
+              // была бы пустым логином, а роли показываются ниже чипами.
               if (user.roles.isNotEmpty) ...[
                 const SizedBox(height: Insets.sm),
                 Wrap(
@@ -129,7 +125,16 @@ class ProfileScreen extends ConsumerWidget {
                 _ActionRow(
                   icon: Icons.tune,
                   title: l10n.profileServerSettings,
-                  onTap: () => Navigator.of(context).pushNamed('/settings'),
+                  onTap: () => Navigator.of(context).push(
+                    // Именованный маршрут здесь не годится: у каждой
+                    // вкладки свой Navigator, его onGenerateRoute отдаёт
+                    //RouteSettings, но всегда строит экран вкладки.
+                    // Из-за этого /settings открывал ещё один профиль,
+                    // а настройки не появлялись.
+                    MaterialPageRoute<void>(
+                      builder: (_) => const ServerSettingsScreen(),
+                    ),
+                  ),
                 ),
             ],
           ),

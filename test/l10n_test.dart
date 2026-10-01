@@ -114,12 +114,8 @@ void main() {
       }
     });
 
-    test('базовые должности и метки узнаются по названию', () {
+    test('базовые метки узнаются по названию', () {
       final en = AppLocalizationsEn();
-      expect(
-        DataLabels.seededLabel('Системный администратор', en),
-        'System administrator',
-      );
       expect(DataLabels.seededLabel('Рефакторинг', en), 'Refactoring');
       expect(DataLabels.seededLabel('Джуниор', en), 'Джуниор');
     });

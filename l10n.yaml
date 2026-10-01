@@ -12,4 +12,5 @@ output-dir: lib/l10n/generated
 nullable-getter: false
 
 # Склонения и разделители зависят от языка, поэтому берём из intl.
-synthetic-package: false
+# Ключ synthetic-package больше не действует: генерация всегда пишет
+# файлы в output-dir, и intl подключается обычным зависимым пакетом.

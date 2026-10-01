@@ -33,7 +33,10 @@ class MessageBubble extends ConsumerWidget {
         ? scheme.surfaceContainerHighest
         : isMine
             ? scheme.primary
-            : scheme.surface;
+            // Чужое сообщение должно заметно отличаться от фона чата.
+            // Раньше брался scheme.surface — в тёмной теме он почти совпадал
+            // с фоном, и пузырь выглядел серым пятном без границы.
+            : scheme.surfaceContainerHigh;
 
     final textColor = message.isDeleted
         ? AppColors.textMuted
@@ -90,24 +93,43 @@ class MessageBubble extends ConsumerWidget {
                         bottomLeft: Radius.circular(isMine ? 14 : 4),
                         bottomRight: Radius.circular(isMine ? 4 : 14),
                       ),
-                      border:
-                          isMine ? null : Border.all(color: AppColors.border),
+                      // Граница задаёт форму пузыря: в тёмной теме
+                      // скругления без неё терялись.
+                      border: message.isDeleted
+                          ? null
+                          : Border.all(
+                              color: isMine
+                                  ? Colors.white.withValues(alpha: 0.12)
+                                  : scheme.outlineVariant,
+                            ),
                     ),
-                    child: BubbleContent(
-                      message: message,
-                      textColor: textColor,
-                      isMine: isMine,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        BubbleContent(
+                          message: message,
+                          textColor: textColor,
+                          isMine: isMine,
+                        ),
+                        // Время перенесено внутрь пузыря. Раньше оно
+                        // висело под ним отдельной строкой и выглядело
+                        // как подпись, не относящаяся к сообщению.
+                        if (!message.isDeleted)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: MessageMeta(
+                                message: message,
+                                isMine: isMine,
+                                onRetry: onRetry,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                  if (!message.isDeleted)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2, left: 4, right: 4),
-                      child: MessageMeta(
-                        message: message,
-                        isMine: isMine,
-                        onRetry: onRetry,
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -420,7 +442,12 @@ class MessageMeta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.textMuted;
+    final scheme = Theme.of(context).colorScheme;
+    // Внутри пузыря цвет берём от его текста с прозрачностью: тёмно-синий
+    // AppColors.textMuted на тёмном фоне пузыря был почти не виден.
+    final color = isMine
+        ? Colors.white.withValues(alpha: 0.75)
+        : scheme.onSurface.withValues(alpha: 0.6);
     final l10n = AppLocalizations.of(context);
 
     return Row(
@@ -457,7 +484,7 @@ class MessageMeta extends StatelessWidget {
           Icon(
             message.isRead ? Icons.done_all : Icons.done,
             size: 13,
-            color: message.isRead ? AppColors.primary : color,
+            color: message.isRead ? scheme.primary : color,
           ),
         if (message.isEdited) ...[
           const SizedBox(width: 3),

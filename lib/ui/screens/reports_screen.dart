@@ -8,9 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../data/api_client.dart';
 import '../../data/models.dart';
 import '../../l10n/generated/app_localizations.dart';
-import '../../state/app_state.dart';
 import '../../state/controllers.dart';
-import '../file_save.dart';
 import '../theme.dart';
 import '../workspace_tab.dart';
 import '../widgets.dart';
@@ -92,8 +90,6 @@ class ReportsScreen extends ConsumerWidget {
           _WeeklyCard(summary: summary),
           const SizedBox(height: Insets.md),
           _LoadTable(rows: state.load),
-          const SizedBox(height: Insets.md),
-          _ExportCard(),
         ],
       ),
     );
@@ -494,73 +490,6 @@ void _openEmployeeTasks(BuildContext context, UserLoad row) {
         TaskFilter(assigneeId: assigneeId),
       );
   container.read(workspaceTabProvider.notifier).state = WorkspaceTab.tasks;
-}
-
-/// Выгрузка в CSV: открывается в Excel.
-class _ExportCard extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    return SectionCard(
-      title: l10n.reportsExportTitle,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // Рядом текст и кнопка умещаются только на широком экране.
-          // На телефоне раскладываем по вертикали: иначе тексту
-          // остаётся ширина в один символ и он встаёт столбиком.
-          final button = OutlinedButton.icon(
-            onPressed: () async {
-              final messenger = ScaffoldMessenger.of(context);
-              try {
-                final bytes =
-                    await ref.read(reportsRepositoryProvider).exportTasksCsv();
-                await saveDownloadedFile(
-                  bytes,
-                  fileName: 'taskflow_tasks.csv',
-                  mimeType: 'text/csv',
-                );
-                messenger.showSnackBar(
-                  SnackBar(content: Text(l10n.reportsExportSaved)),
-                );
-              } on ApiException catch (error) {
-                messenger.showSnackBar(SnackBar(content: Text(error.message)));
-              } catch (error) {
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text('${l10n.reportsExportFailed} $error'),
-                  ),
-                );
-              }
-            },
-            icon: const Icon(Icons.download_outlined, size: 18),
-            label: Text(l10n.reportsExportDownload),
-          );
-          final text = Text(
-            l10n.reportsExportDescription,
-            style: const TextStyle(fontSize: 12, height: 1.4),
-          );
-
-          if (constraints.maxWidth < 380) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                text,
-                const SizedBox(height: Insets.md),
-                Align(alignment: Alignment.centerRight, child: button),
-              ],
-            );
-          }
-          return Row(
-            children: [
-              Expanded(child: text),
-              const SizedBox(width: Insets.md),
-              button,
-            ],
-          );
-        },
-      ),
-    );
-  }
 }
 
 /// Открывает ссылку в браузере или системном приложении.
