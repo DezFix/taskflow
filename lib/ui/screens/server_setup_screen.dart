@@ -50,11 +50,37 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
     });
 
     try {
-      final info = await ref.read(appStageProvider.notifier).connectToServer(
-            _urlController.text,
-            trustCertificate: _trustCertificate,
-            label: _labelController.text.isEmpty ? null : _labelController.text,
-          );
+      ServerInfo info;
+      // Адрес без схемы не говорит, https это или http. Пробуем
+      // предположительный вариант, а если сервер не отвечает или
+      // сертификат не подошёл, повторяем по http: офисные серверы
+      // чаще подняты без TLS, а сотрудник не обязан знать это.
+      try {
+        info = await ref.read(appStageProvider.notifier).connectToServer(
+              _urlController.text,
+              trustCertificate: _trustCertificate,
+              label:
+                  _labelController.text.isEmpty ? null : _labelController.text,
+            );
+      } on ApiException catch (error) {
+        final typed = _urlController.text.trim();
+        final schemeWasImplicit = !AppStorage.hasExplicitScheme(typed);
+        final connectionProblem = error.code == 'network_unreachable' ||
+            error.code == 'connection_timeout' ||
+            error.code == 'certificate_error' ||
+            error.code == 'server_unreachable';
+        if (!schemeWasImplicit || !connectionProblem) rethrow;
+
+        // Повтор по http: сотрудник схему не указывал, значит не
+        // выбрал её сознательно, и молчаливый откат ему не навредит.
+        info = await ref.read(appStageProvider.notifier).connectToServer(
+              'http://$typed',
+              trustCertificate: _trustCertificate,
+              label:
+                  _labelController.text.isEmpty ? null : _labelController.text,
+            );
+        if (mounted) _urlController.text = 'http://$typed';
+      }
       if (!mounted) return;
       setState(() {
         _serverInfo = info;

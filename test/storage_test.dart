@@ -239,4 +239,48 @@ void main() {
       expect(entry.toJson().containsKey('last_used'), isFalse);
     });
   });
+
+  group('Нормализация адреса сервера', () {
+    test('адрес без схемы в офисной сети получает http', () {
+      expect(AppStorage.normalizeServerUrl('192.168.1.50:8080'),
+          'http://192.168.1.50:8080');
+      expect(AppStorage.normalizeServerUrl('localhost:8080'),
+          'http://localhost:8080');
+      expect(AppStorage.normalizeServerUrl('10.0.0.5:8443'),
+          'http://10.0.0.5:8443');
+    });
+
+    test('публичный адрес без схемы получает https', () {
+      expect(AppStorage.normalizeServerUrl('taskflow.example.com'),
+          'https://taskflow.example.com');
+    });
+
+    test('явная схема сохраняется', () {
+      expect(AppStorage.normalizeServerUrl('http://192.168.1.50:8080'),
+          'http://192.168.1.50:8080');
+      expect(AppStorage.normalizeServerUrl('https://office.example.com'),
+          'https://office.example.com');
+    });
+
+    test('0.0.0.0 — адрес прослушивания, а не подключения', () {
+      // Подключаться к 0.0.0.0 нельзя, поэтому считаем намерением
+      // указать локальный компьютер.
+      expect(AppStorage.normalizeServerUrl('0.0.0.0:8080'),
+          'http://127.0.0.1:8080');
+      expect(AppStorage.normalizeServerUrl('0.0.0.0'), 'http://127.0.0.1');
+    });
+
+    test('хвостовые слэши убираются', () {
+      expect(AppStorage.normalizeServerUrl('http://localhost:8080///'),
+          'http://localhost:8080');
+    });
+
+    test('схема считается явной только когда её написали', () {
+      expect(
+          AppStorage.hasExplicitScheme('https://office.example.com'), isTrue);
+      expect(AppStorage.hasExplicitScheme('http://192.168.1.5:8080'), isTrue);
+      expect(AppStorage.hasExplicitScheme('192.168.1.5:8080'), isFalse);
+      expect(AppStorage.hasExplicitScheme('office.example.com'), isFalse);
+    });
+  });
 }
