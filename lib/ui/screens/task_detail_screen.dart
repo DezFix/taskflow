@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models.dart';
+import '../../l10n/data_labels.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
 import '../../state/controllers.dart';
 import '../file_picking.dart';
@@ -20,6 +22,7 @@ class TaskDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(taskDetailProvider(taskId));
     final task = state.task;
+    final l10n = AppLocalizations.of(context);
 
     if (task == null) {
       return Scaffold(
@@ -28,12 +31,12 @@ class TaskDetailScreen extends ConsumerWidget {
             ? const Center(child: CircularProgressIndicator())
             : EmptyState(
                 icon: Icons.error_outline,
-                title: 'Задача не найдена',
+                title: l10n.taskDetailNotFound,
                 message: state.error,
                 action: FilledButton(
                   onPressed: () =>
                       ref.read(taskDetailProvider(taskId).notifier).load(),
-                  child: const Text('Повторить'),
+                  child: Text(l10n.commonRetry),
                 ),
               ),
       );
@@ -41,7 +44,7 @@ class TaskDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Задача'),
+        title: Text(l10n.taskDetailTitle),
         actions: [_TaskMenu(task: task, taskId: taskId)],
       ),
       body: RefreshIndicator(
@@ -55,7 +58,7 @@ class TaskDetailScreen extends ConsumerWidget {
             const SizedBox(height: Insets.md),
             if (task.description != null && task.description!.isNotEmpty) ...[
               SectionCard(
-                title: 'Описание',
+                title: l10n.taskDetailDescriptionTitle,
                 child: Text(
                   task.description!,
                   style: const TextStyle(fontSize: 14, height: 1.5),
@@ -158,14 +161,15 @@ class _StatusRow extends ConsumerWidget {
   ) async {
     // Завершение обычно сопровождается пояснением — спрашиваем.
     // null без результата означает, что сотрудник закрыл диалог.
+    final l10n = AppLocalizations.of(context);
     if (status == TaskStatus.done) {
       final comment = await showInputDialog<String>(
         context,
-        title: 'Завершить задачу',
-        message: 'Добавьте комментарий: что сделано (необязательно).',
-        label: 'Комментарий',
-        hint: 'Например, заменил диск, проверил работу',
-        confirmText: 'Завершить',
+        title: l10n.taskDetailCompleteTitle,
+        message: l10n.taskDetailCompleteMessage,
+        label: l10n.taskDetailCommentLabel,
+        hint: l10n.taskDetailCompleteHint,
+        confirmText: l10n.taskDetailCompleteConfirm,
         maxLength: 2000,
       );
       // Диалог без комментария всё равно завершает задачу: возвращаем пустую строку.
@@ -192,6 +196,7 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final color = AppColors.statusColor(status.wire);
     return Material(
       color: selected ? color : color.withValues(alpha: 0.08),
@@ -202,7 +207,7 @@ class _StatusChip extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Text(
-            status.title,
+            status.title(l10n),
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -228,41 +233,45 @@ class _DetailsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final canAssign = user?.can('tasks.assign') ?? false;
+    final l10n = AppLocalizations.of(context);
 
     return SectionCard(
-      title: 'Параметры',
+      title: l10n.taskDetailParamsTitle,
       child: Column(
         children: [
           InfoRow(
-            label: 'Исполнитель',
-            value: task.assignee?.displayName ?? 'Не назначен',
+            label: l10n.taskAssigneeLabel,
+            value: task.assignee?.displayName ?? l10n.taskAssigneeUnassigned,
           ),
-          InfoRow(label: 'Автор', value: task.author?.displayName ?? '—'),
           InfoRow(
-            label: 'Срок',
-            value: Format.dueLabel(task.dueAt, overdue: task.isOverdue),
+            label: l10n.taskDetailAuthor,
+            value: task.author?.displayName ?? '—',
+          ),
+          InfoRow(
+            label: l10n.taskDueLabel,
+            value: Format.dueLabel(task.dueAt, overdue: task.isOverdue, l10n),
             valueColor: task.isOverdue ? AppColors.danger : null,
           ),
           InfoRow(
-            label: 'Создана',
-            value: Format.dateTime(task.createdAt),
+            label: l10n.taskDetailCreated,
+            value: Format.dateTime(task.createdAt, l10n),
           ),
           if (task.completedAt != null)
             InfoRow(
-              label: 'Завершена',
-              value: Format.dateTime(task.completedAt),
+              label: l10n.taskDetailCompleted,
+              value: Format.dateTime(task.completedAt, l10n),
             ),
           if (task.estimatedHours != null)
             InfoRow(
-              label: 'Оценка',
-              value: '${task.estimatedHours} ч',
+              label: l10n.taskDetailEstimate,
+              value: '${task.estimatedHours} ${l10n.taskHoursUnit}',
             ),
           if (canAssign) ...[
             const SizedBox(height: Insets.sm),
             OutlinedButton.icon(
               onPressed: () => _changeAssignee(context, ref),
               icon: const Icon(Icons.assignment_ind_outlined, size: 18),
-              label: const Text('Назначить исполнителя'),
+              label: Text(l10n.taskAssigneeAction),
               style: OutlinedButton.styleFrom(minimumSize: const Size(0, 40)),
             ),
           ],
@@ -274,6 +283,7 @@ class _DetailsCard extends ConsumerWidget {
   Future<void> _changeAssignee(BuildContext context, WidgetRef ref) async {
     final directory = ref.watch(directoryProvider);
     final users = directory.users.where((u) => u.isActive).toList();
+    final l10n = AppLocalizations.of(context);
 
     await showModalBottomSheet<void>(
       context: context,
@@ -282,21 +292,22 @@ class _DetailsCard extends ConsumerWidget {
         child: ListView(
           shrinkWrap: true,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
                 Insets.md,
                 0,
                 Insets.md,
                 Insets.sm,
               ),
               child: Text(
-                'Назначить исполнителя',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                l10n.taskAssigneeAction,
+                style:
+                    const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.person_off_outlined),
-              title: const Text('Без исполнителя'),
+              title: Text(l10n.taskAssigneeNone),
               onTap: () async {
                 Navigator.of(sheetContext).pop();
                 await ref.read(taskDetailProvider(taskId).notifier).assign();
@@ -335,13 +346,16 @@ class _TagsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Wrap(
       spacing: 6,
       runSpacing: 6,
       children: tags
           .map(
             (tag) => Chip(
-              label: Text(tag.name),
+              // Базовые метки создаются на русском и лежат в базе,
+              // поэтому узнаём их по имени и переводим.
+              label: Text(DataLabels.seededLabel(tag.name, l10n)),
               visualDensity: VisualDensity.compact,
             ),
           )
@@ -359,8 +373,10 @@ class _AttachmentsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return SectionCard(
-      title: 'Вложения (${attachments.length})',
+      title: '${l10n.taskDetailAttachmentsTitle} (${attachments.length})',
       child: Column(
         children: attachments
             .map(
@@ -381,6 +397,7 @@ class _AttachmentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
@@ -404,7 +421,7 @@ class _AttachmentTile extends StatelessWidget {
             ),
           ),
           Text(
-            Format.fileSize(attachment.sizeBytes),
+            Format.fileSize(attachment.sizeBytes, l10n),
             style: const TextStyle(
               fontSize: 12,
               color: AppColors.textMuted,
@@ -467,16 +484,18 @@ class _CommentsSectionState extends ConsumerState<_CommentsSection> {
           a.createdAt ?? DateTime(0),
         ),
       );
+    final l10n = AppLocalizations.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            const Expanded(
+            Expanded(
               child: Text(
-                'Комментарии и отчёты',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                l10n.taskDetailCommentsTitle,
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
             ),
             if (comments.isNotEmpty)
@@ -497,10 +516,9 @@ class _CommentsSectionState extends ConsumerState<_CommentsSection> {
               border: Border.all(color: AppColors.border),
               borderRadius: BorderRadius.circular(Insets.radius),
             ),
-            child: const Text(
-              'Комментариев пока нет. Здесь сотрудник отчитывается о работе '
-              'и прикладывает фотографии.',
-              style: TextStyle(
+            child: Text(
+              l10n.taskDetailCommentsEmpty,
+              style: const TextStyle(
                 fontSize: 13,
                 color: AppColors.textSecondary,
                 height: 1.4,
@@ -550,6 +568,8 @@ class _CommentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(Insets.md),
@@ -565,14 +585,15 @@ class _CommentCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        comment.author?.displayName ?? 'Сотрудник',
+                        comment.author?.displayName ??
+                            l10n.taskDetailAuthorFallback,
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
-                        Format.ago(comment.createdAt),
+                        Format.ago(comment.createdAt, l10n),
                         style: const TextStyle(
                           fontSize: 11,
                           color: AppColors.textMuted,
@@ -591,18 +612,18 @@ class _CommentCard extends StatelessWidget {
                       color: AppColors.success.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.assignment_turned_in,
                           size: 13,
                           color: AppColors.success,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
-                          'Отчёт',
-                          style: TextStyle(
+                          l10n.taskDetailReportBadge,
+                          style: const TextStyle(
                             fontSize: 11,
                             color: AppColors.success,
                             fontWeight: FontWeight.w600,
@@ -646,6 +667,7 @@ class _AttachmentChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
@@ -673,7 +695,7 @@ class _AttachmentChip extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           Text(
-            Format.fileSize(attachment.sizeBytes),
+            Format.fileSize(attachment.sizeBytes, l10n),
             style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
           ),
         ],
@@ -704,6 +726,8 @@ class _CommentComposer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(Insets.sm + 4),
@@ -729,8 +753,8 @@ class _CommentComposer extends StatelessWidget {
               controller: controller,
               maxLines: 3,
               minLines: 2,
-              decoration: const InputDecoration(
-                hintText: 'Комментарий или отчёт о выполненной работе',
+              decoration: InputDecoration(
+                hintText: l10n.taskDetailCommentHint,
                 border: InputBorder.none,
                 filled: false,
                 contentPadding: EdgeInsets.zero,
@@ -743,11 +767,11 @@ class _CommentComposer extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.attach_file),
                   onPressed: onAddFiles,
-                  tooltip: 'Приложить фото',
+                  tooltip: l10n.taskDetailAttachPhoto,
                 ),
                 Expanded(
                   child: FilterChip(
-                    label: const Text('Отчёт о работе'),
+                    label: Text(l10n.taskDetailWorkReportChip),
                     selected: isWorkReport,
                     onSelected: (_) => onToggleWorkReport(),
                     visualDensity: VisualDensity.compact,
@@ -760,7 +784,7 @@ class _CommentComposer extends StatelessWidget {
                     minimumSize: const Size(0, 38),
                     padding: const EdgeInsets.symmetric(horizontal: 18),
                   ),
-                  child: const Text('Отправить'),
+                  child: Text(l10n.taskDetailSend),
                 ),
               ],
             ),
@@ -785,9 +809,10 @@ class _HistoryCard extends StatelessWidget {
           a.createdAt ?? DateTime(0),
         ),
       );
+    final l10n = AppLocalizations.of(context);
 
     return SectionCard(
-      title: 'История изменений',
+      title: l10n.taskDetailHistoryTitle,
       child: Column(
         children: ordered
             .map(
@@ -810,8 +835,8 @@ class _HistoryCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${entry.user?.displayName ?? 'Система'} — '
-                            '${entry.fieldTitle.toLowerCase()}',
+                            '${entry.user?.displayName ?? l10n.taskDetailSystemActor} — '
+                            '${entry.fieldTitle(l10n).toLowerCase()}',
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
@@ -826,7 +851,7 @@ class _HistoryCard extends StatelessWidget {
                               ),
                             ),
                           Text(
-                            Format.dateTime(entry.createdAt),
+                            Format.dateTime(entry.createdAt, l10n),
                             style: const TextStyle(
                               fontSize: 11,
                               color: AppColors.textMuted,
@@ -858,29 +883,31 @@ class _TaskMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final canDelete = user?.can('tasks.delete') ?? false;
+    final l10n = AppLocalizations.of(context);
 
     return PopupMenuButton<String>(
       onSelected: (action) => _handle(context, ref, action),
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'refresh',
           child: ListTile(
             dense: true,
             contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.refresh),
-            title: Text('Обновить'),
+            leading: const Icon(Icons.refresh),
+            title: Text(l10n.taskDetailRefresh),
           ),
         ),
         if (canDelete)
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'delete',
             child: ListTile(
               dense: true,
               contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.delete_outline, color: AppColors.danger),
+              leading:
+                  const Icon(Icons.delete_outline, color: AppColors.danger),
               title: Text(
-                'Удалить задачу',
-                style: TextStyle(color: AppColors.danger),
+                l10n.taskDetailDeleteItem,
+                style: const TextStyle(color: AppColors.danger),
               ),
             ),
           ),
@@ -898,10 +925,11 @@ class _TaskMenu extends ConsumerWidget {
       return;
     }
 
+    final l10n = AppLocalizations.of(context);
     final confirmed = await confirmDialog(
       context,
-      title: 'Удалить задачу?',
-      message: 'Задача пропадёт из списка, но останется в истории отчётов.',
+      title: l10n.taskDetailDeleteConfirm,
+      message: l10n.taskDetailDeleteMessage,
     );
     if (!confirmed || !context.mounted) return;
 
@@ -931,6 +959,7 @@ class _ReportFab extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     final canReport =
         task.assignee?.id == user?.id || user?.can('tasks.edit_any') == true;
+    final l10n = AppLocalizations.of(context);
 
     if (!canReport || task.status == TaskStatus.done) {
       return const SizedBox.shrink();
@@ -940,10 +969,10 @@ class _ReportFab extends ConsumerWidget {
       onPressed: () async {
         final comment = await showInputDialog<String>(
           context,
-          title: 'Отчёт о выполненной работе',
-          message: 'Что было сделано? Задача перейдёт на проверку.',
-          label: 'Отчёт',
-          confirmText: 'Отправить',
+          title: l10n.taskDetailReportDialogTitle,
+          message: l10n.taskDetailReportDialogMessage,
+          label: l10n.taskDetailReportBadge,
+          confirmText: l10n.taskDetailSend,
           maxLength: 2000,
         );
         if (comment == null) return;
@@ -952,7 +981,7 @@ class _ReportFab extends ConsumerWidget {
             .addComment(body: comment, isWorkReport: true);
       },
       icon: const Icon(Icons.assignment_turned_in_outlined),
-      label: const Text('Отчёт'),
+      label: Text(l10n.taskDetailReportBadge),
     );
   }
 }

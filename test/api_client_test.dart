@@ -1,10 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskflow/data/api_client.dart';
+import 'package:taskflow/l10n/l10n_scope.dart';
 
 /// Проверяет контракт запросов к серверу: именно эти места ломались
 /// тихо, без ошибок компиляции.
 void main() {
+  final l10n = L10nScope.current;
+
   group('Адрес запроса', () {
     final client =
         ApiClient(baseUrl: 'https://task.example.com', tokens: TokenProvider());
@@ -77,7 +80,7 @@ void main() {
       );
       expect(error.code, 'network_unreachable');
       // Сотрудник читает friendly, а не технический текст dio.
-      expect(error.info.friendly, contains('Сервер'));
+      expect(error.info.localized(l10n), contains('Сервер'));
     });
 
     test('код ошибки берётся из тела ответа', () {

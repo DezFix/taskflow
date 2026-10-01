@@ -7,7 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/api_client.dart';
 import '../../data/models.dart';
 import '../../data/storage.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
+import '../language_selector.dart';
 import '../theme.dart';
 
 class ServerSetupScreen extends ConsumerStatefulWidget {
@@ -25,6 +27,7 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
   bool _isChecking = false;
   bool _trustCertificate = false;
   String? _error;
+  String? _errorCode;
   ServerInfo? _serverInfo;
   bool _showAdvanced = false;
 
@@ -42,6 +45,7 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
     setState(() {
       _isChecking = true;
       _error = null;
+      _errorCode = null;
       _serverInfo = null;
     });
 
@@ -71,6 +75,9 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
       setState(() {
         _isChecking = false;
         _error = error.message;
+        // Код ошибки запоминаем отдельно от текста: текст приходит с
+        // сервера и остаётся русским при любом языке интерфейса.
+        _errorCode = error.code;
         // Ошибка сертификата лечится одним переключателем — сразу его
         // показываем, чтобы сотрудник не искал причину по настройкам.
         if (error.code == 'certificate_error') _trustCertificate = true;
@@ -80,9 +87,14 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final savedServers = ref.watch(savedServersProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('TaskFlow'),
+        actions: const [LanguageSelector(compact: true)],
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -98,7 +110,7 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
                     const SizedBox(height: Insets.xl),
                     if (savedServers.isNotEmpty) ...[
                       Text(
-                        'Недавние серверы',
+                        l10n.setupRecentServers,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -134,16 +146,18 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
                       autocorrect: false,
                       textInputAction: TextInputAction.go,
                       onFieldSubmitted: (_) => _check(),
-                      decoration: const InputDecoration(
-                        labelText: 'Адрес сервера',
-                        hintText: '192.168.1.50:8080 или taskflow.company.ru',
-                        prefixIcon: Icon(Icons.dns_outlined),
+                      decoration: InputDecoration(
+                        labelText: l10n.setupServerAddress,
+                        hintText: l10n.setupServerAddressHint,
+                        prefixIcon: const Icon(Icons.dns_outlined),
                       ),
                       validator: (value) {
                         final text = (value ?? '').trim();
-                        if (text.isEmpty) return 'Введите адрес сервера';
+                        if (text.isEmpty) {
+                          return l10n.setupServerAddressRequired;
+                        }
                         if (!text.contains('.') && !text.contains(':')) {
-                          return 'Похоже, это не адрес. Пример: 192.168.1.50:8080';
+                          return l10n.setupServerAddressInvalid;
                         }
                         return null;
                       },
@@ -160,10 +174,10 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
                       const SizedBox(height: Insets.md),
                       TextFormField(
                         controller: _labelController,
-                        decoration: const InputDecoration(
-                          labelText: 'Название сервера',
-                          hintText: 'Например, Офис на Пресненской',
-                          prefixIcon: Icon(Icons.badge_outlined),
+                        decoration: InputDecoration(
+                          labelText: l10n.setupServerNameLabel,
+                          hintText: l10n.setupServerNameHint,
+                          prefixIcon: const Icon(Icons.badge_outlined),
                         ),
                       ),
                       const SizedBox(height: Insets.sm),
@@ -182,8 +196,7 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
                       _ErrorBanner(
                         message: _error!,
                         showTrustOption:
-                            _error!.toLowerCase().contains('сертифик') &&
-                                !_showAdvanced,
+                            _errorCode == 'certificate_error' && !_showAdvanced,
                         onTrust: () {
                           setState(() {
                             _showAdvanced = true;
@@ -206,7 +219,7 @@ class _ServerSetupScreenState extends ConsumerState<ServerSetupScreen> {
                             )
                           : const Icon(Icons.arrow_forward),
                       label: Text(
-                        _isChecking ? 'Проверяем сервер…' : 'Подключиться',
+                        _isChecking ? l10n.setupChecking : l10n.setupConnect,
                       ),
                     ),
                     const SizedBox(height: Insets.md),
@@ -227,6 +240,7 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         Container(
@@ -249,7 +263,7 @@ class _Header extends StatelessWidget {
         ),
         const SizedBox(height: Insets.xs),
         Text(
-          'Управление IT-отделом',
+          l10n.setupTagline,
           style: TextStyle(
             fontSize: 15,
             color: Theme.of(context).brightness == Brightness.dark
@@ -275,6 +289,7 @@ class _SavedServerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: Insets.sm),
       child: Material(
@@ -321,7 +336,7 @@ class _SavedServerTile extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.close, size: 18),
                   onPressed: onRemove,
-                  tooltip: 'Забыть сервер',
+                  tooltip: l10n.setupForgetServerTooltip,
                 ),
               ],
             ),
@@ -342,6 +357,7 @@ class _AddressHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final normalized = url.isEmpty ? '' : AppStorage.normalizeServerUrl(url);
     if (!normalized.startsWith('http')) {
       return const SizedBox.shrink();
@@ -362,8 +378,9 @@ class _AddressHint extends StatelessWidget {
         Expanded(
           child: Text(
             normalized.startsWith('https')
-                ? 'Защищённое соединение: $normalized'
-                : 'Без шифрования: $normalized. Подходит для доверенной сети офиса.',
+                ? '${l10n.setupHttpsHint} $normalized'
+                : '${l10n.setupHttpHintPrefix} $normalized'
+                    '${l10n.setupHttpHintSuffix}',
             style: TextStyle(
               fontSize: 12,
               color: normalized.startsWith('https')
@@ -388,6 +405,7 @@ class _AdvancedToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return TextButton.icon(
       onPressed: onToggle,
       style: TextButton.styleFrom(
@@ -398,7 +416,10 @@ class _AdvancedToggle extends StatelessWidget {
         expanded ? Icons.expand_less : Icons.expand_more,
         size: 18,
       ),
-      label: const Text('Дополнительно', style: TextStyle(fontSize: 13)),
+      label: Text(
+        l10n.setupAdvancedLabel,
+        style: const TextStyle(fontSize: 13),
+      ),
     );
   }
 }
@@ -414,6 +435,7 @@ class _CertificateSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(Insets.sm + 4),
       decoration: BoxDecoration(
@@ -429,13 +451,16 @@ class _CertificateSwitch extends StatelessWidget {
             onChanged: onChanged,
             contentPadding: EdgeInsets.zero,
             dense: true,
-            title: const Text(
-              'Доверять сертификату сервера',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            title: Text(
+              l10n.setupTrustCertificateLabel,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            subtitle: const Text(
-              'Для офисной сети и VPN, где сертификат выпущен локально',
-              style: TextStyle(fontSize: 12),
+            subtitle: Text(
+              l10n.setupTrustCertificateSubtitle,
+              style: const TextStyle(fontSize: 12),
             ),
           ),
         ],
@@ -453,6 +478,7 @@ class _ServerInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(Insets.md),
@@ -465,7 +491,7 @@ class _ServerInfoCard extends StatelessWidget {
                     color: AppColors.success, size: 20),
                 const SizedBox(width: Insets.sm),
                 Text(
-                  'Сервер найден: ${info.name} ${info.version}',
+                  '${l10n.setupServerFound} ${info.name} ${info.version}',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -481,7 +507,7 @@ class _ServerInfoCard extends StatelessWidget {
                       size: 15, color: AppColors.textSecondary),
                   const SizedBox(width: 6),
                   Text(
-                    'Распознавание голоса включено, модель ${info.voiceModel}',
+                    '${l10n.setupVoiceEnabledWithModel} ${info.voiceModel}',
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
@@ -510,6 +536,7 @@ class _ErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(Insets.md),
       decoration: BoxDecoration(
@@ -542,7 +569,7 @@ class _ErrorBanner extends StatelessWidget {
             TextButton.icon(
               onPressed: onTrust,
               icon: const Icon(Icons.lock_open, size: 18),
-              label: const Text('Разрешить сертификат сервера'),
+              label: Text(l10n.setupAllowCertificate),
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
                 minimumSize: const Size(0, 36),
@@ -560,13 +587,14 @@ class _Footer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Icon(Icons.open_in_new, size: 13, color: AppColors.textMuted),
         const SizedBox(width: 5),
         Text(
-          'Открытый исходный код · MIT',
+          l10n.setupFooterLicense,
           style: TextStyle(
             fontSize: 11,
             color: Theme.of(context).brightness == Brightness.dark

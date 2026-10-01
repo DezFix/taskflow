@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
 import '../../state/controllers.dart';
 import '../theme.dart';
@@ -32,23 +33,24 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
     final directory = ref.watch(directoryProvider);
     final user = ref.watch(currentUserProvider);
     final canManage = user?.can('users.create') ?? false;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Отдел'),
+        title: Text(l10n.teamTitle),
         bottom: TabBar(
           controller: _tabs,
-          tabs: const [
-            Tab(text: 'Сотрудники'),
-            Tab(text: 'Должности'),
-            Tab(text: 'Роли'),
+          tabs: [
+            Tab(text: l10n.teamTabStaff),
+            Tab(text: l10n.teamTabPositions),
+            Tab(text: l10n.teamTabRoles),
           ],
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(directoryProvider.notifier).load(),
-            tooltip: 'Обновить',
+            tooltip: l10n.teamRefresh,
           ),
         ],
       ),
@@ -59,17 +61,17 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
                 0 => FloatingActionButton.extended(
                     onPressed: _showCreateUser,
                     icon: const Icon(Icons.person_add_alt),
-                    label: const Text('Сотрудник'),
+                    label: Text(l10n.teamAddStaff),
                   ),
                 1 => FloatingActionButton.extended(
                     onPressed: _showCreatePosition,
                     icon: const Icon(Icons.badge_outlined),
-                    label: const Text('Должность'),
+                    label: Text(l10n.teamAddPosition),
                   ),
                 _ => FloatingActionButton.extended(
                     onPressed: () => _showRoleEditor(context, null),
                     icon: const Icon(Icons.shield_outlined),
-                    label: const Text('Роль'),
+                    label: Text(l10n.teamAddRole),
                   ),
               },
             )
@@ -101,14 +103,16 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
   }
 
   Future<void> _showCreatePosition() async {
+    final l10n = AppLocalizations.of(context);
     final title = await showInputDialog<String>(
       context,
-      title: 'Новая должность',
-      label: 'Название',
-      hint: 'Например, DevOps-инженер',
-      confirmText: 'Создать',
-      validator: (value) =>
-          (value ?? '').trim().length < 2 ? 'Введите название' : null,
+      title: l10n.teamNewPositionTitle,
+      label: l10n.teamPositionNameLabel,
+      hint: l10n.teamPositionNameHint,
+      confirmText: l10n.teamCreate,
+      validator: (value) => (value ?? '').trim().length < 2
+          ? l10n.teamPositionNameRequired
+          : null,
     );
     if (title == null || !mounted) return;
     await ref.read(directoryProvider.notifier).createPosition(title.trim());
@@ -148,11 +152,12 @@ class _UsersTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     if (directory.users.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.groups_outlined,
-        title: 'Сотрудников пока нет',
-        message: 'Добавьте первого сотрудника, чтобы выдавать ему задачи',
+        title: l10n.teamEmptyStaffTitle,
+        message: l10n.teamEmptyStaffMessage,
       );
     }
 
@@ -162,11 +167,11 @@ class _UsersTab extends ConsumerWidget {
     return ListView(
       children: [
         if (active.isNotEmpty) ...[
-          const _GroupHeader('Активные'),
+          _GroupHeader(l10n.teamGroupActive),
           ...active.map((user) => _UserTile(user: user)),
         ],
         if (inactive.isNotEmpty) ...[
-          const _GroupHeader('Отключённые'),
+          _GroupHeader(l10n.teamGroupInactive),
           ...inactive.map((user) => _UserTile(user: user)),
         ],
       ],
@@ -213,6 +218,7 @@ class _UserTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final me = ref.watch(currentUserProvider);
     final canEdit = me?.can('users.edit') ?? false;
+    final l10n = AppLocalizations.of(context);
 
     return ListTile(
       leading: UserAvatar(user: user, size: 40),
@@ -227,9 +233,9 @@ class _UserTile extends ConsumerWidget {
           ),
           if (user.id == me?.id) ...[
             const SizedBox(width: 6),
-            const Text(
-              'это вы',
-              style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+            Text(
+              l10n.teamThisIsYou,
+              style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
             ),
           ],
         ],
@@ -239,13 +245,13 @@ class _UserTile extends ConsumerWidget {
           ? PopupMenuButton<String>(
               onSelected: (action) => _handle(context, ref, action),
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'password',
                   child: ListTile(
                     dense: true,
                     contentPadding: EdgeInsets.zero,
-                    leading: Icon(Icons.key_outlined),
-                    title: Text('Сбросить пароль'),
+                    leading: const Icon(Icons.key_outlined),
+                    title: Text(l10n.teamResetPassword),
                   ),
                 ),
                 PopupMenuItem(
@@ -259,7 +265,9 @@ class _UserTile extends ConsumerWidget {
                           : Icons.person_add_alt,
                     ),
                     title: Text(
-                      user.isActive ? 'Отключить' : 'Вернуть в отдел',
+                      user.isActive
+                          ? l10n.teamDeactivate
+                          : l10n.teamRestoreToTeam,
                     ),
                   ),
                 ),
@@ -293,20 +301,22 @@ class _UserTile extends ConsumerWidget {
     String action,
   ) async {
     final notifier = ref.read(directoryProvider.notifier);
+    final l10n = AppLocalizations.of(context);
 
     if (action == 'password') {
       final password = await showInputDialog<String>(
         context,
-        title: 'Сброс пароля',
-        message: 'Сотрудник получит временный пароль и должен будет '
-            'сменить его при первом входе.',
-        label: 'Новый пароль',
-        confirmText: 'Сбросить',
+        title: l10n.teamResetPasswordTitle,
+        message: l10n.teamResetPasswordMessage,
+        label: l10n.teamNewPasswordLabel,
+        confirmText: l10n.teamResetConfirm,
         obscureText: true,
         validator: (value) {
           final text = value ?? '';
-          if (text.length < 8) return 'Минимум 8 символов';
-          if (!RegExp(r'\d').hasMatch(text)) return 'Нужны цифры';
+          if (text.length < 8) return l10n.teamPasswordMinLength;
+          if (!RegExp(r'\d').hasMatch(text)) {
+            return l10n.teamPasswordNeedsDigits;
+          }
           return null;
         },
       );
@@ -320,14 +330,15 @@ class _UserTile extends ConsumerWidget {
         await showDialog<void>(
           context: context,
           builder: (dialogContext) => AlertDialog(
-            title: const Text('Пароль сброшен'),
+            title: Text(l10n.teamPasswordResetDoneTitle),
             content: SelectableText(
-              'Логин: ${user.username}\nПароль: $result',
+              '${l10n.teamLoginLabel}: ${user.username}\n'
+              '${l10n.teamPasswordLabel}: $result',
             ),
             actions: [
               FilledButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text('Готово'),
+                child: Text(l10n.teamDone),
               ),
             ],
           ),
@@ -342,11 +353,9 @@ class _UserTile extends ConsumerWidget {
     if (action == 'deactivate') {
       final confirmed = await confirmDialog(
         context,
-        title: 'Отключить сотрудника?',
-        message:
-            '${user.displayName} не сможет войти. История его задач и сообщений '
-            'сохранится.',
-        confirmText: 'Отключить',
+        title: l10n.teamDeactivateTitle,
+        message: '${user.displayName} ${l10n.teamDeactivateWarning}',
+        confirmText: l10n.teamDeactivate,
       );
       if (confirmed) await notifier.setActive(user.id, false);
       return;
@@ -367,11 +376,12 @@ class _PositionsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     if (directory.positions.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.badge_outlined,
-        title: 'Должностей пока нет',
-        message: 'Создайте должности, чтобы распределять сотрудников',
+        title: l10n.teamEmptyPositionsTitle,
+        message: l10n.teamEmptyPositionsMessage,
       );
     }
 
@@ -385,9 +395,11 @@ class _PositionsTab extends ConsumerWidget {
 
         return ListTile(
           leading: const Icon(Icons.badge_outlined),
-          title: Text(position.title),
+          title: Text(position.localizedTitle(l10n)),
           subtitle: Text(
-            count == 0 ? 'Никого не назначено' : 'Сотрудников: $count',
+            count == 0
+                ? l10n.teamPositionNoStaff
+                : '${l10n.teamPositionStaffCount}: $count',
           ),
         );
       },
@@ -406,10 +418,11 @@ class _RolesTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     if (directory.roles.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.shield_outlined,
-        title: 'Ролей пока нет',
+        title: l10n.teamEmptyRolesTitle,
       );
     }
 
@@ -429,9 +442,10 @@ class _RolesTab extends ConsumerWidget {
             role.isSystem ? Icons.shield : Icons.shield_outlined,
             color: role.isSystem ? AppColors.primary : AppColors.textSecondary,
           ),
-          title: Text(role.title),
+          title: Text(role.localizedTitle(l10n)),
           subtitle: Text(
-            'Прав: ${role.permissions.length} · сотрудников: $count',
+            '${l10n.teamPermissionsCount}: ${role.permissions.length}'
+            ' · ${l10n.teamRolesStaffCount}: $count',
           ),
           trailing: canManage
               ? IconButton(
@@ -508,6 +522,7 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.fromLTRB(
@@ -524,7 +539,7 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  _isEditing ? 'Сотрудник' : 'Новый сотрудник',
+                  _isEditing ? l10n.teamStaffTitle : l10n.teamNewStaffTitle,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -535,72 +550,80 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
                   TextFormField(
                     controller: _usernameController,
                     autocorrect: false,
-                    decoration: const InputDecoration(
-                      labelText: 'Логин',
-                      helperText: 'Латиница, цифры, точка, дефис',
+                    decoration: InputDecoration(
+                      labelText: l10n.teamLoginLabel,
+                      helperText: l10n.teamLoginHelper,
                     ),
                     validator: (value) {
                       final text = (value ?? '').trim();
-                      if (text.length < 3) return 'Минимум 3 символа';
+                      if (text.length < 3) return l10n.teamLoginTooShort;
                       if (!RegExp(r'^[a-zA-Z0-9._-]+$').hasMatch(text)) {
-                        return 'Только латиница, цифры, точка, дефис';
+                        return l10n.teamLoginInvalidChars;
                       }
                       return null;
                     },
                   )
                 else
-                  InfoRow(label: 'Логин', value: widget.existing!.username),
+                  InfoRow(
+                    label: l10n.teamLoginLabel,
+                    value: widget.existing!.username,
+                  ),
                 if (_isEditing) ...[
                   const SizedBox(height: Insets.sm),
                   InfoRow(
-                    label: 'Создан',
-                    value: Format.date(widget.existing!.createdAt),
+                    label: l10n.teamCreatedLabel,
+                    value: Format.date(widget.existing!.createdAt, l10n),
                   ),
                 ],
                 const SizedBox(height: Insets.md),
                 TextFormField(
                   controller: _fullNameController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(labelText: 'Имя и фамилия'),
-                  validator: (value) =>
-                      (value ?? '').trim().length < 2 ? 'Введите имя' : null,
+                  decoration:
+                      InputDecoration(labelText: l10n.teamFullNameLabel),
+                  validator: (value) => (value ?? '').trim().length < 2
+                      ? l10n.teamFullNameRequired
+                      : null,
                 ),
                 const SizedBox(height: Insets.md),
                 TextFormField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: 'Телефон'),
+                  decoration: InputDecoration(labelText: l10n.teamPhoneLabel),
                 ),
                 const SizedBox(height: Insets.md),
                 TextFormField(
                   controller: _jobTitleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Должность (свободным текстом)',
+                  decoration: InputDecoration(
+                    labelText: l10n.teamFreeformJobTitleLabel,
                   ),
                 ),
                 const SizedBox(height: Insets.md),
                 DropdownButtonFormField<String?>(
                   initialValue: _positionId,
                   decoration:
-                      const InputDecoration(labelText: 'Должность из списка'),
+                      InputDecoration(labelText: l10n.teamPositionFromList),
                   items: [
-                    const DropdownMenuItem<String?>(
+                    DropdownMenuItem<String?>(
                       value: null,
-                      child: Text('Не назначена'),
+                      child: Text(l10n.teamPositionUnassigned),
                     ),
                     ...widget.positions.map(
                       (position) => DropdownMenuItem<String?>(
                         value: position.id,
-                        child: Text(position.title),
+                        child: Text(position.localizedTitle(l10n)),
                       ),
                     ),
                   ],
                   onChanged: (value) => setState(() => _positionId = value),
                 ),
                 const SizedBox(height: Insets.md),
-                const Text(
-                  'Роли и права',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                Text(
+                  l10n.teamRolesAndPermissions,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: Insets.sm),
                 ...widget.roles.map(
@@ -613,8 +636,10 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
                         _roleIds.remove(role.id);
                       }
                     }),
-                    title: Text(role.title),
-                    subtitle: Text('Прав: ${role.permissions.length}'),
+                    title: Text(role.localizedTitle(l10n)),
+                    subtitle: Text(
+                      '${l10n.teamPermissionsCount}: ${role.permissions.length}',
+                    ),
                     dense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -623,7 +648,7 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
                 FilledButton(
                   onPressed: _isSaving ? null : _save,
                   child: Text(
-                    _isEditing ? 'Сохранить' : 'Создать сотрудника',
+                    _isEditing ? l10n.commonSave : l10n.teamCreateStaffButton,
                   ),
                 ),
               ],
@@ -637,8 +662,9 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_roleIds.isEmpty) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Выберите хотя бы одну роль')),
+        SnackBar(content: Text(l10n.teamSelectRoleRequired)),
       );
       return;
     }
@@ -673,37 +699,38 @@ class _UserFormSheetState extends ConsumerState<_UserFormSheet> {
         if (!mounted || result == null) return;
 
         // Временный пароль показываем один раз: сотрудник его запомнит.
+        final l10n = AppLocalizations.of(context);
         await showDialog<void>(
           context: context,
           builder: (dialogContext) => AlertDialog(
-            title: const Text('Сотрудник создан'),
+            title: Text(l10n.teamStaffCreatedTitle),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Передайте сотруднику данные для входа:'),
+                Text(l10n.teamShareCredentialsHint),
                 const SizedBox(height: Insets.md),
                 SelectableText(
-                  'Логин: ${result.user.username}\n'
-                  'Пароль: ${result.temporaryPassword ?? "—"}',
+                  '${l10n.teamLoginLabel}: ${result.user.username}\n'
+                  '${l10n.teamPasswordLabel}: '
+                  '${result.temporaryPassword ?? "—"}',
                   style: const TextStyle(
                     fontFamily: 'monospace',
                     fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: Insets.md),
-                const Text(
-                  'Пароль показывается один раз. При первом входе '
-                  'сотрудник должен будет его сменить.',
-                  style:
-                      TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                Text(
+                  l10n.teamPasswordShownOnce,
+                  style: const TextStyle(
+                      fontSize: 12, color: AppColors.textSecondary),
                 ),
               ],
             ),
             actions: [
               FilledButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text('Готово'),
+                child: Text(l10n.teamDone),
               ),
             ],
           ),
@@ -758,6 +785,7 @@ class _RoleEditorSheetState extends ConsumerState<_RoleEditorSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final groups = _grouped;
 
     return SafeArea(
@@ -773,8 +801,8 @@ class _RoleEditorSheetState extends ConsumerState<_RoleEditorSheet> {
           children: [
             Text(
               widget.role == null
-                  ? 'Новая роль'
-                  : 'Роль: ${widget.role!.title}',
+                  ? l10n.teamNewRoleTitle
+                  : '${l10n.teamRoleTitle}: ${widget.role!.title}',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -784,7 +812,7 @@ class _RoleEditorSheetState extends ConsumerState<_RoleEditorSheet> {
             if (widget.role == null)
               TextField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Название роли'),
+                decoration: InputDecoration(labelText: l10n.teamRoleNameLabel),
               )
             else if (widget.role!.isSystem)
               Container(
@@ -793,14 +821,18 @@ class _RoleEditorSheetState extends ConsumerState<_RoleEditorSheet> {
                   color: AppColors.info.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(Insets.radiusSmall),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.lock_outline, size: 16, color: AppColors.info),
-                    SizedBox(width: Insets.sm),
+                    const Icon(
+                      Icons.lock_outline,
+                      size: 16,
+                      color: AppColors.info,
+                    ),
+                    const SizedBox(width: Insets.sm),
                     Expanded(
                       child: Text(
-                        'Системную роль нельзя удалить, но права можно менять',
-                        style: TextStyle(fontSize: 12),
+                        l10n.teamSystemRoleHint,
+                        style: const TextStyle(fontSize: 12),
                       ),
                     ),
                   ],
@@ -843,7 +875,9 @@ class _RoleEditorSheetState extends ConsumerState<_RoleEditorSheet> {
                               }
                             }),
                             child: Text(
-                              allSelected ? 'Снять всё' : 'Выбрать всё',
+                              allSelected
+                                  ? l10n.teamDeselectAll
+                                  : l10n.teamSelectAll,
                             ),
                           ),
                         ],
@@ -883,8 +917,9 @@ class _RoleEditorSheetState extends ConsumerState<_RoleEditorSheet> {
               onPressed: _isSaving ? null : _save,
               child: Text(
                 widget.role == null
-                    ? 'Создать роль'
-                    : 'Сохранить (${_selected.length} прав)',
+                    ? l10n.teamCreateRoleButton
+                    : '${l10n.commonSave} '
+                        '(${_selected.length} ${l10n.teamPermissionsWord})',
               ),
             ),
           ],
@@ -895,8 +930,9 @@ class _RoleEditorSheetState extends ConsumerState<_RoleEditorSheet> {
 
   Future<void> _save() async {
     if (widget.role == null && _titleController.text.trim().length < 2) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Введите название роли')),
+        SnackBar(content: Text(l10n.teamRoleNameRequired)),
       );
       return;
     }

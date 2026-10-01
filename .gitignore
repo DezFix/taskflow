@@ -6,6 +6,9 @@
 build/
 *.iml
 
+# Переводы генерируются из lib/l10n/arb при сборке
+lib/l10n/generated/
+
 # Android
 android/local.properties
 android/.gradle/

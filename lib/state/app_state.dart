@@ -32,7 +32,16 @@ enum AppStage {
 
 /// Хранилище и настройки приложения. Создаётся один раз при старте.
 final storageProvider = Provider<AppStorage>((ref) {
-  throw UnimplementedError('storageProvider переопределяется при старте');
+  throw UnimplementedError(
+      'storageProvider должен быть переопределён при старте');
+});
+
+/// Язык интерфейса: null означает «как в системе».
+///
+/// Хранится отдельно от сервера, потому что выбор языка должен
+/// переживать и смену адреса, и выход из учётной записи.
+final localeCodeProvider = StateProvider<String?>((ref) {
+  return ref.read(storageProvider).localeCode;
 });
 
 /// Текущий адрес сервера. Пустая строка — сервер ещё не выбран.
@@ -201,12 +210,8 @@ class AppStageNotifier extends StateNotifier<AppStage> {
   }) async {
     final url = AppStorage.normalizeServerUrl(rawUrl);
     if (url.isEmpty) {
-      throw ApiException(
-        const ApiErrorInfo(
-          code: 'bad_url',
-          message: 'Введите адрес сервера',
-        ),
-      );
+      // Текст подставит перевод по коду bad_url.
+      throw ApiException(const ApiErrorInfo(code: 'bad_url'));
     }
 
     // Клиент настраиваем до проверки: доверие к сертификату включает
@@ -382,10 +387,8 @@ class DirectoryRepositoryProbe {
     // всегда падал бы и подключиться к серверу было бы невозможно.
     final data = await client.get('/api/v1/meta/info');
     if (data.isEmpty) {
-      throw ApiException(
-        const ApiErrorInfo(
-            code: 'unknown', message: 'Сервер не отвечает как TaskFlow'),
-      );
+      // Адрес отвечает, но не похож на TaskFlow: перевод по коду.
+      throw ApiException(const ApiErrorInfo(code: 'not_taskflow'));
     }
     return ServerInfo.fromJson(data.cast<String, dynamic>());
   }

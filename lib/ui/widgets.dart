@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 import 'theme.dart';
 
@@ -212,6 +213,7 @@ class StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final color = AppColors.statusColor(status.wire);
     return Container(
       padding: EdgeInsets.symmetric(
@@ -223,7 +225,7 @@ class StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        status.title,
+        status.title(l10n),
         style: TextStyle(
           color: color,
           fontSize: compact ? 11 : 12,
@@ -244,6 +246,7 @@ class PriorityBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Низкий приоритет — обычное дело, не печатаем его под задачей.
     if (priority == TaskPriority.low && !showLow) {
       return const SizedBox.shrink();
@@ -258,7 +261,9 @@ class PriorityBadge extends StatelessWidget {
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(
-          'СРОЧНО',
+          // Срочный приоритет показываем заглавными: он должен бросаться
+          // в глаза даже мелким шрифтом.
+          l10n.priorityUrgent.toUpperCase(),
           style: TextStyle(
             color: Colors.white,
             fontSize: 10,
@@ -279,7 +284,7 @@ class PriorityBadge extends StatelessWidget {
         ),
         const SizedBox(width: 5),
         Text(
-          priority.title,
+          priority.title(l10n),
           style: TextStyle(
             color: color,
             fontSize: 12,
@@ -537,7 +542,9 @@ Future<T?> showInputDialog<T>(
   String? message,
   String? label,
   String? hint,
-  String confirmText = 'Сохранить',
+
+  /// Подпись кнопки. null — берётся «Сохранить» на языке интерфейса.
+  String? confirmText,
   String? initialValue,
   TextInputType? keyboardType,
   TextCapitalization textCapitalization = TextCapitalization.sentences,
@@ -552,7 +559,7 @@ Future<T?> showInputDialog<T>(
       message: message,
       label: label,
       hint: hint,
-      confirmText: confirmText,
+      confirmText: confirmText ?? AppLocalizations.of(context).commonSave,
       initialValue: initialValue,
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,
@@ -654,12 +661,14 @@ class _InputDialogState<T> extends State<_InputDialog<T>> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Отмена'),
+          child: Text(AppLocalizations.of(context).commonCancel),
         ),
         FilledButton(
           onPressed: _submit,
           style: FilledButton.styleFrom(minimumSize: const Size(100, 40)),
-          child: Text(widget.confirmText ?? 'Сохранить'),
+          child: Text(
+            widget.confirmText ?? AppLocalizations.of(context).commonSave,
+          ),
         ),
       ],
     );
@@ -671,9 +680,12 @@ Future<bool> confirmDialog(
   BuildContext context, {
   required String title,
   required String message,
-  String confirmText = 'Удалить',
+
+  /// null — берётся «Удалить» на языке интерфейса.
+  String? confirmText,
   bool destructive = true,
 }) async {
+  final l10n = AppLocalizations.of(context);
   final result = await showDialog<bool>(
     context: context,
     builder: (dialogContext) => AlertDialog(
@@ -682,7 +694,7 @@ Future<bool> confirmDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.of(dialogContext).pop(false),
-          child: const Text('Отмена'),
+          child: Text(AppLocalizations.of(dialogContext).commonCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.of(dialogContext).pop(true),
@@ -692,7 +704,7 @@ Future<bool> confirmDialog(
                   minimumSize: const Size(100, 40),
                 )
               : FilledButton.styleFrom(minimumSize: const Size(100, 40)),
-          child: Text(confirmText),
+          child: Text(confirmText ?? l10n.commonDelete),
         ),
       ],
     ),

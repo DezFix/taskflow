@@ -1,0 +1,766 @@
+{
+  "keys": [
+    {
+      "key": "teamTitle",
+      "ru": "Отдел",
+      "uk": "Відділ",
+      "en": "Team",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamTabStaff",
+      "ru": "Сотрудники",
+      "uk": "Співробітники",
+      "en": "Staff",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamTabPositions",
+      "ru": "Должности",
+      "uk": "Посади",
+      "en": "Positions",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamTabRoles",
+      "ru": "Роли",
+      "uk": "Ролі",
+      "en": "Roles",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamRefresh",
+      "ru": "Обновить",
+      "uk": "Оновити",
+      "en": "Refresh",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamAddStaff",
+      "ru": "Сотрудник",
+      "uk": "Співробітник",
+      "en": "Staff member",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamAddPosition",
+      "ru": "Должность",
+      "uk": "Посада",
+      "en": "Position",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamAddRole",
+      "ru": "Роль",
+      "uk": "Роль",
+      "en": "Role",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamCreate",
+      "ru": "Создать",
+      "uk": "Створити",
+      "en": "Create",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamNewPositionTitle",
+      "ru": "Новая должность",
+      "uk": "Нова посада",
+      "en": "New position",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPositionNameLabel",
+      "ru": "Название",
+      "uk": "Назва",
+      "en": "Name",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPositionNameHint",
+      "ru": "Например, DevOps-инженер",
+      "uk": "Наприклад, DevOps-інженер",
+      "en": "For example, DevOps engineer",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPositionNameRequired",
+      "ru": "Введите название",
+      "uk": "Введіть назву",
+      "en": "Enter a name",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamEmptyStaffTitle",
+      "ru": "Сотрудников пока нет",
+      "uk": "Співробітників поки немає",
+      "en": "No staff members yet",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamEmptyStaffMessage",
+      "ru": "Добавьте первого сотрудника, чтобы выдавать ему задачи",
+      "uk": "Додайте першого співробітника, щоб давати йому завдання",
+      "en": "Add the first staff member to assign tasks",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamGroupActive",
+      "ru": "Активные",
+      "uk": "Активні",
+      "en": "Active",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamGroupInactive",
+      "ru": "Отключённые",
+      "uk": "Вимкнені",
+      "en": "Disabled",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamThisIsYou",
+      "ru": "это вы",
+      "uk": "це ви",
+      "en": "you",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamLoginLabel",
+      "ru": "Логин",
+      "uk": "Логін",
+      "en": "Login",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPasswordLabel",
+      "ru": "Пароль",
+      "uk": "Пароль",
+      "en": "Password",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamResetPassword",
+      "ru": "Сбросить пароль",
+      "uk": "Скинути пароль",
+      "en": "Reset password",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamResetPasswordTitle",
+      "ru": "Сброс пароля",
+      "uk": "Скидання пароля",
+      "en": "Password reset",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamResetPasswordMessage",
+      "ru": "Сотрудник получит временный пароль и должен будет сменить его при первом входе.",
+      "uk": "Співробітник отримає тимчасовий пароль і повинен буде змінити його при першому вході.",
+      "en": "The staff member will get a temporary password and must change it at first sign-in.",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamNewPasswordLabel",
+      "ru": "Новый пароль",
+      "uk": "Новий пароль",
+      "en": "New password",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamResetConfirm",
+      "ru": "Сбросить",
+      "uk": "Скинути",
+      "en": "Reset",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPasswordMinLength",
+      "ru": "Минимум 8 символов",
+      "uk": "Мінімум 8 символів",
+      "en": "At least 8 characters",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPasswordNeedsDigits",
+      "ru": "Нужны цифры",
+      "uk": "Потрібні цифри",
+      "en": "Digits are required",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPasswordResetDoneTitle",
+      "ru": "Пароль сброшен",
+      "uk": "Пароль скинуто",
+      "en": "Password reset",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamDone",
+      "ru": "Готово",
+      "uk": "Готово",
+      "en": "Done",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamDeactivate",
+      "ru": "Отключить",
+      "uk": "Вимкнути",
+      "en": "Deactivate",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamRestoreToTeam",
+      "ru": "Вернуть в отдел",
+      "uk": "Повернути до відділу",
+      "en": "Return to team",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamDeactivateTitle",
+      "ru": "Отключить сотрудника?",
+      "uk": "Вимкнути співробітника?",
+      "en": "Deactivate staff member?",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamDeactivateWarning",
+      "ru": "не сможет войти. История его задач и сообщений сохранится.",
+      "uk": "не зможе увійти. Історія його завдань і повідомлень збережеться.",
+      "en": "will not be able to sign in. Their task and message history will be kept.",
+      "source": "lib/ui/screens/team_screen.dart",
+      "note": "Склеивается с именем сотрудника: '${user.displayName} ' + teamDeactivateWarning"
+    },
+    {
+      "key": "teamEmptyPositionsTitle",
+      "ru": "Должностей пока нет",
+      "uk": "Посад поки немає",
+      "en": "No positions yet",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamEmptyPositionsMessage",
+      "ru": "Создайте должности, чтобы распределять сотрудников",
+      "uk": "Створіть посади, щоб розподіляти співробітників",
+      "en": "Create positions to assign staff members",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPositionNoStaff",
+      "ru": "Никого не назначено",
+      "uk": "Нікого не призначено",
+      "en": "No one assigned",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPositionStaffCount",
+      "ru": "Сотрудников",
+      "uk": "Співробітників",
+      "en": "Staff",
+      "source": "lib/ui/screens/team_screen.dart",
+      "note": "Используется как подпись с числом: 'Сотрудников: N'"
+    },
+    {
+      "key": "teamEmptyRolesTitle",
+      "ru": "Ролей пока нет",
+      "uk": "Ролей поки немає",
+      "en": "No roles yet",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPermissionsCount",
+      "ru": "Прав",
+      "uk": "Прав",
+      "en": "Permissions",
+      "source": "lib/ui/screens/team_screen.dart",
+      "note": "Используется как подпись с числом: 'Прав: N'"
+    },
+    {
+      "key": "teamRolesStaffCount",
+      "ru": "сотрудников",
+      "uk": "співробітників",
+      "en": "staff",
+      "source": "lib/ui/screens/team_screen.dart",
+      "note": "Подпись с числом в нижнем регистре: 'Прав: N · сотрудников: M'"
+    },
+    {
+      "key": "teamStaffTitle",
+      "ru": "Сотрудник",
+      "uk": "Співробітник",
+      "en": "Staff member",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamNewStaffTitle",
+      "ru": "Новый сотрудник",
+      "uk": "Новий співробітник",
+      "en": "New staff member",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamLoginHelper",
+      "ru": "Латиница, цифры, точка, дефис",
+      "uk": "Латиниця, цифри, крапка, дефіс",
+      "en": "Latin letters, digits, dot, hyphen",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamLoginTooShort",
+      "ru": "Минимум 3 символа",
+      "uk": "Мінімум 3 символи",
+      "en": "At least 3 characters",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamLoginInvalidChars",
+      "ru": "Только латиница, цифры, точка, дефис",
+      "uk": "Тільки латиниця, цифри, крапка, дефіс",
+      "en": "Only Latin letters, digits, dot and hyphen",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamCreatedLabel",
+      "ru": "Создан",
+      "uk": "Створено",
+      "en": "Created",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamFullNameLabel",
+      "ru": "Имя и фамилия",
+      "uk": "Ім'я та прізвище",
+      "en": "Full name",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamFullNameRequired",
+      "ru": "Введите имя",
+      "uk": "Введіть ім'я",
+      "en": "Enter a name",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPhoneLabel",
+      "ru": "Телефон",
+      "uk": "Телефон",
+      "en": "Phone",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamFreeformJobTitleLabel",
+      "ru": "Должность (свободным текстом)",
+      "uk": "Посада (вільним текстом)",
+      "en": "Position (free text)",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPositionFromList",
+      "ru": "Должность из списка",
+      "uk": "Посада зі списку",
+      "en": "Position from the list",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPositionUnassigned",
+      "ru": "Не назначена",
+      "uk": "Не призначена",
+      "en": "Not assigned",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamRolesAndPermissions",
+      "ru": "Роли и права",
+      "uk": "Ролі та права",
+      "en": "Roles and permissions",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamCreateStaffButton",
+      "ru": "Создать сотрудника",
+      "uk": "Створити співробітника",
+      "en": "Create staff member",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamSelectRoleRequired",
+      "ru": "Выберите хотя бы одну роль",
+      "uk": "Виберіть щонайменше одну роль",
+      "en": "Select at least one role",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamStaffCreatedTitle",
+      "ru": "Сотрудник создан",
+      "uk": "Співробітника створено",
+      "en": "Staff member created",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamShareCredentialsHint",
+      "ru": "Передайте сотруднику данные для входа:",
+      "uk": "Передайте співробітнику дані для входу:",
+      "en": "Share these login details with the staff member:",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPasswordShownOnce",
+      "ru": "Пароль показывается один раз. При первом входе сотрудник должен будет его сменить.",
+      "uk": "Пароль показується один раз. При першому вході співробітник повинен буде його змінити.",
+      "en": "The password is shown once. The staff member must change it at first sign-in.",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamNewRoleTitle",
+      "ru": "Новая роль",
+      "uk": "Нова роль",
+      "en": "New role",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamRoleTitle",
+      "ru": "Роль",
+      "uk": "Роль",
+      "en": "Role",
+      "source": "lib/ui/screens/team_screen.dart",
+      "note": "Используется как префикс: 'Роль: ' + название роли"
+    },
+    {
+      "key": "teamRoleNameLabel",
+      "ru": "Название роли",
+      "uk": "Назва ролі",
+      "en": "Role name",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamRoleNameRequired",
+      "ru": "Введите название роли",
+      "uk": "Введіть назву ролі",
+      "en": "Enter a role name",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamSystemRoleHint",
+      "ru": "Системную роль нельзя удалить, но права можно менять",
+      "uk": "Системну роль не можна видалити, але права можна змінювати",
+      "en": "A system role cannot be deleted, but its permissions can be changed",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamSelectAll",
+      "ru": "Выбрать всё",
+      "uk": "Вибрати все",
+      "en": "Select all",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamDeselectAll",
+      "ru": "Снять всё",
+      "uk": "Зняти все",
+      "en": "Clear all",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamCreateRoleButton",
+      "ru": "Создать роль",
+      "uk": "Створити роль",
+      "en": "Create role",
+      "source": "lib/ui/screens/team_screen.dart"
+    },
+    {
+      "key": "teamPermissionsWord",
+      "ru": "прав",
+      "uk": "прав",
+      "en": "permissions",
+      "source": "lib/ui/screens/team_screen.dart",
+      "note": "Используется в склейке: commonSave + ' (N ' + teamPermissionsWord + ')'"
+    },
+
+    {
+      "key": "profileSectionDetails",
+      "ru": "Данные",
+      "uk": "Дані",
+      "en": "Details",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileLoginLabel",
+      "ru": "Логин",
+      "uk": "Логін",
+      "en": "Login",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profilePhoneLabel",
+      "ru": "Телефон",
+      "uk": "Телефон",
+      "en": "Phone",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileLastLoginLabel",
+      "ru": "Последний вход",
+      "uk": "Останній вхід",
+      "en": "Last sign-in",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileMemberSinceLabel",
+      "ru": "В системе с",
+      "uk": "У системі з",
+      "en": "Member since",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileSectionActions",
+      "ru": "Действия",
+      "uk": "Дії",
+      "en": "Actions",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileEditProfile",
+      "ru": "Изменить профиль",
+      "uk": "Змінити профіль",
+      "en": "Edit profile",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileChangePassword",
+      "ru": "Сменить пароль",
+      "uk": "Змінити пароль",
+      "en": "Change password",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileServerSettings",
+      "ru": "Настройки сервера",
+      "uk": "Налаштування сервера",
+      "en": "Server settings",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileSectionConnection",
+      "ru": "Подключение",
+      "uk": "Підключення",
+      "en": "Connection",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileServerLabel",
+      "ru": "Сервер",
+      "uk": "Сервер",
+      "en": "Server",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileLogout",
+      "ru": "Выйти из аккаунта",
+      "uk": "Вийти з акаунта",
+      "en": "Sign out",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileConnectOtherServer",
+      "ru": "Подключиться к другому серверу",
+      "uk": "Підключитися до іншого сервера",
+      "en": "Connect to another server",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileFullNameLabel",
+      "ru": "Имя и фамилия",
+      "uk": "Ім'я та прізвище",
+      "en": "Full name",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profilePhoneNumberLabel",
+      "ru": "Номер телефона",
+      "uk": "Номер телефону",
+      "en": "Phone number",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileCurrentPasswordTitle",
+      "ru": "Текущий пароль",
+      "uk": "Поточний пароль",
+      "en": "Current password",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profilePasswordLabel",
+      "ru": "Пароль",
+      "uk": "Пароль",
+      "en": "Password",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileNewPasswordTitle",
+      "ru": "Новый пароль",
+      "uk": "Новий пароль",
+      "en": "New password",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileNewPasswordHint",
+      "ru": "Минимум 8 символов, буквы и цифры.",
+      "uk": "Мінімум 8 символів, літери та цифри.",
+      "en": "At least 8 characters, letters and digits.",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profilePasswordMinLength",
+      "ru": "Минимум 8 символов",
+      "uk": "Мінімум 8 символів",
+      "en": "At least 8 characters",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profilePasswordNeedsLetters",
+      "ru": "Нужны буквы",
+      "uk": "Потрібні літери",
+      "en": "Letters are required",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profilePasswordNeedsDigits",
+      "ru": "Нужны цифры",
+      "uk": "Потрібні цифри",
+      "en": "Digits are required",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileRepeatPasswordTitle",
+      "ru": "Повторите пароль",
+      "uk": "Повторіть пароль",
+      "en": "Repeat the password",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileRepeatPasswordLabel",
+      "ru": "Новый пароль ещё раз",
+      "uk": "Новий пароль ще раз",
+      "en": "New password again",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileChangeConfirm",
+      "ru": "Сменить",
+      "uk": "Змінити",
+      "en": "Change",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profilePasswordMismatch",
+      "ru": "Пароли не совпадают",
+      "uk": "Паролі не збігаються",
+      "en": "Passwords do not match",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileEndOtherSessionsTitle",
+      "ru": "Завершить другие сессии?",
+      "uk": "Завершити інші сесії?",
+      "en": "Sign out other sessions?",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileEndOtherSessionsMessage",
+      "ru": "Рекомендуется включить, если пароль мог увидеть кто-то ещё.",
+      "uk": "Радимо увімкнути, якщо пароль міг побачити хтось інший.",
+      "en": "Recommended if someone else might have seen your password.",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileEndSessionsConfirm",
+      "ru": "Да, завершить",
+      "uk": "Так, завершити",
+      "en": "Yes, sign out",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profilePasswordChanged",
+      "ru": "Пароль изменён",
+      "uk": "Пароль змінено",
+      "en": "Password changed",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileLogoutTitle",
+      "ru": "Выйти из аккаунта?",
+      "uk": "Вийти з акаунта?",
+      "en": "Sign out?",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileLogoutMessage",
+      "ru": "Адрес сервера сохранится, вход будет выполнен паролем.",
+      "uk": "Адреса сервера збережеться, вхід буде виконано паролем.",
+      "en": "The server address will be kept; you will sign in with your password.",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileLogoutConfirm",
+      "ru": "Выйти",
+      "uk": "Вийти",
+      "en": "Sign out",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileChangeServerTitle",
+      "ru": "Сменить сервер?",
+      "uk": "Змінити сервер?",
+      "en": "Change server?",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileChangeServerMessage",
+      "ru": "Текущий сервер будет забыт. Убедитесь, что знаете пароль.",
+      "uk": "Поточний сервер буде забуто. Переконайтеся, що знаєте пароль.",
+      "en": "The current server will be forgotten. Make sure you know the password.",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileMustChangePasswordBanner",
+      "ru": "Вам выдан временный пароль. Смените его, чтобы защитить учётную запись.",
+      "uk": "Вам видано тимчасовий пароль. Змініть його, щоб захистити обліковий запис.",
+      "en": "You were issued a temporary password. Change it to secure your account.",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileStatusConnected",
+      "ru": "Подключено, обновления в реальном времени",
+      "uk": "Підключено, оновлення в реальному часі",
+      "en": "Connected, real-time updates",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileStatusConnecting",
+      "ru": "Подключение…",
+      "uk": "Підключення…",
+      "en": "Connecting…",
+      "source": "lib/ui/screens/profile_screen.dart"
+    },
+    {
+      "key": "profileStatusDisconnected",
+      "ru": "Нет связи, идёт переподключение",
+      "uk": "Немає зв'язку, триває перепідключення",
+      "en": "No connection, reconnecting",
+      "source": "lib/ui/screens/profile_screen.dart"
+    }
+  ],
+  "reused_existing_keys": [
+    { "key": "commonSave", "used_as": "Сохранить", "source": "lib/ui/screens/team_screen.dart" },
+    { "key": "commonNext", "used_as": "Далее", "source": "lib/ui/screens/profile_screen.dart" },
+    { "key": "commonNo", "used_as": "Нет", "source": "lib/ui/screens/profile_screen.dart" },
+    { "key": "commonRetry", "used_as": "Повторить", "source": "lib/ui/screens/profile_screen.dart" }
+  ],
+  "skipped": [
+    { "text": "Email", "reason": "Техническая подпись, одинакова во всех языках" },
+    { "text": "TaskFlow 1.0.0 · MIT", "reason": "Строка версии" },
+    { "text": "'connected' / 'connecting' / 'password' / 'deactivate' / 'activate' / users.create / users.edit / settings.view", "reason": "Технические значения из API и ключи настроек" },
+    { "text": "role.title / position.title / user.subtitle / permission.title / permission.description / permission.group", "reason": "Строки, приходящие с сервера" },
+    { "text": "r'[a-zA-Zа-яА-Я]', r'\\d', r'^[a-zA-Z0-9._-]+$'", "reason": "Регулярные выражения" }
+  ]
+}

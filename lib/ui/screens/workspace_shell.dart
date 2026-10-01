@@ -10,8 +10,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models.dart';
 import '../../state/app_state.dart';
 import '../../state/controllers.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../theme.dart';
 import '../widgets.dart';
+import '../language_selector.dart';
 import '../workspace_tab.dart';
 import 'chat_list_screen.dart';
 import 'profile_screen.dart';
@@ -74,6 +76,7 @@ class _WorkspaceShellState extends ConsumerState<WorkspaceShell> {
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
     final unread = ref.watch(unreadProvider);
+    final l10n = AppLocalizations.of(context);
     final tabs = tabsFor(user);
 
     // Права могли измениться: подстраиваем активную вкладку.
@@ -105,6 +108,10 @@ class _WorkspaceShellState extends ConsumerState<WorkspaceShell> {
               )
               .toList(),
         ),
+        // Переключатель языка внизу справа: он нужен на всех вкладках,
+        // а шапки у вложенных экранов свои.
+        floatingActionButton: const LanguageSelector(compact: true),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
         bottomNavigationBar: NavigationBar(
           selectedIndex: tabs.contains(_tab) ? tabs.indexOf(_tab) : 0,
           onDestinationSelected: (index) {
@@ -115,7 +122,7 @@ class _WorkspaceShellState extends ConsumerState<WorkspaceShell> {
                 (tab) => NavigationDestination(
                   icon: _iconFor(tab, unread),
                   selectedIcon: _iconFor(tab, unread, selected: true),
-                  label: tab.title,
+                  label: tab.title(l10n),
                 ),
               )
               .toList(),
@@ -150,17 +157,19 @@ class _ProfileShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final status = ref.watch(realtimeStatusProvider).value;
+    final l10n = AppLocalizations.of(context);
+    final online = status?.name == 'connected';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Профиль'),
+        title: Text(l10n.tabProfile),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: Insets.md),
             child: Center(
               child: RealtimeIndicator(
-                connected: status?.name == 'connected',
-                label: status?.name == 'connected' ? 'На связи' : 'Нет связи',
+                connected: online,
+                label: online ? l10n.realtimeOnline : l10n.realtimeOffline,
               ),
             ),
           ),
@@ -169,7 +178,7 @@ class _ProfileShell extends ConsumerWidget {
       body: const ProfileScreen(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => ref.read(realtimeProvider).reconnect(),
-        tooltip: 'Переподключить',
+        tooltip: l10n.commonRetry,
         child: const Icon(Icons.sync),
       ),
     );

@@ -1,0 +1,21 @@
+{
+  "keys": [
+    { "key": "roleAdmin", "ru": "Администратор", "uk": "Адміністратор", "en": "Administrator" },
+    { "key": "roleHead", "ru": "Глава отдела", "uk": "Керівник відділу", "en": "Department head" },
+    { "key": "roleStaff", "ru": "Сотрудник", "uk": "Співробітник", "en": "Staff member" },
+
+    { "key": "positionItHead", "ru": "Руководитель IT-отдела", "uk": "Керівник IT-відділу", "en": "IT department head" },
+    { "key": "positionSysadmin", "ru": "Системный администратор", "uk": "Системний адміністратор", "en": "System administrator" },
+    { "key": "positionDeveloper", "ru": "Системный программист", "uk": "Системний програміст", "en": "Software developer" },
+    { "key": "positionEngineer", "ru": "Инженер", "uk": "Інженер", "en": "Engineer" },
+    { "key": "positionTester", "ru": "Тестировщик", "uk": "Тестувальник", "en": "QA engineer" },
+    { "key": "positionTechWriter", "ru": "Технический писатель", "uk": "Технічний письменник", "en": "Technical writer" },
+
+    { "key": "labelUrgent", "ru": "Срочно", "uk": "Терміново", "en": "Urgent" },
+    { "key": "labelWaiting", "ru": "Ждёт ответа", "uk": "Чекає відповіді", "en": "Waiting for reply" },
+    { "key": "labelClient", "ru": "Клиент", "uk": "Клієнт", "en": "Client" },
+    { "key": "labelRefinement", "ru": "Доработка", "uk": "Доробка", "en": "Refinement" },
+    { "key": "labelRelease", "ru": "Релиз", "uk": "Реліз", "en": "Release" },
+    { "key": "labelRefactoring", "ru": "Рефакторинг", "uk": "Рефакторинг", "en": "Refactoring" }
+  ]
+}

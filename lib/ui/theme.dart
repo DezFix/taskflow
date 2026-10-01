@@ -2,6 +2,9 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../l10n/generated/app_localizations.dart';
 
 /// Палитра приложения. Спокойные синие тона: интерфейс открыт весь день.
 class AppColors {
@@ -238,75 +241,44 @@ class Insets {
 }
 
 /// Форматирование дат и чисел по-русски.
+/// Форматирование дат, времени и размеров файлов.
+///
+/// Названия месяцев и дней недели берутся из intl: они зависят от
+/// локали, и свои списки в коде быстро расходятся с языком устройства.
+/// Связки вроде «сегодня» приходят из переводов интерфейса.
 class Format {
   const Format._();
 
-  static const List<String> monthsShort = [
-    'янв',
-    'фев',
-    'мар',
-    'апр',
-    'мая',
-    'июн',
-    'июл',
-    'авг',
-    'сен',
-    'окт',
-    'ноя',
-    'дек',
-  ];
-
-  static const List<String> monthsFull = [
-    'января',
-    'февраля',
-    'марта',
-    'апреля',
-    'мая',
-    'июня',
-    'июля',
-    'августа',
-    'сентября',
-    'октября',
-    'ноября',
-    'декабря',
-  ];
-
-  static const List<String> weekdays = [
-    'пн',
-    'вт',
-    'ср',
-    'чт',
-    'пт',
-    'сб',
-    'вс',
-  ];
+  /// Локаль для дат.
+  ///
+  /// Берём из объекта переводов, а не из контекста: у
+  /// AppLocalizations есть собственное имя локали, и так формат
+  /// работает даже там, где контекста нет (тесты, фоновые задачи).
+  static String _localeName(AppLocalizations l10n) => l10n.localeName;
 
   /// «5 дек», «сегодня», «вчера», «5 дек 2024».
-  static String date(DateTime? value) {
+  static String date(DateTime? value, AppLocalizations l10n) {
     if (value == null) return '—';
     final now = DateTime.now();
     final local = value.toLocal();
-    final today = DateTime(now.year, now.month, now.day);
-    final day = DateTime(local.year, local.month, local.day);
-    final diff = today.difference(day).inDays;
+    final diff = _daysBetween(local, now);
 
-    if (diff == 0) return 'сегодня';
-    if (diff == 1) return 'вчера';
-    if (diff == -1) return 'завтра';
+    if (diff == 0) return l10n.dateShortToday;
+    if (diff == 1) return l10n.dateShortYesterday;
+    if (diff == -1) return l10n.dateShortTomorrow;
 
-    final base = '${local.day} ${monthsShort[local.month - 1]}';
-    if (local.year == now.year) return base;
-    return '$base ${local.year}';
+    return DateFormat.MMMd(_localeName(l10n)).format(local) +
+        (local.year == now.year ? '' : ' ${local.year}');
   }
 
   /// «5 дек, 14:30».
-  static String dateTime(DateTime? value) {
+  static String dateTime(DateTime? value, AppLocalizations l10n) {
     if (value == null) return '—';
     final local = value.toLocal();
-    return '${date(value)}, ${time(local)}';
+    return '${date(value, l10n)}, ${time(local)}';
   }
 
-  /// «14:30».
+  /// «14:30». Формат 24 часа одинаков для всех трёх языков.
   static String time(DateTime value) {
     final local = value.toLocal();
     final hour = local.hour.toString().padLeft(2, '0');
@@ -314,62 +286,73 @@ class Format {
     return '$hour:$minute';
   }
 
-  /// «5 декабря 2024, 14:30» — для подробных подписей.
-  static String longDateTime(DateTime? value) {
+  /// «5 грудня 2024, 14:30» — для подробных подписей.
+  static String longDateTime(DateTime? value, AppLocalizations l10n) {
     if (value == null) return '—';
     final local = value.toLocal();
-    return '${local.day} ${monthsFull[local.month - 1]} ${local.year}, ${time(local)}';
+    final day = DateFormat.yMMMMd(_localeName(l10n)).format(local);
+    return '$day, ${time(local)}';
   }
 
-  /// Срок задачи: «Сегодня», «Завтра», «5 дек» плюс «просрочено».
-  static String dueLabel(DateTime? due, {bool overdue = false}) {
-    if (due == null) return 'Без срока';
-    final now = DateTime.now();
+  /// Срок задачи: «Сьогодні, 14:30» плюс «прострочено».
+  static String dueLabel(
+    DateTime? due,
+    AppLocalizations l10n, {
+    bool overdue = false,
+  }) {
+    if (due == null) return l10n.dateNoDue;
     final local = due.toLocal();
-    final today = DateTime(now.year, now.month, now.day);
-    final day = DateTime(local.year, local.month, local.day);
-    final diff = day.difference(today).inDays;
+    final diff = _daysBetween(local, DateTime.now());
+    final stamp = time(local);
 
     final String base;
     if (diff == 0) {
-      base = 'Сегодня, ${time(local)}';
+      base = l10n.dateToday(stamp);
     } else if (diff == 1) {
-      base = 'Завтра, ${time(local)}';
+      base = l10n.dateTomorrow(stamp);
     } else if (diff == -1) {
-      base = 'Вчера, ${time(local)}';
+      base = l10n.dateYesterday(stamp);
     } else {
-      base = '${date(due)}, ${time(local)}';
+      base = '${date(due, l10n)}, $stamp';
     }
-    return overdue ? '$base · просрочено' : base;
+    return overdue ? l10n.dateOverdue(base) : base;
   }
 
-  /// «5 мин», «2 ч», «3 д» — длительность голосового.
+  /// «1:05» — длительность голосового. Формат одинаков для всех языков.
   static String duration(double? seconds) {
     if (seconds == null || seconds <= 0) return '0:00';
     final total = seconds.round();
-    final minutes = total ~/ 60;
-    final rest = total % 60;
-    return '$minutes:${rest.toString().padLeft(2, '0')}';
+    return '${total ~/ 60}:${(total % 60).toString().padLeft(2, '0')}';
   }
 
-  /// «1.2 МБ», «340 КБ».
-  static String fileSize(int bytes) {
-    if (bytes < 1024) return '$bytes Б';
+  /// «1.2 MB», «340 KB».
+  static String fileSize(int bytes, AppLocalizations l10n) {
+    if (bytes < 1024) return l10n.sizeBytes(bytes);
     if (bytes < 1024 * 1024) {
-      return '${(bytes / 1024).toStringAsFixed(0)} КБ';
+      return l10n.sizeKilobytes((bytes / 1024).toStringAsFixed(0));
     }
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} МБ';
+    return l10n.sizeMegabytes(
+      (bytes / (1024 * 1024)).toStringAsFixed(1),
+    );
   }
 
-  /// «Сейчас», «5 мин назад», «вчера в 14:30».
-  static String ago(DateTime? value) {
+  /// «Зараз», «5 хв тому», «вчора о 14:30».
+  static String ago(DateTime? value, AppLocalizations l10n) {
     if (value == null) return '';
-    final diff = DateTime.now().difference(value.toLocal());
-    if (diff.inSeconds < 60) return 'сейчас';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} мин назад';
-    if (diff.inHours < 24) return '${diff.inHours} ч назад';
-    if (diff.inDays == 1) return 'вчера, ${time(value)}';
-    if (diff.inDays < 7) return '${diff.inDays} дн назад';
-    return date(value);
+    final local = value.toLocal();
+    final diff = DateTime.now().difference(local);
+    if (diff.inSeconds < 60) return l10n.agoNow;
+    if (diff.inMinutes < 60) return l10n.agoMinutes(diff.inMinutes);
+    if (diff.inHours < 24) return l10n.agoHours(diff.inHours);
+    if (diff.inDays == 1) return l10n.agoYesterday(time(local));
+    if (diff.inDays < 7) return l10n.agoDays(diff.inDays);
+    return date(value, l10n);
+  }
+
+  /// Целые дни между двумя датами: положительное число — в прошлом.
+  static int _daysBetween(DateTime value, DateTime reference) {
+    final a = DateTime(value.year, value.month, value.day);
+    final b = DateTime(reference.year, reference.month, reference.day);
+    return b.difference(a).inDays;
   }
 }

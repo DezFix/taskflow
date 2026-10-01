@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/api_client.dart';
 import '../../data/models.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
 import '../theme.dart';
 import '../widgets.dart';
@@ -53,8 +54,10 @@ class _ServerSettingsScreenState extends ConsumerState<ServerSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Настройки сервера')),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
@@ -98,29 +101,36 @@ class _ConnectionCard extends ConsumerWidget {
     final url = ref.watch(serverUrlProvider);
     final storage = ref.read(storageProvider);
     final trusted = storage.trustsCertificate(url);
+    final l10n = AppLocalizations.of(context);
 
     return SectionCard(
-      title: 'Подключение',
+      title: l10n.settingsConnectionTitle,
       child: Column(
         children: [
-          InfoRow(label: 'Адрес', value: url, monospace: true),
           InfoRow(
-            label: 'Шифрование',
+            label: l10n.settingsAddressLabel,
+            value: url,
+            monospace: true,
+          ),
+          InfoRow(
+            label: l10n.settingsEncryptionLabel,
             value: url.startsWith('https')
-                ? 'Включено (HTTPS)'
-                : 'Нет (HTTP, доверенная сеть)',
+                ? l10n.settingsEncryptionOn
+                : l10n.settingsEncryptionOff,
             valueColor:
                 url.startsWith('https') ? AppColors.success : AppColors.warning,
           ),
           InfoRow(
-            label: 'Доверие к сертификату',
-            value: trusted ? 'Разрешено' : 'Обычная проверка',
+            label: l10n.settingsCertTrustLabel,
+            value: trusted
+                ? l10n.settingsCertTrustAllowed
+                : l10n.settingsCertTrustDefault,
           ),
           const SizedBox(height: Insets.sm),
-          const Text(
-            'Если сервер доступен по VPN или в локальной сети с '
-            'самоподписанным сертификатом, доверие можно включить при входе.',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          Text(
+            l10n.settingsCertTrustHint,
+            style:
+                const TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -151,25 +161,26 @@ class _VoiceCardState extends ConsumerState<_VoiceCard> {
     final model = Json.text(settings['model'], 'base');
     final language = Json.text(settings['language'], 'ru');
     final models = Json.strings(settings['available_models']);
+    final l10n = AppLocalizations.of(context);
 
     return SectionCard(
-      title: 'Распознавание голоса',
+      title: l10n.settingsVoiceTitle,
       child: Column(
         children: [
           SwitchListTile(
             value: enabled,
             onChanged: (value) => _update({'enabled': value}),
             contentPadding: EdgeInsets.zero,
-            title: const Text('Включено'),
-            subtitle: const Text(
-              'Голосовые расшифровываются на сервере, данные никуда не уходят',
-              style: TextStyle(fontSize: 12),
+            title: Text(l10n.settingsVoiceEnabled),
+            subtitle: Text(
+              l10n.settingsVoiceSubtitle,
+              style: const TextStyle(fontSize: 12),
             ),
           ),
           const Divider(),
           DropdownButtonFormField<String>(
             initialValue: models.contains(model) ? model : models.firstOrNull,
-            decoration: const InputDecoration(labelText: 'Модель'),
+            decoration: InputDecoration(labelText: l10n.settingsModelLabel),
             items: models
                 .map(
                   (item) => DropdownMenuItem(
@@ -185,12 +196,24 @@ class _VoiceCardState extends ConsumerState<_VoiceCard> {
           const SizedBox(height: Insets.md),
           DropdownButtonFormField<String>(
             initialValue: language,
-            decoration: const InputDecoration(labelText: 'Язык'),
-            items: const [
-              DropdownMenuItem(value: 'ru', child: Text('Русский')),
-              DropdownMenuItem(value: 'en', child: Text('Английский')),
-              DropdownMenuItem(value: 'uk', child: Text('Украинский')),
-              DropdownMenuItem(value: 'de', child: Text('Немецкий')),
+            decoration: InputDecoration(labelText: l10n.languageTitle),
+            items: [
+              DropdownMenuItem(
+                value: 'ru',
+                child: Text(l10n.languageRussian),
+              ),
+              DropdownMenuItem(
+                value: 'en',
+                child: Text(l10n.languageEnglish),
+              ),
+              DropdownMenuItem(
+                value: 'uk',
+                child: Text(l10n.languageUkrainian),
+              ),
+              DropdownMenuItem(
+                value: 'de',
+                child: Text(l10n.languageGerman),
+              ),
             ],
             onChanged: (value) {
               if (value != null) _update({'language': value});
@@ -210,8 +233,8 @@ class _VoiceCardState extends ConsumerState<_VoiceCard> {
                           .read(reportsRepositoryProvider)
                           .warmUpVoiceModel();
                       messenger.showSnackBar(
-                        const SnackBar(
-                          content: Text('Модель загружается, это займёт время'),
+                        SnackBar(
+                          content: Text(l10n.settingsVoiceModelLoading),
                         ),
                       );
                       if (mounted) await widget.onChanged();
@@ -224,20 +247,23 @@ class _VoiceCardState extends ConsumerState<_VoiceCard> {
                     }
                   },
             icon: const Icon(Icons.download_outlined, size: 18),
-            label: const Text('Загрузить модель заранее'),
+            label: Text(l10n.settingsVoiceModelPreload),
           ),
         ],
       ),
     );
   }
 
-  String _modelTitle(String key) => switch (key) {
-        'tiny' => 'Быстрая, черновик',
-        'base' => 'Баланс (по умолчанию)',
-        'small' => 'Точнее',
-        'medium' => 'Максимум точности',
-        _ => key,
-      };
+  String _modelTitle(String key) {
+    final l10n = AppLocalizations.of(context);
+    return switch (key) {
+      'tiny' => l10n.settingsModelTiny,
+      'base' => l10n.settingsModelBase,
+      'small' => l10n.settingsModelSmall,
+      'medium' => l10n.settingsModelMedium,
+      _ => key,
+    };
+  }
 
   Future<void> _update(Map<String, dynamic> changes) async {
     setState(() => _saving = true);
@@ -261,20 +287,28 @@ class _SystemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return SectionCard(
-      title: 'Система',
+      title: l10n.settingsSystemTitle,
       child: Column(
         children: [
           InfoRow(label: 'Python', value: Json.text(info['python'], '—')),
-          InfoRow(label: 'Платформа', value: Json.text(info['platform'], '—')),
           InfoRow(
-              label: 'База данных', value: Json.text(info['database'], '—')),
-          InfoRow(
-            label: 'Лимит файла',
-            value: '${Json.integer(info['max_upload_mb'])} МБ',
+            label: l10n.settingsPlatformLabel,
+            value: Json.text(info['platform'], '—'),
           ),
           InfoRow(
-            label: 'Время сервера',
+            label: l10n.settingsDatabaseLabel,
+            value: Json.text(info['database'], '—'),
+          ),
+          InfoRow(
+            label: l10n.settingsFileLimitLabel,
+            value: '${Json.integer(info['max_upload_mb'])} '
+                '${l10n.settingsMegabytes}',
+          ),
+          InfoRow(
+            label: l10n.settingsServerTimeLabel,
             value: Json.text(info['server_time'], '—'),
           ),
         ],
@@ -288,18 +322,20 @@ class _AboutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return SectionCard(
-      title: 'О приложении',
+      title: l10n.settingsAboutTitle,
       child: Column(
         children: [
-          InfoRow(label: 'Название', value: 'TaskFlow'),
-          InfoRow(label: 'Версия', value: '1.0.0'),
-          InfoRow(label: 'Лицензия', value: 'MIT'),
+          InfoRow(label: l10n.settingsAppNameLabel, value: 'TaskFlow'),
+          InfoRow(label: l10n.settingsVersionLabel, value: '1.0.0'),
+          InfoRow(label: l10n.settingsLicenseLabel, value: 'MIT'),
           const SizedBox(height: Insets.sm),
-          const Text(
-            'Открытый исходный код. Приложение можно развернуть в своём '
-            'офисе на своём сервере.',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          Text(
+            l10n.settingsAboutNote,
+            style:
+                const TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
         ],
       ),

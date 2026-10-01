@@ -3,8 +3,12 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskflow/data/models.dart';
+import 'package:taskflow/l10n/l10n_scope.dart';
 
 void main() {
+  // Русский — язык по умолчанию, поэтому именно он проверяется здесь.
+  final l10n = L10nScope.current;
+
   group('Разбор дат', () {
     test('ISO с Z разбирается в местное время', () {
       final value = parseServerDate('2026-03-15T10:30:00Z');
@@ -82,7 +86,7 @@ void main() {
     test('разбор и заголовки', () {
       expect(TaskPriority.parse('urgent'), TaskPriority.urgent);
       expect(TaskPriority.parse('неизвестно'), TaskPriority.normal);
-      expect(TaskPriority.urgent.title, 'Срочный');
+      expect(TaskPriority.urgent.title(l10n), 'Срочный');
     });
   });
 
@@ -196,13 +200,13 @@ void main() {
         'old_value': 'Новая',
         'new_value': 'В работе',
       });
-      expect(entry.fieldTitle, 'Статус');
+      expect(entry.fieldTitle(l10n), 'Статус');
       expect(entry.newValue, 'В работе');
     });
 
     test('неизвестное поле показывается как есть', () {
       final entry = TaskHistoryEntry.fromJson({'id': 'h2', 'field': 'что_то'});
-      expect(entry.fieldTitle, 'что_то');
+      expect(entry.fieldTitle(l10n), 'что_то');
     });
   });
 
@@ -219,7 +223,7 @@ void main() {
       });
       expect(message.isVoice, isFalse);
       expect(message.isRead, isTrue);
-      expect(message.preview, 'Привет');
+      expect(message.preview(l10n), 'Привет');
     });
 
     test('голосовое с готовой расшифровкой', () {
@@ -233,7 +237,7 @@ void main() {
         'voice_duration_sec': 4.5,
       });
       expect(message.isVoice, isTrue);
-      expect(message.preview, contains('Почини принтер'));
+      expect(message.preview(l10n), contains('Почини принтер'));
     });
 
     test('голосовое в процессе распознавания', () {
@@ -245,7 +249,7 @@ void main() {
         'status': 'sent',
         'transcript': {'id': 'tr1', 'status': 'running'},
       });
-      expect(message.preview, contains('Распознаём'));
+      expect(message.preview(l10n), contains('Распознаём'));
     });
 
     test('удалённое сообщение помечается', () {
@@ -258,7 +262,7 @@ void main() {
         'deleted_at': '2026-01-01T10:00:00Z',
       });
       expect(message.isDeleted, isTrue);
-      expect(message.preview, 'Сообщение удалено');
+      expect(message.preview(l10n), 'Сообщение удалено');
     });
 
     test('отправленное сообщение показывает статус доставки', () {
@@ -313,14 +317,14 @@ void main() {
         'title': 'Пётр Петров',
       });
       expect(group.isGroup, isTrue);
-      expect(group.displayTitle, 'Отдел ИТ');
+      expect(group.displayTitle(l10n), 'Отдел ИТ');
       expect(direct.isGroup, isFalse);
-      expect(direct.displayTitle, 'Пётр Петров');
+      expect(direct.displayTitle(l10n), 'Пётр Петров');
     });
 
     test('без названия показывается заглушка', () {
       final chat = Chat.fromJson({'id': 'c3', 'kind': 'direct'});
-      expect(chat.displayTitle, 'Диалог');
+      expect(chat.displayTitle(l10n), 'Диалог');
     });
   });
 
@@ -357,19 +361,19 @@ void main() {
       expect(
         ApiErrorInfo.parse({
           'error': {'code': 'invalid_credentials'}
-        }).friendly,
+        }).localized(l10n),
         'Неверный логин или пароль',
       );
       expect(
         ApiErrorInfo.parse({
           'error': {'code': 'network_unreachable'}
-        }).friendly,
+        }).localized(l10n),
         'Сервер недоступен. Проверьте адрес и подключение',
       );
       expect(
         ApiErrorInfo.parse({
           'error': {'code': 'account_disabled'}
-        }).friendly,
+        }).localized(l10n),
         contains('отключена'),
       );
     });
@@ -378,7 +382,7 @@ void main() {
       final info = ApiErrorInfo.parse({
         'error': {'code': 'file_too_large', 'message': 'Файл больше 25 МБ'},
       });
-      expect(info.friendly, 'Файл больше 25 МБ');
+      expect(info.localized(l10n), 'Файл больше 25 МБ');
     });
 
     test('мусорный ответ не роняет разбор', () {
@@ -415,7 +419,7 @@ void main() {
             name: 'f',
             mimeType: 'image/png',
             sizeBytes: 512,
-          ).humanSize,
+          ).humanSize(l10n),
           '512 Б');
 
       expect(
@@ -425,7 +429,7 @@ void main() {
             name: 'f',
             mimeType: 'image/png',
             sizeBytes: 2048,
-          ).humanSize,
+          ).humanSize(l10n),
           '2.0 КБ');
     });
 

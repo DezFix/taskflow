@@ -1,0 +1,15 @@
+# Настройка переводов интерфейса.
+#
+# Три языка: русский (по умолчанию), украинский, английский.
+# app_en.arb служит шаблоном: по нему проверяется, что ключи есть
+# во всех языках. Генерация запускается сама при сборке и analyze.
+
+arb-dir: lib/l10n/arb
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+output-dir: lib/l10n/generated
+nullable-getter: false
+
+# Склонения и разделители зависят от языка, поэтому берём из intl.
+synthetic-package: false

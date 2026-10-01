@@ -6,13 +6,23 @@ version: 1.0.0+1
 environment:
   sdk: ">=3.6.0 <4.0.0"
 
+# Три языка интерфейса: русский, украинский, английский.
+# Файлы переводов лежат в lib/l10n/arb, генерация — flutter gen-l10n.
+flutter_localizations:
+  sdk: flutter
+
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
   # Состояние приложения: Riverpod даёт простые контроллеры без кодогенерации
   # и юнит-тестируется обычными вызовами, без моков.
   flutter_riverpod: ^2.6.1
+
+  # Даты и числа в локализованном виде.
+  intl: ">=0.19.0 <0.21.0"
 
   # Сеть и multipart-загрузка файлов/голосовых.
   dio: ^5.7.0
@@ -50,6 +60,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # Включает автоматическую генерацию переводов при сборке и analyze.
+  generate: true
   assets:
     - assets/images/
   fonts: []

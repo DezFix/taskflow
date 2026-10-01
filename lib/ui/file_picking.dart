@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../data/api_client.dart';
 import '../data/models.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 
 /// Расширения, которые сервер принимает: остальное лучше не предлагать.
@@ -79,6 +80,7 @@ Future<List<({String name, Uint8List bytes})>?> pickFiles(
   BuildContext context, {
   bool allowImages = true,
 }) async {
+  final l10n = AppLocalizations.of(context);
   final source = await showModalBottomSheet<String>(
     context: context,
     showDragHandle: true,
@@ -89,23 +91,23 @@ Future<List<({String name, Uint8List bytes})>?> pickFiles(
           if (allowImages) ...[
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Сделать фото'),
+              title: Text(l10n.pickTakePhoto),
               onTap: () => Navigator.of(sheetContext).pop('camera'),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Выбрать из галереи'),
+              title: Text(l10n.pickFromGallery),
               onTap: () => Navigator.of(sheetContext).pop('gallery'),
             ),
           ],
           ListTile(
             leading: const Icon(Icons.attach_file),
-            title: const Text('Выбрать файл'),
+            title: Text(l10n.pickFile),
             onTap: () => Navigator.of(sheetContext).pop('file'),
           ),
           ListTile(
             leading: const Icon(Icons.insert_drive_file_outlined),
-            title: const Text('Документ или фото'),
+            title: Text(l10n.pickDocument),
             onTap: () => Navigator.of(sheetContext).pop('document'),
           ),
         ],
@@ -166,7 +168,7 @@ Future<List<({String name, Uint8List bytes})>?> pickFiles(
           content: Text(
             error is ApiException
                 ? error.message
-                : 'Не удалось открыть файл: $error',
+                : '${AppLocalizations.of(context).pickFailed}: $error',
           ),
         ),
       );

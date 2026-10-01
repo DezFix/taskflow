@@ -63,6 +63,40 @@ they are:
 | Reports | Those granted the reports permission |
 | Profile | Everyone |
 
+## Languages
+
+The interface is available in three languages: Russian, Ukrainian and English.
+Russian is the default; if nothing is chosen, the system language is used.
+
+The language can be changed on the main screens:
+
+- the sign-in screen, next to the back arrow
+- the first step of the server setup wizard
+- the workspace, top right corner on any tab
+- the profile, next to the online/offline indicator
+
+The choice is remembered on the device and is independent of the account, so
+it survives changing the server address and signing out.
+
+Translations live in `lib/l10n/arb` as ARB files, one per language. English
+(`app_en.arb`) acts as the template: the build fails if a key is missing in it,
+and `flutter analyze` points at gaps. To add a language:
+
+1. copy `app_en.arb` to `app_<code>.arb` and set `@@locale`
+2. fill in the translations
+3. add the locale to `AppLocalizations` usages if a plural rule is needed
+
+```bash
+flutter gen-l10n
+```
+
+Server messages are translated on the client: the API returns a stable error
+code (`task_access_denied`), and the app looks up the wording in its own
+dictionaries. Server-side text stays available for debugging. Names that live
+in the database — system roles, default positions and task labels — are
+recognised by their identifiers and translated the same way; custom names set
+by an administrator are shown as entered.
+
 ## Build
 
 ### Requirements

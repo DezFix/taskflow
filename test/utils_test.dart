@@ -3,25 +3,33 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:taskflow/data/api_client.dart';
+import 'package:taskflow/l10n/l10n_scope.dart';
 import 'package:taskflow/data/models.dart';
 import 'package:taskflow/ui/screens/workspace_shell.dart';
 import 'package:taskflow/ui/workspace_tab.dart';
 import 'package:taskflow/ui/theme.dart';
 
 void main() {
+  // Проверяем русский текст: это язык по умолчанию.
+  final l10n = L10nScope.current;
+
+  // Названия месяцев берутся из данных intl, их нужно загрузить.
+  setUpAll(initializeDateFormatting);
+
   group('Форматирование дат', () {
     test('сегодня, вчера и завтра', () {
       final now = DateTime.now();
-      expect(Format.date(now), 'сегодня');
-      expect(Format.date(now.subtract(const Duration(days: 1))), 'вчера');
-      expect(Format.date(now.add(const Duration(days: 1))), 'завтра');
+      expect(Format.date(now, l10n), 'сегодня');
+      expect(Format.date(now.subtract(const Duration(days: 1)), l10n), 'вчера');
+      expect(Format.date(now.add(const Duration(days: 1)), l10n), 'завтра');
     });
 
     test('пустая дата даёт прочерк', () {
-      expect(Format.date(null), '—');
-      expect(Format.dateTime(null), '—');
-      expect(Format.longDateTime(null), '—');
+      expect(Format.date(null, l10n), '—');
+      expect(Format.dateTime(null, l10n), '—');
+      expect(Format.longDateTime(null, l10n), '—');
     });
 
     test('время в формате ЧЧ:ММ', () {
@@ -32,19 +40,22 @@ void main() {
 
     test('дата с годом отличается от текущего', () {
       final value = DateTime(2020, 1, 15, 12, 0);
-      final text = Format.date(value);
+      final text = Format.date(value, l10n);
       expect(text, contains('15'));
       expect(text, contains('2020'));
     });
 
     test('срок задачи с пометкой просрочки', () {
       final past = DateTime.now().subtract(const Duration(days: 3));
-      expect(Format.dueLabel(past, overdue: true), contains('просрочено'));
-      expect(Format.dueLabel(past), isNot(contains('просрочено')));
+      expect(
+        Format.dueLabel(past, l10n, overdue: true),
+        contains('просрочено'),
+      );
+      expect(Format.dueLabel(past, l10n), isNot(contains('просрочено')));
     });
 
     test('без срока пишем «Без срока»', () {
-      expect(Format.dueLabel(null), 'Без срока');
+      expect(Format.dueLabel(null, l10n), 'Без срока');
     });
 
     test('длительность голосового', () {
@@ -57,20 +68,23 @@ void main() {
     });
 
     test('размер файла', () {
-      expect(Format.fileSize(512), '512 Б');
-      expect(Format.fileSize(2048), '2 КБ');
-      expect(Format.fileSize(5 * 1024 * 1024), '5.0 МБ');
+      expect(Format.fileSize(512, l10n), '512 Б');
+      expect(Format.fileSize(2048, l10n), '2 КБ');
+      expect(Format.fileSize(5 * 1024 * 1024, l10n), '5.0 МБ');
     });
 
     test('относительное время', () {
-      expect(Format.ago(null), '');
-      expect(Format.ago(DateTime.now()), 'сейчас');
+      expect(Format.ago(null, l10n), '');
+      expect(Format.ago(DateTime.now(), l10n), 'сейчас');
       expect(
-        Format.ago(DateTime.now().subtract(const Duration(minutes: 5))),
+        Format.ago(
+          DateTime.now().subtract(const Duration(minutes: 5)),
+          l10n,
+        ),
         '5 мин назад',
       );
       expect(
-        Format.ago(DateTime.now().subtract(const Duration(hours: 3))),
+        Format.ago(DateTime.now().subtract(const Duration(hours: 3)), l10n),
         '3 ч назад',
       );
     });

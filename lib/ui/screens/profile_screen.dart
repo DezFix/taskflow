@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
 import '../theme.dart';
 import '../widgets.dart';
@@ -15,6 +16,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final serverUrl = ref.watch(serverUrlProvider);
+    final l10n = AppLocalizations.of(context);
 
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
@@ -51,7 +53,7 @@ class ProfileScreen extends ConsumerWidget {
                   alignment: WrapAlignment.center,
                   children: user.roles
                       .map((role) => Chip(
-                            label: Text(role.title),
+                            label: Text(role.localizedTitle(l10n)),
                             visualDensity: VisualDensity.compact,
                           ))
                       .toList(),
@@ -64,48 +66,49 @@ class ProfileScreen extends ConsumerWidget {
         if (user.mustChangePassword)
           _MustChangeBanner(onTap: () => _changePassword(context, ref)),
         SectionCard(
-          title: 'Данные',
+          title: l10n.profileSectionDetails,
           child: Column(
             children: [
-              InfoRow(label: 'Логин', value: '@${user.username}'),
+              InfoRow(
+                  label: l10n.profileLoginLabel, value: '@${user.username}'),
               if (user.email != null)
                 InfoRow(label: 'Email', value: user.email!),
               if (user.phone != null)
-                InfoRow(label: 'Телефон', value: user.phone!),
+                InfoRow(label: l10n.profilePhoneLabel, value: user.phone!),
               if (user.lastLoginAt != null)
                 InfoRow(
-                  label: 'Последний вход',
-                  value: Format.longDateTime(user.lastLoginAt),
+                  label: l10n.profileLastLoginLabel,
+                  value: Format.longDateTime(user.lastLoginAt, l10n),
                 ),
               if (user.createdAt != null)
                 InfoRow(
-                  label: 'В системе с',
-                  value: Format.date(user.createdAt),
+                  label: l10n.profileMemberSinceLabel,
+                  value: Format.date(user.createdAt, l10n),
                 ),
             ],
           ),
         ),
         const SizedBox(height: Insets.md),
         SectionCard(
-          title: 'Действия',
+          title: l10n.profileSectionActions,
           child: Column(
             children: [
               _ActionRow(
                 icon: Icons.badge_outlined,
-                title: 'Изменить профиль',
+                title: l10n.profileEditProfile,
                 onTap: () => _editProfile(context, ref),
               ),
               const Divider(height: 1),
               _ActionRow(
                 icon: Icons.lock_outline,
-                title: 'Сменить пароль',
+                title: l10n.profileChangePassword,
                 onTap: () => _changePassword(context, ref),
               ),
               const Divider(height: 1),
               if (user.can('settings.view'))
                 _ActionRow(
                   icon: Icons.tune,
-                  title: 'Настройки сервера',
+                  title: l10n.profileServerSettings,
                   onTap: () => Navigator.of(context).pushNamed('/settings'),
                 ),
             ],
@@ -113,10 +116,14 @@ class ProfileScreen extends ConsumerWidget {
         ),
         const SizedBox(height: Insets.md),
         SectionCard(
-          title: 'Подключение',
+          title: l10n.profileSectionConnection,
           child: Column(
             children: [
-              InfoRow(label: 'Сервер', value: serverUrl, monospace: true),
+              InfoRow(
+                label: l10n.profileServerLabel,
+                value: serverUrl,
+                monospace: true,
+              ),
               const SizedBox(height: Insets.sm),
               _ConnectionRow(url: serverUrl),
             ],
@@ -126,7 +133,7 @@ class ProfileScreen extends ConsumerWidget {
         OutlinedButton.icon(
           onPressed: () => _logout(context, ref),
           icon: const Icon(Icons.logout, size: 18),
-          label: const Text('Выйти из аккаунта'),
+          label: Text(l10n.profileLogout),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.danger,
             side: const BorderSide(color: AppColors.danger),
@@ -136,7 +143,7 @@ class ProfileScreen extends ConsumerWidget {
         TextButton.icon(
           onPressed: () => _changeServer(context, ref),
           icon: const Icon(Icons.dns_outlined, size: 18),
-          label: const Text('Подключиться к другому серверу'),
+          label: Text(l10n.profileConnectOtherServer),
         ),
         const SizedBox(height: Insets.md),
         Center(
@@ -155,19 +162,20 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Future<void> _editProfile(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
     final user = ref.read(currentUserProvider)!;
     final name = await showInputDialog<String>(
       context,
-      title: 'Изменить профиль',
-      label: 'Имя и фамилия',
+      title: l10n.profileEditProfile,
+      label: l10n.profileFullNameLabel,
       initialValue: user.fullName,
     );
     if (name == null || !context.mounted) return;
 
     final phone = await showInputDialog<String>(
       context,
-      title: 'Телефон',
-      label: 'Номер телефона',
+      title: l10n.profilePhoneLabel,
+      label: l10n.profilePhoneNumberLabel,
       initialValue: user.phone ?? '',
       keyboardType: TextInputType.phone,
     );
@@ -183,28 +191,33 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Future<void> _changePassword(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
     final current = await showInputDialog<String>(
       context,
-      title: 'Текущий пароль',
-      label: 'Пароль',
+      title: l10n.profileCurrentPasswordTitle,
+      label: l10n.profilePasswordLabel,
       obscureText: true,
-      confirmText: 'Далее',
+      confirmText: l10n.commonNext,
     );
     // null означает, что сотрудник закрыл диалог: продолжать нечего.
     if (current == null || !context.mounted) return;
 
     final next = await showInputDialog<String>(
       context,
-      title: 'Новый пароль',
-      message: 'Минимум 8 символов, буквы и цифры.',
-      label: 'Новый пароль',
+      title: l10n.profileNewPasswordTitle,
+      message: l10n.profileNewPasswordHint,
+      label: l10n.profileNewPasswordTitle,
       obscureText: true,
-      confirmText: 'Далее',
+      confirmText: l10n.commonNext,
       validator: (value) {
         final text = value ?? '';
-        if (text.length < 8) return 'Минимум 8 символов';
-        if (!RegExp(r'[a-zA-Zа-яА-Я]').hasMatch(text)) return 'Нужны буквы';
-        if (!RegExp(r'\d').hasMatch(text)) return 'Нужны цифры';
+        if (text.length < 8) return l10n.profilePasswordMinLength;
+        if (!RegExp(r'[a-zA-Zа-яА-Я]').hasMatch(text)) {
+          return l10n.profilePasswordNeedsLetters;
+        }
+        if (!RegExp(r'\d').hasMatch(text)) {
+          return l10n.profilePasswordNeedsDigits;
+        }
         return null;
       },
     );
@@ -212,29 +225,27 @@ class ProfileScreen extends ConsumerWidget {
 
     final repeat = await showInputDialog<String>(
       context,
-      title: 'Повторите пароль',
-      label: 'Новый пароль ещё раз',
+      title: l10n.profileRepeatPasswordTitle,
+      label: l10n.profileRepeatPasswordLabel,
       obscureText: true,
-      confirmText: 'Сменить',
-      validator: (value) => value != next ? 'Пароли не совпадают' : null,
+      confirmText: l10n.profileChangeConfirm,
+      validator: (value) => value != next ? l10n.profilePasswordMismatch : null,
     );
     if (repeat == null || !context.mounted) return;
 
     final signOutOthers = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Завершить другие сессии?'),
-        content: const Text(
-          'Рекомендуется включить, если пароль мог увидеть кто-то ещё.',
-        ),
+        title: Text(l10n.profileEndOtherSessionsTitle),
+        content: Text(l10n.profileEndOtherSessionsMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Нет'),
+            child: Text(l10n.commonNo),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Да, завершить'),
+            child: Text(l10n.profileEndSessionsConfirm),
           ),
         ],
       ),
@@ -248,9 +259,9 @@ class ProfileScreen extends ConsumerWidget {
             allDevices: signOutOthers ?? false,
           );
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Пароль изменён')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.profilePasswordChanged)),
+        );
         ref.read(currentUserProvider.notifier).load();
       }
     } catch (error) {
@@ -259,11 +270,12 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Future<void> _logout(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await confirmDialog(
       context,
-      title: 'Выйти из аккаунта?',
-      message: 'Адрес сервера сохранится, вход будет выполнен паролем.',
-      confirmText: 'Выйти',
+      title: l10n.profileLogoutTitle,
+      message: l10n.profileLogoutMessage,
+      confirmText: l10n.profileLogoutConfirm,
       destructive: false,
     );
     if (confirmed) {
@@ -272,11 +284,12 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Future<void> _changeServer(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await confirmDialog(
       context,
-      title: 'Сменить сервер?',
-      message: 'Текущий сервер будет забыт. Убедитесь, что знаете пароль.',
-      confirmText: 'Сменить',
+      title: l10n.profileChangeServerTitle,
+      message: l10n.profileChangeServerMessage,
+      confirmText: l10n.profileChangeConfirm,
     );
     if (confirmed) {
       await ref.read(appStageProvider.notifier).forgetServer();
@@ -293,6 +306,7 @@ class _MustChangeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: Insets.md),
       padding: const EdgeInsets.all(Insets.md),
@@ -305,13 +319,13 @@ class _MustChangeBanner extends StatelessWidget {
         children: [
           const Icon(Icons.warning_amber_rounded, color: AppColors.warning),
           const SizedBox(width: Insets.sm + 2),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Вам выдан временный пароль. Смените его, чтобы защитить учётную запись.',
-              style: TextStyle(fontSize: 13, height: 1.4),
+              l10n.profileMustChangePasswordBanner,
+              style: const TextStyle(fontSize: 13, height: 1.4),
             ),
           ),
-          TextButton(onPressed: onTap, child: const Text('Сменить')),
+          TextButton(onPressed: onTap, child: Text(l10n.profileChangeConfirm)),
         ],
       ),
     );
@@ -352,12 +366,13 @@ class _ConnectionRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final status = ref.watch(realtimeStatusProvider).value;
+    final l10n = AppLocalizations.of(context);
 
     final connected = status?.name == 'connected';
     final label = switch (status?.name) {
-      'connected' => 'Подключено, обновления в реальном времени',
-      'connecting' => 'Подключение…',
-      _ => 'Нет связи, идёт переподключение',
+      'connected' => l10n.profileStatusConnected,
+      'connecting' => l10n.profileStatusConnecting,
+      _ => l10n.profileStatusDisconnected,
     };
 
     return Row(
@@ -377,7 +392,7 @@ class _ConnectionRow extends ConsumerWidget {
         if (!connected)
           TextButton(
             onPressed: () => ref.read(realtimeProvider).reconnect(),
-            child: const Text('Повторить'),
+            child: Text(l10n.commonRetry),
           ),
       ],
     );

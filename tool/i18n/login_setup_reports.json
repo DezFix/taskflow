@@ -1,0 +1,550 @@
+{
+  "keys": [
+    {
+      "key": "loginTitle",
+      "ru": "Вход",
+      "uk": "Вхід",
+      "en": "Sign in",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "loginOtherServerTooltip",
+      "ru": "Другой сервер",
+      "uk": "Інший сервер",
+      "en": "Another server",
+      "source": "lib/ui/screens/login_screen.dart",
+      "note": "Подсказка кнопки возврата в шапке экрана входа"
+    },
+    {
+      "key": "loginIdentifierLabel",
+      "ru": "Логин или email",
+      "uk": "Логін або email",
+      "en": "Username or email",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "loginIdentifierRequired",
+      "ru": "Введите логин",
+      "uk": "Введіть логін",
+      "en": "Enter your username",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "loginPasswordLabel",
+      "ru": "Пароль",
+      "uk": "Пароль",
+      "en": "Password",
+      "source": "lib/ui/screens/login_screen.dart",
+      "note": "Один ключ на два поля: вход и мастер первоначальной настройки"
+    },
+    {
+      "key": "loginPasswordShowTooltip",
+      "ru": "Показать",
+      "uk": "Показати",
+      "en": "Show password",
+      "source": "lib/ui/screens/login_screen.dart",
+      "note": "Одна из двух подсказок кнопки-глаза, выбор по состоянию поля"
+    },
+    {
+      "key": "loginPasswordHideTooltip",
+      "ru": "Скрыть",
+      "uk": "Приховати",
+      "en": "Hide password",
+      "source": "lib/ui/screens/login_screen.dart",
+      "note": "Одна из двух подсказок кнопки-глаза, выбор по состоянию поля"
+    },
+    {
+      "key": "loginPasswordRequired",
+      "ru": "Введите пароль",
+      "uk": "Введіть пароль",
+      "en": "Enter your password",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "loginSubmit",
+      "ru": "Войти",
+      "uk": "Увійти",
+      "en": "Sign in",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "loginForgotPassword",
+      "ru": "Не помню пароль",
+      "uk": "Не пам’ятаю пароль",
+      "en": "Forgot password",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "loginServerChipLabel",
+      "ru": "Сервер",
+      "uk": "Сервер",
+      "en": "Server",
+      "source": "lib/ui/screens/login_screen.dart",
+      "note": "Подпись над адресом сервера в плашке над формой входа"
+    },
+    {
+      "key": "setupTitle",
+      "ru": "Настройка сервера",
+      "uk": "Налаштування сервера",
+      "en": "Server setup",
+      "source": "lib/ui/screens/login_screen.dart",
+      "note": "Заголовок мастера первоначальной настройки (ServerSetupWizardScreen)"
+    },
+    {
+      "key": "setupIntroNotice",
+      "ru": "Этот сервер ещё не настроен. Создайте учётную запись администратора — она же будет первой в списке сотрудников.",
+      "uk": "Цей сервер ще не налаштовано. Створіть обліковий запис адміністратора — він же буде першим у списку співробітників.",
+      "en": "This server has not been set up yet. Create the administrator account — it will also be the first one in the staff list.",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "setupOrganizationLabel",
+      "ru": "Организация (необязательно)",
+      "uk": "Організація (необов’язково)",
+      "en": "Organization (optional)",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "setupFullNameLabel",
+      "ru": "Ваше имя и фамилия",
+      "uk": "Ваше ім’я та прізвище",
+      "en": "Your first and last name",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "setupFullNameRequired",
+      "ru": "Введите имя",
+      "uk": "Введіть ім’я",
+      "en": "Enter your name",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "setupAdminLoginLabel",
+      "ru": "Логин администратора",
+      "uk": "Логін адміністратора",
+      "en": "Administrator username",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "setupLoginMinLength",
+      "ru": "Минимум 3 символа",
+      "uk": "Мінімум 3 символи",
+      "en": "At least 3 characters",
+      "source": "lib/ui/screens/login_screen.dart",
+      "note": "Подпись валидатора: число хранится в коде и не переводится"
+    },
+    {
+      "key": "setupRepeatPasswordLabel",
+      "ru": "Повторите пароль",
+      "uk": "Повторіть пароль",
+      "en": "Repeat password",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "setupPasswordMismatch",
+      "ru": "Пароли не совпадают",
+      "uk": "Паролі не збігаються",
+      "en": "Passwords do not match",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "setupCreateAdmin",
+      "ru": "Создать администратора",
+      "uk": "Створити адміністратора",
+      "en": "Create administrator",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "setupPasswordMinLength",
+      "ru": "Минимум 8 символов",
+      "uk": "Мінімум 8 символів",
+      "en": "At least 8 characters",
+      "source": "lib/ui/screens/login_screen.dart",
+      "note": "Подпись валидатора: число хранится в коде и не переводится"
+    },
+    {
+      "key": "setupPasswordNeedsDigits",
+      "ru": "Нужны буквы и цифры",
+      "uk": "Потрібні літери та цифри",
+      "en": "Letters and digits are required",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "passwordResetTitle",
+      "ru": "Восстановление доступа",
+      "uk": "Відновлення доступу",
+      "en": "Access recovery",
+      "source": "lib/ui/screens/login_screen.dart",
+      "note": "Заголовок экрана-подсказки PasswordResetScreen"
+    },
+    {
+      "key": "passwordResetHeadline",
+      "ru": "Обратитесь к главе отдела",
+      "uk": "Зверніться до керівника відділу",
+      "en": "Contact your department head",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "passwordResetMessage",
+      "ru": "Он сбросит ваш пароль и выдаст временный. После входа приложение попросит придумать новый.",
+      "uk": "Він скине ваш пароль і видасть тимчасовий. Після входу застосунок попросить придумати новий.",
+      "en": "They will reset your password and issue a temporary one. After signing in, the app will ask you to come up with a new one.",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "passwordResetBack",
+      "ru": "Вернуться ко входу",
+      "uk": "Повернутися до входу",
+      "en": "Back to sign in",
+      "source": "lib/ui/screens/login_screen.dart"
+    },
+    {
+      "key": "setupRecentServers",
+      "ru": "Недавние серверы",
+      "uk": "Недавні сервери",
+      "en": "Recent servers",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupServerAddress",
+      "ru": "Адрес сервера",
+      "uk": "Адреса сервера",
+      "en": "Server address",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupServerAddressHint",
+      "ru": "192.168.1.50:8080 или taskflow.company.ru",
+      "uk": "192.168.1.50:8080 або taskflow.company.ru",
+      "en": "192.168.1.50:8080 or taskflow.company.ru",
+      "source": "lib/ui/screens/server_setup_screen.dart",
+      "note": "Переводится только союз между примерами, сами примеры адресов остаются как есть"
+    },
+    {
+      "key": "setupServerAddressRequired",
+      "ru": "Введите адрес сервера",
+      "uk": "Введіть адресу сервера",
+      "en": "Enter the server address",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupServerAddressInvalid",
+      "ru": "Похоже, это не адрес. Пример: 192.168.1.50:8080",
+      "uk": "Схоже, це не адреса. Приклад: 192.168.1.50:8080",
+      "en": "This does not look like an address. Example: 192.168.1.50:8080",
+      "source": "lib/ui/screens/server_setup_screen.dart",
+      "note": "Пример адреса остаётся как есть, переводится только текст вокруг него"
+    },
+    {
+      "key": "setupServerNameLabel",
+      "ru": "Название сервера",
+      "uk": "Назва сервера",
+      "en": "Server name",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupServerNameHint",
+      "ru": "Например, Офис на Пресненской",
+      "uk": "Наприклад, Офіс на Пресненській",
+      "en": "For example, Presnenskaya office",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupTagline",
+      "ru": "Управление IT-отделом",
+      "uk": "Керування IT-відділом",
+      "en": "IT department management",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupConnect",
+      "ru": "Подключиться",
+      "uk": "Підключитися",
+      "en": "Connect",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupChecking",
+      "ru": "Проверяем сервер…",
+      "uk": "Перевіряємо сервер…",
+      "en": "Checking the server…",
+      "source": "lib/ui/screens/server_setup_screen.dart",
+      "note": "Подпись основной кнопки во время проверки адреса"
+    },
+    {
+      "key": "setupForgetServerTooltip",
+      "ru": "Забыть сервер",
+      "uk": "Забути сервер",
+      "en": "Forget server",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupHttpsHint",
+      "ru": "Защищённое соединение:",
+      "uk": "Захищений зв’язок:",
+      "en": "Secure connection:",
+      "source": "lib/ui/screens/server_setup_screen.dart",
+      "note": "Склеивается с адресом: 'ключ + пробел + нормализованный URL'"
+    },
+    {
+      "key": "setupHttpHintPrefix",
+      "ru": "Без шифрования:",
+      "uk": "Без шифрування:",
+      "en": "No encryption:",
+      "source": "lib/ui/screens/server_setup_screen.dart",
+      "note": "Начало подсказки об HTTP: 'ключ + пробел + нормализованный URL' и следом ключ setupHttpHintSuffix"
+    },
+    {
+      "key": "setupHttpHintSuffix",
+      "ru": ". Подходит для доверенной сети офиса.",
+      "uk": ". Підходить для довіреної мережі офісу.",
+      "en": ". Suitable for a trusted office network.",
+      "source": "lib/ui/screens/server_setup_screen.dart",
+      "note": "Продолжение подсказки об HTTP, приклеивается к адресу без пробела"
+    },
+    {
+      "key": "setupAdvancedLabel",
+      "ru": "Дополнительно",
+      "uk": "Додатково",
+      "en": "Advanced",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupTrustCertificateLabel",
+      "ru": "Доверять сертификату сервера",
+      "uk": "Довіряти сертифікату сервера",
+      "en": "Trust the server certificate",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupTrustCertificateSubtitle",
+      "ru": "Для офисной сети и VPN, где сертификат выпущен локально",
+      "uk": "Для офісної мережі та VPN, де сертифікат видано локально",
+      "en": "For office networks and VPNs where the certificate is issued locally",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "setupServerFound",
+      "ru": "Сервер найден:",
+      "uk": "Сервер знайдено:",
+      "en": "Server found:",
+      "source": "lib/ui/screens/server_setup_screen.dart",
+      "note": "Склеивается с данными из API: 'ключ + пробел + info.name + пробел + info.version'"
+    },
+    {
+      "key": "setupVoiceEnabledWithModel",
+      "ru": "Распознавание голоса включено, модель",
+      "uk": "Розпізнавання голосу увімкнено, модель",
+      "en": "Voice recognition is on, model",
+      "source": "lib/ui/screens/server_setup_screen.dart",
+      "note": "Склеивается с именем модели из API: 'ключ + пробел + info.voiceModel'"
+    },
+    {
+      "key": "setupAllowCertificate",
+      "ru": "Разрешить сертификат сервера",
+      "uk": "Дозволити сертифікат сервера",
+      "en": "Trust this certificate",
+      "source": "lib/ui/screens/server_setup_screen.dart",
+      "note": "Подпись кнопки под баннером ошибки сертификата"
+    },
+    {
+      "key": "setupFooterLicense",
+      "ru": "Открытый исходный код · MIT",
+      "uk": "Відкритий вихідний код · MIT",
+      "en": "Open source · MIT",
+      "source": "lib/ui/screens/server_setup_screen.dart"
+    },
+    {
+      "key": "reportsUnavailableTitle",
+      "ru": "Отчёты недоступны",
+      "uk": "Звіти недоступні",
+      "en": "Reports unavailable",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsTotalTasks",
+      "ru": "Всего задач",
+      "uk": "Усього завдань",
+      "en": "Total tasks",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsInProgress",
+      "ru": "В работе",
+      "uk": "У роботі",
+      "en": "In progress",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsInReview",
+      "ru": "На проверке",
+      "uk": "На перевірці",
+      "en": "In review",
+      "source": "lib/ui/screens/reports_screen.dart",
+      "note": "Один ключ на два места: плитка статистики и строка легенды у круга выполнения"
+    },
+    {
+      "key": "reportsOverdue",
+      "ru": "Просрочено",
+      "uk": "Прострочено",
+      "en": "Overdue",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsCompletionCaption",
+      "ru": "выполнено",
+      "uk": "виконано",
+      "en": "completed",
+      "source": "lib/ui/screens/reports_screen.dart",
+      "note": "Подпись под процентом в круге выполнения, число берётся рядом отдельно"
+    },
+    {
+      "key": "reportsStatusDone",
+      "ru": "Выполнено",
+      "uk": "Виконано",
+      "en": "Done",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsStatusCancelled",
+      "ru": "Отменено",
+      "uk": "Скасовано",
+      "en": "Cancelled",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsUnassigned",
+      "ru": "Без исполнителя",
+      "uk": "Без виконавця",
+      "en": "Unassigned",
+      "source": "lib/ui/screens/reports_screen.dart",
+      "note": "Строка легенды у круга выполнения; текст совпадает с taskAssigneeNone из tool/i18n/settings_tasks.json, но это отдельный экран"
+    },
+    {
+      "key": "reportsStatusBreakdownTitle",
+      "ru": "Распределение задач",
+      "uk": "Розподіл завдань",
+      "en": "Task breakdown",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsWeeklyTitle",
+      "ru": "За неделю",
+      "uk": "За тиждень",
+      "en": "This week",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsWeeklyCreated",
+      "ru": "Создано задач",
+      "uk": "Створено завдань",
+      "en": "Tasks created",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsWeeklyCompleted",
+      "ru": "Завершено",
+      "uk": "Завершено",
+      "en": "Completed",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsNoEmployeeData",
+      "ru": "Данных по сотрудникам пока нет",
+      "uk": "Даних по співробітниках поки немає",
+      "en": "No employee data yet",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsWorkloadTitle",
+      "ru": "Нагрузка сотрудников",
+      "uk": "Навантаження співробітників",
+      "en": "Workload",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsEmployeeAssigned",
+      "ru": "Всего",
+      "uk": "Усього",
+      "en": "Total",
+      "source": "lib/ui/screens/reports_screen.dart",
+      "note": "Часть строки-сводки под именем сотрудника, склеивается как 'ключ: число' и разделитель ' · '"
+    },
+    {
+      "key": "reportsEmployeeInProgress",
+      "ru": "в работе",
+      "uk": "у роботі",
+      "en": "In progress",
+      "source": "lib/ui/screens/reports_screen.dart",
+      "note": "Часть строки-сводки под именем сотрудника, склеивается как 'ключ: число' и разделитель ' · '"
+    },
+    {
+      "key": "reportsEmployeeDone",
+      "ru": "готово",
+      "uk": "готово",
+      "en": "Done",
+      "source": "lib/ui/screens/reports_screen.dart",
+      "note": "Часть строки-сводки под именем сотрудника, склеивается как 'ключ: число' и разделитель ' · '"
+    },
+    {
+      "key": "reportsOverdueCount",
+      "ru": "просрочено",
+      "uk": "прострочено",
+      "en": "overdue",
+      "source": "lib/ui/screens/reports_screen.dart",
+      "note": "Склеивается с числом: 'число + пробел + ключ' (бейдж просроченных задач)"
+    },
+    {
+      "key": "reportsExportTitle",
+      "ru": "Выгрузка",
+      "uk": "Вивантаження",
+      "en": "CSV export",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsExportDescription",
+      "ru": "CSV со всеми задачами отдела. Откроется в Excel или LibreOffice, русский текст не поедет.",
+      "uk": "CSV з усіма завданнями відділу. Відкриється в Excel або LibreOffice, кириличний текст не зламається.",
+      "en": "CSV with all department tasks. Opens in Excel or LibreOffice, Cyrillic text stays intact.",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsExportSaved",
+      "ru": "Файл выгрузки сохранён",
+      "uk": "Файл вивантаження збережено",
+      "en": "Export file saved",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsExportFailed",
+      "ru": "Не удалось сохранить файл:",
+      "uk": "Не вдалося зберегти файл:",
+      "en": "Failed to save the file:",
+      "source": "lib/ui/screens/reports_screen.dart",
+      "note": "Склеивается с текстом ошибки: 'ключ + пробел + error'"
+    },
+    {
+      "key": "reportsExportDownload",
+      "ru": "Скачать",
+      "uk": "Завантажити",
+      "en": "Download",
+      "source": "lib/ui/screens/reports_screen.dart"
+    },
+    {
+      "key": "reportsInvalidUrl",
+      "ru": "Некорректный адрес:",
+      "uk": "Некоректна адреса:",
+      "en": "Invalid address:",
+      "source": "lib/ui/screens/reports_screen.dart",
+      "note": "Склеивается с адресом: 'ключ + пробел + url'. Ключ используется в общей функции openExternalUrl, лежащей в этом файле"
+    },
+    {
+      "key": "reportsOpenInBrowser",
+      "ru": "Откройте в браузере:",
+      "uk": "Відкрийте в браузері:",
+      "en": "Open in browser:",
+      "source": "lib/ui/screens/reports_screen.dart",
+      "note": "Склеивается с адресом: 'ключ + пробел + url'. Используется в общей функции openExternalUrl, лежащей в этом файле"
+    }
+  ]
+}

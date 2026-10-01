@@ -21,12 +21,8 @@ class AuthRepository {
     // всегда падал бы и подключиться к серверу было бы невозможно.
     final result = await client.get('/api/v1/meta/info');
     if (result.isEmpty) {
-      throw ApiException(
-        const ApiErrorInfo(
-          code: 'unknown',
-          message: 'Сервер не найден или не отвечает',
-        ),
-      );
+      // Перевод по коду: текст подставит словарь интерфейса.
+      throw ApiException(const ApiErrorInfo(code: 'server_unreachable'));
     }
     return ServerInfo.fromJson(result.cast<String, dynamic>());
   }

@@ -1,0 +1,608 @@
+{
+  "keys": [
+    {
+      "key": "settingsTitle",
+      "ru": "Настройки сервера",
+      "uk": "Налаштування сервера",
+      "en": "Server settings",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsConnectionTitle",
+      "ru": "Подключение",
+      "uk": "Підключення",
+      "en": "Connection",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsAddressLabel",
+      "ru": "Адрес",
+      "uk": "Адреса",
+      "en": "Address",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsEncryptionLabel",
+      "ru": "Шифрование",
+      "uk": "Шифрування",
+      "en": "Encryption",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsEncryptionOn",
+      "ru": "Включено (HTTPS)",
+      "uk": "Увімкнено (HTTPS)",
+      "en": "Enabled (HTTPS)",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsEncryptionOff",
+      "ru": "Нет (HTTP, доверенная сеть)",
+      "uk": "Ні (HTTP, довірена мережа)",
+      "en": "Off (HTTP, trusted network)",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsCertTrustLabel",
+      "ru": "Доверие к сертификату",
+      "uk": "Довіра до сертифіката",
+      "en": "Certificate trust",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsCertTrustAllowed",
+      "ru": "Разрешено",
+      "uk": "Дозволено",
+      "en": "Allowed",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsCertTrustDefault",
+      "ru": "Обычная проверка",
+      "uk": "Звичайна перевірка",
+      "en": "Standard verification",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsCertTrustHint",
+      "ru": "Если сервер доступен по VPN или в локальной сети с самоподписанным сертификатом, доверие можно включить при входе.",
+      "uk": "Якщо сервер доступний через VPN або в локальній мережі з самопідписаним сертифікатом, довіру можна ввімкнути під час входу.",
+      "en": "If the server is reachable over VPN or on a local network with a self-signed certificate, you can enable trust at sign-in.",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsVoiceTitle",
+      "ru": "Распознавание голоса",
+      "uk": "Розпізнавання голосу",
+      "en": "Voice recognition",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsVoiceEnabled",
+      "ru": "Включено",
+      "uk": "Увімкнено",
+      "en": "Enabled",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsVoiceSubtitle",
+      "ru": "Голосовые расшифровываются на сервере, данные никуда не уходят",
+      "uk": "Голосові розшифровуються на сервері, дані нікуди не потрапляють",
+      "en": "Voice messages are transcribed on the server, no data leaves it",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsModelLabel",
+      "ru": "Модель",
+      "uk": "Модель",
+      "en": "Model",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsModelTiny",
+      "ru": "Быстрая, черновик",
+      "uk": "Швидка, чернетка",
+      "en": "Fast, rough draft",
+      "source": "lib/ui/screens/server_settings_screen.dart",
+      "note": "Подпись для модели с идентификатором 'tiny' (сам идентификатор не переводится и показывается рядом через ' · ')"
+    },
+    {
+      "key": "settingsModelBase",
+      "ru": "Баланс (по умолчанию)",
+      "uk": "Баланс (типово)",
+      "en": "Balanced (default)",
+      "source": "lib/ui/screens/server_settings_screen.dart",
+      "note": "Подпись для модели с идентификатором 'base'"
+    },
+    {
+      "key": "settingsModelSmall",
+      "ru": "Точнее",
+      "uk": "Точніше",
+      "en": "More accurate",
+      "source": "lib/ui/screens/server_settings_screen.dart",
+      "note": "Подпись для модели с идентификатором 'small'"
+    },
+    {
+      "key": "settingsModelMedium",
+      "ru": "Максимум точности",
+      "uk": "Максимальна точність",
+      "en": "Highest accuracy",
+      "source": "lib/ui/screens/server_settings_screen.dart",
+      "note": "Подпись для модели с идентификатором 'medium'"
+    },
+    {
+      "key": "languageGerman",
+      "ru": "Немецкий",
+      "uk": "Німецька",
+      "en": "German",
+      "source": "lib/ui/screens/server_settings_screen.dart",
+      "note": "Дополняет существующие languageRussian/languageEnglish/languageUkrainian в выпадающем списке языка распознавания"
+    },
+    {
+      "key": "settingsVoiceModelLoading",
+      "ru": "Модель загружается, это займёт время",
+      "uk": "Модель завантажується, це займе час",
+      "en": "The model is downloading, this may take a while",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsVoiceModelPreload",
+      "ru": "Загрузить модель заранее",
+      "uk": "Завантажити модель заздалегідь",
+      "en": "Download model now",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsSystemTitle",
+      "ru": "Система",
+      "uk": "Система",
+      "en": "System",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsPlatformLabel",
+      "ru": "Платформа",
+      "uk": "Платформа",
+      "en": "Platform",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsDatabaseLabel",
+      "ru": "База данных",
+      "uk": "База даних",
+      "en": "Database",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsFileLimitLabel",
+      "ru": "Лимит файла",
+      "uk": "Ліміт файлу",
+      "en": "File size limit",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsMegabytes",
+      "ru": "МБ",
+      "uk": "МБ",
+      "en": "MB",
+      "source": "lib/ui/screens/server_settings_screen.dart",
+      "note": "Единица измерения, склеивается с числом: 'N МБ'"
+    },
+    {
+      "key": "settingsServerTimeLabel",
+      "ru": "Время сервера",
+      "uk": "Час сервера",
+      "en": "Server time",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsAboutTitle",
+      "ru": "О приложении",
+      "uk": "Про застосунок",
+      "en": "About",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsAppNameLabel",
+      "ru": "Название",
+      "uk": "Назва",
+      "en": "Name",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsVersionLabel",
+      "ru": "Версия",
+      "uk": "Версія",
+      "en": "Version",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsLicenseLabel",
+      "ru": "Лицензия",
+      "uk": "Ліцензія",
+      "en": "License",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "settingsAboutNote",
+      "ru": "Открытый исходный код. Приложение можно развернуть в своём офисе на своём сервере.",
+      "uk": "Відкритий вихідний код. Застосунок можна розгорнути у своєму офісі на своєму сервері.",
+      "en": "Open source. The app can be self-hosted in your office on your own server.",
+      "source": "lib/ui/screens/server_settings_screen.dart"
+    },
+    {
+      "key": "taskDetailNotFound",
+      "ru": "Задача не найдена",
+      "uk": "Завдання не знайдено",
+      "en": "Task not found",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailTitle",
+      "ru": "Задача",
+      "uk": "Завдання",
+      "en": "Task",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailDescriptionTitle",
+      "ru": "Описание",
+      "uk": "Опис",
+      "en": "Description",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailCompleteTitle",
+      "ru": "Завершить задачу",
+      "uk": "Завершити завдання",
+      "en": "Complete task",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailCompleteMessage",
+      "ru": "Добавьте комментарий: что сделано (необязательно).",
+      "uk": "Додайте коментар: що зроблено (необов'язково).",
+      "en": "Add a comment about what was done (optional).",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailCommentLabel",
+      "ru": "Комментарий",
+      "uk": "Коментар",
+      "en": "Comment",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailCompleteHint",
+      "ru": "Например, заменил диск, проверил работу",
+      "uk": "Наприклад, замінив диск, перевірив роботу",
+      "en": "For example, replaced the disk, checked the work",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailCompleteConfirm",
+      "ru": "Завершить",
+      "uk": "Завершити",
+      "en": "Complete",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailParamsTitle",
+      "ru": "Параметры",
+      "uk": "Параметри",
+      "en": "Details",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskAssigneeLabel",
+      "ru": "Исполнитель",
+      "uk": "Виконавець",
+      "en": "Assignee",
+      "source": "lib/ui/screens/task_detail_screen.dart, lib/ui/screens/task_form_screen.dart",
+      "note": "Общий ключ: подпись InfoRow в карточке задачи и заголовок секции в форме"
+    },
+    {
+      "key": "taskAssigneeUnassigned",
+      "ru": "Не назначен",
+      "uk": "Не призначено",
+      "en": "Unassigned",
+      "source": "lib/ui/screens/task_detail_screen.dart, lib/ui/screens/task_form_screen.dart",
+      "note": "Общий ключ: значение InfoRow в карточке задачи и текст в поле выбора исполнителя"
+    },
+    {
+      "key": "taskAssigneeAction",
+      "ru": "Назначить исполнителя",
+      "uk": "Призначити виконавця",
+      "en": "Assign",
+      "source": "lib/ui/screens/task_detail_screen.dart",
+      "note": "Один ключ на два места: заголовок нижнего листа выбора и подпись кнопки под карточкой параметров"
+    },
+    {
+      "key": "taskAssigneeNone",
+      "ru": "Без исполнителя",
+      "uk": "Без виконавця",
+      "en": "No assignee",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskAssigneePickerTitle",
+      "ru": "Кому назначить",
+      "uk": "Кому призначити",
+      "en": "Assign to",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskAssigneeDoNotAssign",
+      "ru": "Не назначать",
+      "uk": "Не призначати",
+      "en": "Don't assign",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskDetailAuthor",
+      "ru": "Автор",
+      "uk": "Автор",
+      "en": "Author",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDueLabel",
+      "ru": "Срок",
+      "uk": "Термін",
+      "en": "Deadline",
+      "source": "lib/ui/screens/task_detail_screen.dart, lib/ui/screens/task_form_screen.dart",
+      "note": "Общий ключ: подпись InfoRow в карточке задачи и заголовок секции в форме"
+    },
+    {
+      "key": "taskDueNone",
+      "ru": "Без срока",
+      "uk": "Без терміну",
+      "en": "No deadline",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskDueClear",
+      "ru": "Убрать срок",
+      "uk": "Прибрати термін",
+      "en": "Clear deadline",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskDuePickerTitle",
+      "ru": "Срок выполнения",
+      "uk": "Термін виконання",
+      "en": "Due date",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskDueTimePicker",
+      "ru": "Время",
+      "uk": "Час",
+      "en": "Time",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskDetailCreated",
+      "ru": "Создана",
+      "uk": "Створено",
+      "en": "Created",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailCompleted",
+      "ru": "Завершена",
+      "uk": "Завершено",
+      "en": "Completed",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailEstimate",
+      "ru": "Оценка",
+      "uk": "Оцінка",
+      "en": "Estimate",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskHoursUnit",
+      "ru": "ч",
+      "uk": "год",
+      "en": "h",
+      "source": "lib/ui/screens/task_detail_screen.dart",
+      "note": "Единица измерения, склеивается с числом: 'N ч'"
+    },
+    {
+      "key": "taskDetailAttachmentsTitle",
+      "ru": "Вложения",
+      "uk": "Вкладення",
+      "en": "Attachments",
+      "source": "lib/ui/screens/task_detail_screen.dart",
+      "note": "Склеивается с числом и скобками: 'Вложения (N)'"
+    },
+    {
+      "key": "taskDetailCommentsTitle",
+      "ru": "Комментарии и отчёты",
+      "uk": "Коментарі та звіти",
+      "en": "Comments and work reports",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailCommentsEmpty",
+      "ru": "Комментариев пока нет. Здесь сотрудник отчитывается о работе и прикладывает фотографии.",
+      "uk": "Коментарів ще немає. Тут співробітник звітує про роботу та додає фотографії.",
+      "en": "No comments yet. Staff members report their work and attach photos here.",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailAuthorFallback",
+      "ru": "Сотрудник",
+      "uk": "Співробітник",
+      "en": "Staff member",
+      "source": "lib/ui/screens/task_detail_screen.dart",
+      "note": "Подставляется вместо имени автора комментария, если автор неизвестен"
+    },
+    {
+      "key": "taskDetailReportBadge",
+      "ru": "Отчёт",
+      "uk": "Звіт",
+      "en": "Report",
+      "source": "lib/ui/screens/task_detail_screen.dart",
+      "note": "Один ключ на три места: бейдж у комментария, подпись плавающей кнопки и label в диалоге отчёта"
+    },
+    {
+      "key": "taskDetailCommentHint",
+      "ru": "Комментарий или отчёт о выполненной работе",
+      "uk": "Коментар або звіт про виконану роботу",
+      "en": "Comment or work report",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailAttachPhoto",
+      "ru": "Приложить фото",
+      "uk": "Прикріпити фото",
+      "en": "Attach photo",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailWorkReportChip",
+      "ru": "Отчёт о работе",
+      "uk": "Звіт про роботу",
+      "en": "Work report",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailSend",
+      "ru": "Отправить",
+      "uk": "Надіслати",
+      "en": "Send",
+      "source": "lib/ui/screens/task_detail_screen.dart",
+      "note": "Один ключ на два места: подпись кнопки отправки и confirmText в диалоге отчёта"
+    },
+    {
+      "key": "taskDetailHistoryTitle",
+      "ru": "История изменений",
+      "uk": "Історія змін",
+      "en": "Change history",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailSystemActor",
+      "ru": "Система",
+      "uk": "Система",
+      "en": "System",
+      "source": "lib/ui/screens/task_detail_screen.dart",
+      "note": "Подставляется вместо имени пользователя в истории, если запись сделана системой"
+    },
+    {
+      "key": "taskDetailRefresh",
+      "ru": "Обновить",
+      "uk": "Оновити",
+      "en": "Refresh",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailDeleteItem",
+      "ru": "Удалить задачу",
+      "uk": "Видалити завдання",
+      "en": "Delete task",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailDeleteConfirm",
+      "ru": "Удалить задачу?",
+      "uk": "Видалити завдання?",
+      "en": "Delete task?",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailDeleteMessage",
+      "ru": "Задача пропадёт из списка, но останется в истории отчётов.",
+      "uk": "Завдання зникне зі списку, але залишиться в історії звітів.",
+      "en": "The task will disappear from the list but stay in report history.",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailReportDialogTitle",
+      "ru": "Отчёт о выполненной работе",
+      "uk": "Звіт про виконану роботу",
+      "en": "Work report",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskDetailReportDialogMessage",
+      "ru": "Что было сделано? Задача перейдёт на проверку.",
+      "uk": "Що було зроблено? Завдання перейде на перевірку.",
+      "en": "What was done? The task will move to review.",
+      "source": "lib/ui/screens/task_detail_screen.dart"
+    },
+    {
+      "key": "taskFormSaveError",
+      "ru": "Не удалось сохранить задачу",
+      "uk": "Не вдалося зберегти завдання",
+      "en": "Failed to save the task",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskFormEditTitle",
+      "ru": "Изменить задачу",
+      "uk": "Змінити завдання",
+      "en": "Edit task",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskFormCreateTitle",
+      "ru": "Новая задача",
+      "uk": "Нове завдання",
+      "en": "New task",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskFormTitleLabel",
+      "ru": "Что нужно сделать",
+      "uk": "Що потрібно зробити",
+      "en": "What needs to be done",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskFormTitleShort",
+      "ru": "Опишите задачу подробнее",
+      "uk": "Опишіть завдання докладніше",
+      "en": "Describe the task in more detail",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskFormDetailsLabel",
+      "ru": "Подробности",
+      "uk": "Подробиці",
+      "en": "Details",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskFormPriorityLabel",
+      "ru": "Приоритет",
+      "uk": "Пріоритет",
+      "en": "Priority",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskFormTagsLabel",
+      "ru": "Метки",
+      "uk": "Мітки",
+      "en": "Labels",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskFormTagsHint",
+      "ru": "Введите метку и нажмите Enter",
+      "uk": "Введіть мітку та натисніть Enter",
+      "en": "Enter a label and press Enter",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    },
+    {
+      "key": "taskFormCreateButton",
+      "ru": "Создать задачу",
+      "uk": "Створити завдання",
+      "en": "Create task",
+      "source": "lib/ui/screens/task_form_screen.dart"
+    }
+  ]
+}

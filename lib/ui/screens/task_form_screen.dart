@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
 import '../../state/controllers.dart';
 import '../theme.dart';
@@ -82,7 +83,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
       if (!mounted) return;
       setState(() {
         _isSaving = false;
-        _error = error is Exception ? 'Не удалось сохранить задачу' : '$error';
+        _error = error is Exception
+            ? AppLocalizations.of(context).taskFormSaveError
+            : '$error';
       });
       ref.read(appErrorBusProvider).showError(error);
     }
@@ -92,10 +95,13 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
     final canAssign = user?.can('tasks.assign') ?? false;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Изменить задачу' : 'Новая задача'),
+        title: Text(
+          _isEditing ? l10n.taskFormEditTitle : l10n.taskFormCreateTitle,
+        ),
         actions: [
           if (_isSaving)
             const Padding(
@@ -119,12 +125,12 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
               controller: _titleController,
               autofocus: !_isEditing,
               maxLength: 300,
-              decoration: const InputDecoration(
-                labelText: 'Что нужно сделать',
+              decoration: InputDecoration(
+                labelText: l10n.taskFormTitleLabel,
                 counterText: '',
               ),
               validator: (value) => (value ?? '').trim().length < 3
-                  ? 'Опишите задачу подробнее'
+                  ? l10n.taskFormTitleShort
                   : null,
             ),
             const SizedBox(height: Insets.md),
@@ -132,15 +138,15 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
               controller: _descriptionController,
               maxLines: 5,
               maxLength: 20000,
-              decoration: const InputDecoration(
-                labelText: 'Подробности',
+              decoration: InputDecoration(
+                labelText: l10n.taskFormDetailsLabel,
                 alignLabelWithHint: true,
               ),
             ),
             const SizedBox(height: Insets.sm),
-            const Text(
-              'Приоритет',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            Text(
+              l10n.taskFormPriorityLabel,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: Insets.sm),
             Wrap(
@@ -148,7 +154,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
               runSpacing: 6,
               children: TaskPriority.values.map((priority) {
                 return ChoiceChip(
-                  label: Text(priority.title),
+                  label: Text(priority.title(l10n)),
                   selected: _priority == priority,
                   onSelected: (_) => setState(() => _priority = priority),
                   avatar: _priority == priority
@@ -166,9 +172,10 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
             ),
             const SizedBox(height: Insets.md),
             if (canAssign && !_isEditing) ...[
-              const Text(
-                'Исполнитель',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              Text(
+                l10n.taskAssigneeLabel,
+                style:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: Insets.sm),
               _AssigneeField(
@@ -181,9 +188,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
               ),
               const SizedBox(height: Insets.md),
             ],
-            const Text(
-              'Срок',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            Text(
+              l10n.taskDueLabel,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: Insets.sm),
             _DueField(
@@ -191,9 +198,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
               onChanged: (value) => setState(() => _dueAt = value),
             ),
             const SizedBox(height: Insets.md),
-            const Text(
-              'Метки',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            Text(
+              l10n.taskFormTagsLabel,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: Insets.sm),
             _TagsField(tags: _tags, onChanged: () => setState(() {})),
@@ -210,7 +217,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
             ],
             FilledButton(
               onPressed: _isSaving ? null : _save,
-              child: Text(_isEditing ? 'Сохранить' : 'Создать задачу'),
+              child: Text(
+                _isEditing ? l10n.commonSave : l10n.taskFormCreateButton,
+              ),
             ),
             const SizedBox(height: Insets.lg),
           ],
@@ -243,6 +252,7 @@ class _AssigneeField extends ConsumerWidget {
     final selected = selectedId == null
         ? null
         : users.where((u) => u.id == selectedId).firstOrNull;
+    final l10n = AppLocalizations.of(context);
 
     return InputDecorator(
       decoration: const InputDecoration(
@@ -258,7 +268,7 @@ class _AssigneeField extends ConsumerWidget {
             ],
             Expanded(
               child: Text(
-                selected?.displayName ?? 'Не назначен',
+                selected?.displayName ?? l10n.taskAssigneeUnassigned,
                 style: const TextStyle(fontSize: 14),
               ),
             ),
@@ -270,6 +280,7 @@ class _AssigneeField extends ConsumerWidget {
   }
 
   Future<void> _showPicker(BuildContext context, List<UserBrief> users) async {
+    final l10n = AppLocalizations.of(context);
     final result = await showModalBottomSheet<(String?, String?)>(
       context: context,
       showDragHandle: true,
@@ -277,21 +288,22 @@ class _AssigneeField extends ConsumerWidget {
         child: ListView(
           shrinkWrap: true,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
                 Insets.md,
                 0,
                 Insets.md,
                 Insets.sm,
               ),
               child: Text(
-                'Кому назначить',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                l10n.taskAssigneePickerTitle,
+                style:
+                    const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.person_off_outlined),
-              title: const Text('Не назначать'),
+              title: Text(l10n.taskAssigneeDoNotAssign),
               onTap: () => Navigator.of(sheetContext).pop((null, null)),
             ),
             const Divider(),
@@ -324,6 +336,8 @@ class _DueField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Row(
       children: [
         Expanded(
@@ -335,7 +349,7 @@ class _DueField extends StatelessWidget {
                 prefixIcon: Icon(Icons.event_outlined),
               ),
               child: Text(
-                dueAt == null ? 'Без срока' : Format.dateTime(dueAt),
+                dueAt == null ? l10n.taskDueNone : Format.dateTime(dueAt, l10n),
                 style: const TextStyle(fontSize: 14),
               ),
             ),
@@ -346,7 +360,7 @@ class _DueField extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.clear),
             onPressed: () => onChanged(null),
-            tooltip: 'Убрать срок',
+            tooltip: l10n.taskDueClear,
           ),
         ],
       ],
@@ -354,20 +368,21 @@ class _DueField extends StatelessWidget {
   }
 
   Future<void> _pickDate(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final date = await showDatePicker(
       context: context,
       initialDate: dueAt?.toLocal() ?? now.add(const Duration(days: 1)),
       firstDate: DateTime(now.year - 1),
       lastDate: DateTime(now.year + 5),
-      helpText: 'Срок выполнения',
+      helpText: l10n.taskDuePickerTitle,
     );
     if (date == null || !context.mounted) return;
 
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(dueAt?.toLocal() ?? now),
-      helpText: 'Время',
+      helpText: l10n.taskDueTimePicker,
     );
     if (time == null) {
       onChanged(date);
@@ -425,6 +440,7 @@ class _TagsFieldState extends ConsumerState<_TagsField> {
     } catch (_) {
       // Список задач мог быть ещё не загружен: подсказки необязательны.
     }
+    final l10n = AppLocalizations.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,7 +448,7 @@ class _TagsFieldState extends ConsumerState<_TagsField> {
         TextField(
           controller: _controller,
           decoration: InputDecoration(
-            hintText: 'Введите метку и нажмите Enter',
+            hintText: l10n.taskFormTagsHint,
             prefixIcon: const Icon(Icons.label_outline),
             suffixIcon: IconButton(
               icon: const Icon(Icons.add),

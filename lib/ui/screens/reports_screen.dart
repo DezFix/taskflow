@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/api_client.dart';
 import '../../data/models.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
 import '../../state/controllers.dart';
 import '../file_save.dart';
@@ -19,6 +20,7 @@ class ReportsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final state = ref.watch(reportsProvider);
     final summary = state.summary;
 
@@ -29,11 +31,11 @@ class ReportsScreen extends ConsumerWidget {
     if (summary == null) {
       return EmptyState(
         icon: Icons.bar_chart_outlined,
-        title: 'Отчёты недоступны',
+        title: l10n.reportsUnavailableTitle,
         message: state.error,
         action: FilledButton(
           onPressed: () => ref.read(reportsProvider.notifier).load(),
-          child: const Text('Повторить'),
+          child: Text(l10n.commonRetry),
         ),
       );
     }
@@ -54,28 +56,28 @@ class ReportsScreen extends ConsumerWidget {
             mainAxisSpacing: Insets.sm,
             children: [
               StatTile(
-                label: 'Всего задач',
+                label: l10n.reportsTotalTasks,
                 value: '${summary.total}',
                 icon: Icons.checklist_rtl,
                 color: AppColors.primary,
                 onTap: () => _openByStatus(context, ref, TaskStatus.created),
               ),
               StatTile(
-                label: 'В работе',
+                label: l10n.reportsInProgress,
                 value: '${summary.countFor(TaskStatus.inProgress)}',
                 icon: Icons.pending_actions,
                 color: AppColors.info,
                 onTap: () => _openByStatus(context, ref, TaskStatus.inProgress),
               ),
               StatTile(
-                label: 'На проверке',
+                label: l10n.reportsInReview,
                 value: '${summary.countFor(TaskStatus.review)}',
                 icon: Icons.rate_review_outlined,
                 color: AppColors.warning,
                 onTap: () => _openByStatus(context, ref, TaskStatus.review),
               ),
               StatTile(
-                label: 'Просрочено',
+                label: l10n.reportsOverdue,
                 value: '${summary.overdue}',
                 icon: Icons.warning_amber_rounded,
                 color: AppColors.danger,
@@ -120,6 +122,7 @@ class _CompletionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(Insets.md),
@@ -151,9 +154,9 @@ class _CompletionCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const Text(
-                        'выполнено',
-                        style: TextStyle(
+                      Text(
+                        l10n.reportsCompletionCaption,
+                        style: const TextStyle(
                           fontSize: 10,
                           color: AppColors.textSecondary,
                         ),
@@ -170,22 +173,22 @@ class _CompletionCard extends StatelessWidget {
                 children: [
                   _Legend(
                     color: AppColors.success,
-                    label: 'Выполнено',
+                    label: l10n.reportsStatusDone,
                     value: summary.countFor(TaskStatus.done),
                   ),
                   _Legend(
                     color: AppColors.warning,
-                    label: 'На проверке',
+                    label: l10n.reportsInReview,
                     value: summary.countFor(TaskStatus.review),
                   ),
                   _Legend(
                     color: AppColors.textMuted,
-                    label: 'Отменено',
+                    label: l10n.reportsStatusCancelled,
                     value: summary.countFor(TaskStatus.cancelled),
                   ),
                   _Legend(
                     color: AppColors.info,
-                    label: 'Без исполнителя',
+                    label: l10n.reportsUnassigned,
                     value: summary.unassigned,
                   ),
                 ],
@@ -247,10 +250,11 @@ class _StatusBreakdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final total = summary.total == 0 ? 1 : summary.total;
 
     return SectionCard(
-      title: 'Распределение задач',
+      title: l10n.reportsStatusBreakdownTitle,
       child: Column(
         children: TaskStatus.values.map((status) {
           final count = summary.countFor(status);
@@ -264,7 +268,7 @@ class _StatusBreakdown extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      status.title,
+                      status.title(l10n),
                       style: const TextStyle(fontSize: 12),
                     ),
                     const Spacer(),
@@ -305,13 +309,14 @@ class _WeeklyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SectionCard(
-      title: 'За неделю',
+      title: l10n.reportsWeeklyTitle,
       child: Row(
         children: [
           Expanded(
             child: _WeeklyStat(
-              label: 'Создано задач',
+              label: l10n.reportsWeeklyCreated,
               value: summary.createdThisWeek,
               icon: Icons.add_circle_outline,
               color: AppColors.primary,
@@ -320,7 +325,7 @@ class _WeeklyCard extends StatelessWidget {
           Container(width: 1, height: 44, color: AppColors.border),
           Expanded(
             child: _WeeklyStat(
-              label: 'Завершено',
+              label: l10n.reportsWeeklyCompleted,
               value: summary.completedThisWeek,
               icon: Icons.check_circle_outline,
               color: AppColors.success,
@@ -380,14 +385,15 @@ class _LoadTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (rows.isEmpty) {
-      return const SectionCard(
-        child: Text('Данных по сотрудникам пока нет'),
+      return SectionCard(
+        child: Text(l10n.reportsNoEmployeeData),
       );
     }
 
     return SectionCard(
-      title: 'Нагрузка сотрудников',
+      title: l10n.reportsWorkloadTitle,
       padding: const EdgeInsets.fromLTRB(
         Insets.md,
         Insets.md,
@@ -421,8 +427,9 @@ class _LoadTable extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Всего: ${row.assigned} · в работе: ${row.inProgress} · '
-                          'готово: ${row.completed}',
+                          '${l10n.reportsEmployeeAssigned}: ${row.assigned} · '
+                          '${l10n.reportsEmployeeInProgress}: ${row.inProgress} · '
+                          '${l10n.reportsEmployeeDone}: ${row.completed}',
                           style: const TextStyle(
                             fontSize: 11,
                             color: AppColors.textSecondary,
@@ -442,7 +449,7 @@ class _LoadTable extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        '${row.overdue} просрочено',
+                        '${row.overdue} ${l10n.reportsOverdueCount}',
                         style: const TextStyle(
                           fontSize: 10,
                           color: AppColors.danger,
@@ -487,15 +494,15 @@ void _openEmployeeTasks(BuildContext context, UserLoad row) {
 class _ExportCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return SectionCard(
-      title: 'Выгрузка',
+      title: l10n.reportsExportTitle,
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: Text(
-              'CSV со всеми задачами отдела. Откроется в Excel или '
-              'LibreOffice, русский текст не поедет.',
-              style: TextStyle(fontSize: 12, height: 1.4),
+              l10n.reportsExportDescription,
+              style: const TextStyle(fontSize: 12, height: 1.4),
             ),
           ),
           const SizedBox(width: Insets.sm),
@@ -511,18 +518,20 @@ class _ExportCard extends ConsumerWidget {
                   mimeType: 'text/csv',
                 );
                 messenger.showSnackBar(
-                  const SnackBar(content: Text('Файл выгрузки сохранён')),
+                  SnackBar(content: Text(l10n.reportsExportSaved)),
                 );
               } on ApiException catch (error) {
                 messenger.showSnackBar(SnackBar(content: Text(error.message)));
               } catch (error) {
                 messenger.showSnackBar(
-                  SnackBar(content: Text('Не удалось сохранить файл: $error')),
+                  SnackBar(
+                    content: Text('${l10n.reportsExportFailed} $error'),
+                  ),
                 );
               }
             },
             icon: const Icon(Icons.download_outlined, size: 18),
-            label: const Text('Скачать'),
+            label: Text(l10n.reportsExportDownload),
           ),
         ],
       ),
@@ -536,9 +545,10 @@ Future<void> openExternalUrl(BuildContext context, String url) async {
   final uri = Uri.tryParse(url);
   if (uri == null) {
     if (context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Некорректный адрес: $url')));
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${l10n.reportsInvalidUrl} $url')),
+      );
     }
     return;
   }
@@ -553,9 +563,10 @@ Future<void> openExternalUrl(BuildContext context, String url) async {
   if (!opened && context.mounted) {
     // На некоторых устройствах системный обработчик не настроен: показываем
     // адрес, чтобы сотрудник мог открыть его вручную.
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Откройте в браузере: $url'),
+        content: Text('${l10n.reportsOpenInBrowser} $url'),
         duration: const Duration(seconds: 6),
       ),
     );

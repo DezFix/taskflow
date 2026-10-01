@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
 import '../../state/controllers.dart';
 import '../theme.dart';
@@ -18,22 +19,23 @@ class ChatListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(chatListProvider);
     final unread = ref.watch(unreadProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Чаты'),
+        title: Text(l10n.chatListTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () => _startDialog(context, ref),
-            tooltip: 'Новый диалог',
+            tooltip: l10n.chatListNewDialogTooltip,
           ),
         ],
       ),
       body: _buildBody(context, ref, state),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _startDialog(context, ref),
-        tooltip: 'Новый диалог',
+        tooltip: l10n.chatListNewDialogTooltip,
         child: const Icon(Icons.add_comment_outlined),
       ),
       bottomNavigationBar: unread > 0
@@ -51,7 +53,7 @@ class ChatListScreen extends ConsumerWidget {
                     ),
                     const SizedBox(width: Insets.sm),
                     Text(
-                      'Непрочитанных сообщений: $unread',
+                      '${l10n.chatListUnreadMessages}: $unread',
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.primary,
@@ -66,6 +68,8 @@ class ChatListScreen extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref, ChatListState state) {
+    final l10n = AppLocalizations.of(context);
+
     if (state.isLoading && state.chats.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -73,12 +77,12 @@ class ChatListScreen extends ConsumerWidget {
     if (state.error != null && state.chats.isEmpty) {
       return EmptyState(
         icon: Icons.cloud_off,
-        title: 'Не удалось загрузить чаты',
+        title: l10n.chatListLoadErrorTitle,
         message: state.error,
         action: FilledButton.icon(
           onPressed: () => ref.read(chatListProvider.notifier).load(),
           icon: const Icon(Icons.refresh),
-          label: const Text('Повторить'),
+          label: Text(l10n.commonRetry),
         ),
       );
     }
@@ -86,12 +90,12 @@ class ChatListScreen extends ConsumerWidget {
     if (state.chats.isEmpty) {
       return EmptyState(
         icon: Icons.forum_outlined,
-        title: 'Чатов пока нет',
-        message: 'Начните диалог с коллегой или создайте группу отдела',
+        title: l10n.chatListEmptyTitle,
+        message: l10n.chatListEmptyMessage,
         action: FilledButton.icon(
           onPressed: () => _startDialog(context, ref),
           icon: const Icon(Icons.add),
-          label: const Text('Начать диалог'),
+          label: Text(l10n.chatListEmptyAction),
         ),
       );
     }
@@ -107,6 +111,7 @@ class ChatListScreen extends ConsumerWidget {
   }
 
   Future<void> _startDialog(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
     final directory = ref.watch(directoryProvider);
     if (directory.isLoading) {
       await ref.read(directoryProvider.notifier).load();
@@ -120,9 +125,7 @@ class ChatListScreen extends ConsumerWidget {
 
     if (users.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Нет других сотрудников для диалога'),
-        ),
+        SnackBar(content: Text(l10n.chatListNoColleagues)),
       );
       return;
     }
@@ -156,14 +159,15 @@ class _ChatTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final subtitle = chat.lastMessage?.preview ?? 'Нет сообщений';
+    final l10n = AppLocalizations.of(context);
+    final subtitle = chat.lastMessage?.preview(l10n) ?? l10n.chatListNoMessages;
 
     return ListTile(
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => ChatScreen(
             chatId: chat.id,
-            initialTitle: chat.displayTitle,
+            initialTitle: chat.displayTitle(l10n),
           ),
         ),
       ),
@@ -180,7 +184,7 @@ class _ChatTile extends ConsumerWidget {
         children: [
           Expanded(
             child: Text(
-              chat.displayTitle,
+              chat.displayTitle(l10n),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontWeight: FontWeight.w600),
@@ -188,7 +192,7 @@ class _ChatTile extends ConsumerWidget {
           ),
           if (chat.lastMessageAt != null)
             Text(
-              Format.ago(chat.lastMessageAt),
+              Format.ago(chat.lastMessageAt, l10n),
               style: const TextStyle(
                 fontSize: 11,
                 color: AppColors.textMuted,
@@ -245,6 +249,7 @@ class _NewChatSheetState extends ConsumerState<_NewChatSheet> {
   @override
   Widget build(BuildContext context) {
     final query = _searchController.text.toLowerCase();
+    final l10n = AppLocalizations.of(context);
 
     return SafeArea(
       child: Padding(
@@ -258,16 +263,16 @@ class _NewChatSheetState extends ConsumerState<_NewChatSheet> {
           mainAxisSize: MainAxisSize.min,
           children: [
             SegmentedButton<bool>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: false,
-                  label: Text('Диалог'),
-                  icon: Icon(Icons.person_outline),
+                  label: Text(l10n.chatNewTypeDirect),
+                  icon: const Icon(Icons.person_outline),
                 ),
                 ButtonSegment(
                   value: true,
-                  label: Text('Группа'),
-                  icon: Icon(Icons.groups_outlined),
+                  label: Text(l10n.chatNewTypeGroup),
+                  icon: const Icon(Icons.groups_outlined),
                 ),
               ],
               selected: {_isGroup},
@@ -278,9 +283,9 @@ class _NewChatSheetState extends ConsumerState<_NewChatSheet> {
             TextField(
               controller: _searchController,
               onChanged: (_) => setState(() {}),
-              decoration: const InputDecoration(
-                hintText: 'Поиск сотрудника',
-                prefixIcon: Icon(Icons.search),
+              decoration: InputDecoration(
+                hintText: l10n.chatNewSearchHint,
+                prefixIcon: const Icon(Icons.search),
                 isDense: true,
               ),
             ),
@@ -319,8 +324,8 @@ class _NewChatSheetState extends ConsumerState<_NewChatSheet> {
               onPressed: _selected.isEmpty || _isSaving ? null : _create,
               child: Text(
                 _isGroup
-                    ? 'Создать группу (${_selected.length})'
-                    : 'Открыть диалог',
+                    ? '${l10n.chatNewCreateGroup} (${_selected.length})'
+                    : l10n.chatNewOpenDialog,
               ),
             ),
           ],
@@ -330,6 +335,7 @@ class _NewChatSheetState extends ConsumerState<_NewChatSheet> {
   }
 
   Future<void> _create() async {
+    final l10n = AppLocalizations.of(context);
     setState(() => _isSaving = true);
     final repository = ref.read(chatRepositoryProvider);
 
@@ -337,7 +343,7 @@ class _NewChatSheetState extends ConsumerState<_NewChatSheet> {
       if (_isGroup) {
         final title = _selected.map((id) => _nameOf(id)).take(3).join(', ');
         await repository.createGroup(
-          title: title.isEmpty ? 'Новая группа' : title,
+          title: title.isEmpty ? l10n.chatNewGroupDefaultTitle : title,
           memberIds: _selected.toList(),
         );
       } else {
@@ -357,6 +363,6 @@ class _NewChatSheetState extends ConsumerState<_NewChatSheet> {
     for (final user in _visible) {
       if (user.id == id) return user.displayName;
     }
-    return 'Сотрудник';
+    return AppLocalizations.of(context).chatNewDefaultMemberName;
   }
 }

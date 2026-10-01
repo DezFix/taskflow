@@ -3,6 +3,10 @@ library;
 
 import 'dart:convert';
 
+import '../l10n/data_labels.dart';
+import '../l10n/error_messages.dart';
+import '../l10n/generated/app_localizations.dart';
+
 /// Разбирает дату из строки ISO-8601, которую отдаёт сервер.
 DateTime? parseServerDate(Object? value) {
   if (value == null) return null;
@@ -107,12 +111,16 @@ class Attachment {
       );
 
   /// Размер файла для подписи под вложением.
-  String get humanSize {
-    if (sizeBytes < 1024) return '$sizeBytes Б';
+  ///
+  /// Единицы измерения берём из переводов: в английском интерфейсе
+  /// подпись должна быть в килобайтах и мегабайтах, а не в кило- и
+  /// мегабайтах русской типографики.
+  String humanSize(AppLocalizations l10n) {
+    if (sizeBytes < 1024) return l10n.sizeBytes(sizeBytes);
     if (sizeBytes < 1024 * 1024) {
-      return '${(sizeBytes / 1024).toStringAsFixed(1)} КБ';
+      return l10n.sizeKilobytes((sizeBytes / 1024).toStringAsFixed(1));
     }
-    return '${(sizeBytes / (1024 * 1024)).toStringAsFixed(1)} МБ';
+    return l10n.sizeMegabytes((sizeBytes / (1024 * 1024)).toStringAsFixed(1));
   }
 }
 
@@ -122,6 +130,14 @@ class Position {
 
   final String id;
   final String title;
+
+  /// Название должности на языке интерфейса.
+  ///
+  /// Базовые должности создаются при первом запуске и лежат в базе
+  /// по-русски, поэтому узнаём их по имени. Своя должность,
+  /// добавленная администратором, показывается как есть.
+  String localizedTitle(AppLocalizations l10n) =>
+      DataLabels.seededLabel(title, l10n);
 
   factory Position.fromJson(Map<String, dynamic> json) => Position(
         id: Json.text(json['id']),
@@ -135,6 +151,7 @@ class Role {
     required this.id,
     required this.key,
     required this.title,
+    this.i18nKey,
     this.permissions = const [],
     this.isSystem = false,
   });
@@ -142,13 +159,26 @@ class Role {
   final String id;
   final String key;
   final String title;
+
+  /// Идентификатор системной роли ('admin', 'head', 'staff').
+  ///
+  /// Ключ роли в базе русский, поэтому сервер отдаёт отдельное
+  /// независимое от языка поле: по нему клиент показывает своё
+  /// название. У своих ролей поле пустое.
+  final String? i18nKey;
+
   final List<String> permissions;
   final bool isSystem;
+
+  /// Название роли на языке интерфейса.
+  String localizedTitle(AppLocalizations l10n) =>
+      DataLabels.roleName(title, i18nKey, l10n);
 
   factory Role.fromJson(Map<String, dynamic> json) => Role(
         id: Json.text(json['id']),
         key: Json.text(json['key']),
         title: Json.text(json['title']),
+        i18nKey: Json.string(json['i18n_key']),
         permissions: Json.strings(json['permissions']),
         isSystem: Json.flag(json['is_system']),
       );
@@ -295,18 +325,29 @@ class AuthTokens {
 /// Имя `created` вместо `new`: `new` в Dart — зарезервированное слово,
 /// поэтому такое имя члена перечисления недопустимо. По сети статус
 /// по-прежнему передаётся как `new`.
+///
+/// Человекочитаемое название не хранится в перечислении: оно зависит
+/// от языка интерфейса, поэтому берётся из переводов через [title].
 enum TaskStatus {
-  created('new', 'Новая'),
-  inProgress('in_progress', 'В работе'),
-  review('review', 'На проверке'),
-  done('done', 'Выполнена'),
-  cancelled('cancelled', 'Отменена');
+  created('new'),
+  inProgress('in_progress'),
+  review('review'),
+  done('done'),
+  cancelled('cancelled');
 
-  const TaskStatus(this.wire, this.title);
+  const TaskStatus(this.wire);
 
   /// Значение, которым статус передаётся по сети.
   final String wire;
-  final String title;
+
+  /// Название статуса на языке интерфейса.
+  String title(AppLocalizations l10n) => switch (this) {
+        TaskStatus.created => l10n.statusNew,
+        TaskStatus.inProgress => l10n.statusInProgress,
+        TaskStatus.review => l10n.statusReview,
+        TaskStatus.done => l10n.statusDone,
+        TaskStatus.cancelled => l10n.statusCancelled,
+      };
 
   bool get isOpen => this != TaskStatus.done && this != TaskStatus.cancelled;
 
@@ -318,15 +359,21 @@ enum TaskStatus {
 
 /// Приоритет задачи.
 enum TaskPriority {
-  low('low', 'Низкий'),
-  normal('normal', 'Обычный'),
-  high('high', 'Высокий'),
-  urgent('urgent', 'Срочный');
+  low('low'),
+  normal('normal'),
+  high('high'),
+  urgent('urgent');
 
-  const TaskPriority(this.wire, this.title);
+  const TaskPriority(this.wire);
 
   final String wire;
-  final String title;
+
+  String title(AppLocalizations l10n) => switch (this) {
+        TaskPriority.low => l10n.priorityLow,
+        TaskPriority.normal => l10n.priorityNormal,
+        TaskPriority.high => l10n.priorityHigh,
+        TaskPriority.urgent => l10n.priorityUrgent,
+      };
 
   int get weight => switch (this) {
         TaskPriority.low => 0,
@@ -490,14 +537,14 @@ class TaskHistoryEntry {
   final DateTime? createdAt;
 
   /// Человекочитаемое название поля: сервер присылает ключ.
-  String get fieldTitle => switch (field) {
-        'title' => 'Заголовок',
-        'description' => 'Описание',
-        'status' => 'Статус',
-        'priority' => 'Приоритет',
-        'assignee_id' => 'Исполнитель',
-        'due_at' => 'Срок',
-        'estimated_hours' => 'Оценка часов',
+  String fieldTitle(AppLocalizations l10n) => switch (field) {
+        'title' => l10n.taskFieldTitle,
+        'description' => l10n.taskFieldDescription,
+        'status' => l10n.taskFieldStatus,
+        'priority' => l10n.taskFieldPriority,
+        'assignee_id' => l10n.taskFieldAssignee,
+        'due_at' => l10n.taskFieldDue,
+        'estimated_hours' => l10n.taskFieldEstimate,
         _ => field,
       };
 
@@ -607,16 +654,16 @@ class ChatMessage {
   bool get showsStatus => status == 'sent' || status == 'delivered';
 
   /// Текст для предпросмотра в списке чатов.
-  String get preview {
-    if (isDeleted) return 'Сообщение удалено';
+  String preview(AppLocalizations l10n) {
+    if (isDeleted) return l10n.chatMessageDeleted;
     if (isVoice) {
       final recognized = transcriptText ?? transcript?.text;
       if (recognized != null && recognized.isNotEmpty) return '🎤 $recognized';
-      if (transcript?.isPending ?? false) return '🎤 Распознаём…';
-      return '🎤 Голосовое сообщение';
+      if (transcript?.isPending ?? false) return l10n.chatKindVoicePending;
+      return l10n.chatKindVoice;
     }
-    if (isImage) return '🖼 Фото';
-    if (isFile && (body == null || body!.isEmpty)) return '📎 Файл';
+    if (isImage) return l10n.chatKindPhoto;
+    if (isFile && (body == null || body!.isEmpty)) return l10n.chatKindFile;
     return body ?? '';
   }
 
@@ -675,9 +722,11 @@ class Chat {
   bool get isGroup => kind == 'group';
 
   /// Название для шапки чата: у диалога — имя собеседника.
-  String get displayTitle {
-    if (isGroup) return title?.isNotEmpty == true ? title! : 'Группа';
-    return title?.isNotEmpty == true ? title! : 'Диалог';
+  String displayTitle(AppLocalizations l10n) {
+    if (isGroup) {
+      return title?.isNotEmpty == true ? title! : l10n.chatKindGroup;
+    }
+    return title?.isNotEmpty == true ? title! : l10n.chatKindDirect;
   }
 
   factory Chat.fromJson(Map<String, dynamic> json) {
@@ -851,7 +900,7 @@ class PermissionInfo {
 
 /// Ответ сервера об ошибке в едином формате.
 class ApiErrorInfo {
-  const ApiErrorInfo({required this.code, required this.message, this.details});
+  const ApiErrorInfo({required this.code, this.message = '', this.details});
 
   final String code;
   final String message;
@@ -861,46 +910,32 @@ class ApiErrorInfo {
     final error = Json.object(json['error']) ?? json;
     return ApiErrorInfo(
       code: Json.text(error['code'], 'unknown'),
-      message: Json.text(
-        error['message'],
-        'Не удалось выполнить запрос',
-      ),
+      // Пустая строка вместо русской заглушки: текст подставит
+      // перевод по коду ошибки, иначе неизвестный код показался бы
+      // сотруднику русским словом в английском интерфейсе.
+      message: Json.text(error['message']),
       details: error['details'],
     );
   }
 
   /// Понятные сообщения для частых ошибок сервера.
-  String get friendly {
-    switch (code) {
-      case 'invalid_credentials':
-        return 'Неверный логин или пароль';
-      case 'account_locked':
-        return message;
-      case 'account_disabled':
-        return 'Учётная запись отключена. Обратитесь к руководителю';
-      case 'network_unreachable':
-        return 'Сервер недоступен. Проверьте адрес и подключение';
-      case 'connection_timeout':
-        return 'Сервер не отвечает. Проверьте адрес и подключение';
-      case 'certificate_error':
-        return 'Сертификат сервера не вызывает доверия. Разрешить его в настройках?';
-      case 'token_expired':
-        return 'Сессия истекла, войдите заново';
-      case 'token_revoked':
-        return 'Сессия завершена, войдите заново';
-      case 'file_too_large':
-        return message;
-      default:
-        return message;
-    }
-  }
+  /// Текст для сотрудника на языке интерфейса.
+  ///
+  /// Перевод по коду ошибки: сервер присылает текст для отладки, а
+  /// этот текст — на языке интерфейса. Пустое сообщение означает
+  /// «сервер ничего не прислал», и тогда берётся общая формулировка.
+  String localized(AppLocalizations l10n) => translateErrorCode(
+        code,
+        l10n,
+        fallback: message.isEmpty ? null : message,
+      );
 
   static ApiErrorInfo parse(Object? body) {
     if (body is String) {
       if (body.isEmpty) {
         return const ApiErrorInfo(
-          code: 'unknown',
-          message: 'Сервер вернул пустой ответ',
+          code: 'empty_response',
+          message: '',
         );
       }
       try {
@@ -916,7 +951,7 @@ class ApiErrorInfo {
     }
     return const ApiErrorInfo(
       code: 'unknown',
-      message: 'Не удалось выполнить запрос',
+      message: '',
     );
   }
 }

@@ -5,8 +5,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'data/storage.dart';
+import 'l10n/generated/app_localizations.dart';
+import 'l10n/l10n_scope.dart';
 import 'state/app_state.dart';
 import 'ui/screens/chat_screen.dart';
 import 'ui/screens/login_screen.dart';
@@ -18,7 +21,12 @@ import 'ui/theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Хранилище адреса и токенов готовим до первого кадра.
+  // intl берёт названия месяцев и дней недели из своих данных, а они
+  // загружаются отдельно. Без этого Format.date упадёт на первом же
+  // экране со списком задач.
+  await initializeDateFormatting();
+
+  // Хранилище создаём после инициализации: язык может прийти оттуда.
   final storage = await AppStorage.create();
 
   runApp(
@@ -72,6 +80,8 @@ class _TaskFlowAppState extends ConsumerState<TaskFlowApp> {
 
   @override
   Widget build(BuildContext context) {
+    final localeCode = ref.watch(localeCodeProvider);
+
     return MaterialApp(
       title: 'TaskFlow',
       debugShowCheckedModeBanner: false,
@@ -79,9 +89,32 @@ class _TaskFlowAppState extends ConsumerState<TaskFlowApp> {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
+      // Переводы: русский, украинский, английский. Пустой код —
+      // когда сотрудник не выбрал язык и мы берём системный.
+      locale: _localeFor(localeCode),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       onGenerateRoute: _onGenerateRoute,
+      // Ошибки формируются вне дерева виджетов, поэтому переводы
+      // кладём в общий скоуп: иначе каждое сообщение было бы русским.
+      builder: (context, child) {
+        L10nScope.update(AppLocalizations.of(context));
+        return child ?? const SizedBox.shrink();
+      },
       home: const _StageRouter(),
     );
+  }
+
+  /// Разбирает сохранённый код языка в Locale.
+  ///
+  /// Неизвестное значение игнорируем: лучше язык по умолчанию, чем
+  /// падение при старте из-за испорченных настроек.
+  static Locale? _localeFor(String? code) {
+    if (code == null || code.isEmpty) return null;
+    for (final locale in AppLocalizations.supportedLocales) {
+      if (locale.languageCode == code) return locale;
+    }
+    return null;
   }
 
   Route<dynamic>? _onGenerateRoute(RouteSettings settings) {

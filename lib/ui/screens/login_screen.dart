@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/api_client.dart';
 import '../../data/storage.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
+import '../language_selector.dart';
 import '../theme.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -70,6 +72,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final serverUrl = ref.watch(serverUrlProvider);
 
     return Scaffold(
@@ -79,9 +82,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           onPressed: _isLoading
               ? null
               : () => ref.read(appStageProvider.notifier).forgetServer(),
-          tooltip: 'Другой сервер',
+          tooltip: l10n.loginOtherServerTooltip,
         ),
-        title: const Text('Вход'),
+        title: Text(l10n.loginTitle),
+        actions: const [LanguageSelector(compact: true)],
       ),
       body: SafeArea(
         child: Center(
@@ -100,12 +104,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       controller: _identifierController,
                       autocorrect: false,
                       textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        labelText: 'Логин или email',
-                        prefixIcon: Icon(Icons.person_outline),
+                      decoration: InputDecoration(
+                        labelText: l10n.loginIdentifierLabel,
+                        prefixIcon: const Icon(Icons.person_outline),
                       ),
-                      validator: (value) =>
-                          (value ?? '').trim().isEmpty ? 'Введите логин' : null,
+                      validator: (value) => (value ?? '').trim().isEmpty
+                          ? l10n.loginIdentifierRequired
+                          : null,
                     ),
                     const SizedBox(height: Insets.md),
                     TextFormField(
@@ -114,7 +119,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => _login(),
                       decoration: InputDecoration(
-                        labelText: 'Пароль',
+                        labelText: l10n.loginPasswordLabel,
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -123,11 +128,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 : Icons.visibility_off_outlined,
                           ),
                           onPressed: () => setState(() => _obscure = !_obscure),
-                          tooltip: _obscure ? 'Показать' : 'Скрыть',
+                          tooltip: _obscure
+                              ? l10n.loginPasswordShowTooltip
+                              : l10n.loginPasswordHideTooltip,
                         ),
                       ),
-                      validator: (value) =>
-                          (value ?? '').isEmpty ? 'Введите пароль' : null,
+                      validator: (value) => (value ?? '').isEmpty
+                          ? l10n.loginPasswordRequired
+                          : null,
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: Insets.md),
@@ -145,7 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Войти'),
+                          : Text(l10n.loginSubmit),
                     ),
                     const SizedBox(height: Insets.md),
                     TextButton.icon(
@@ -155,7 +163,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 '/login/password-policy',
                               ),
                       icon: const Icon(Icons.help_outline, size: 18),
-                      label: const Text('Не помню пароль'),
+                      label: Text(l10n.loginForgotPassword),
                     ),
                   ],
                 ),
@@ -177,6 +185,7 @@ class _ServerChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(Insets.sm + 4),
       decoration: BoxDecoration(
@@ -191,10 +200,10 @@ class _ServerChip extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Сервер',
-                  style:
-                      TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                Text(
+                  l10n.loginServerChipLabel,
+                  style: const TextStyle(
+                      fontSize: 11, color: AppColors.textSecondary),
                 ),
                 Text(
                   url,
@@ -328,8 +337,9 @@ class _ServerSetupWizardScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Настройка сервера')),
+      appBar: AppBar(title: Text(l10n.setupTitle)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -347,21 +357,19 @@ class _ServerSetupWizardScreenState
                         color: AppColors.info.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(Insets.radius),
                       ),
-                      child: const Row(
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.info_outline,
                             color: AppColors.info,
                             size: 20,
                           ),
-                          SizedBox(width: Insets.sm),
+                          const SizedBox(width: Insets.sm),
                           Expanded(
                             child: Text(
-                              'Этот сервер ещё не настроен. Создайте учётную '
-                              'запись администратора — она же будет первой '
-                              'в списке сотрудников.',
-                              style: TextStyle(fontSize: 13, height: 1.4),
+                              l10n.setupIntroNotice,
+                              style: const TextStyle(fontSize: 13, height: 1.4),
                             ),
                           ),
                         ],
@@ -370,34 +378,34 @@ class _ServerSetupWizardScreenState
                     const SizedBox(height: Insets.lg),
                     TextFormField(
                       controller: _organizationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Организация (необязательно)',
-                        prefixIcon: Icon(Icons.business_outlined),
+                      decoration: InputDecoration(
+                        labelText: l10n.setupOrganizationLabel,
+                        prefixIcon: const Icon(Icons.business_outlined),
                       ),
                     ),
                     const SizedBox(height: Insets.md),
                     TextFormField(
                       controller: _fullNameController,
                       textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(
-                        labelText: 'Ваше имя и фамилия',
-                        prefixIcon: Icon(Icons.badge_outlined),
+                      decoration: InputDecoration(
+                        labelText: l10n.setupFullNameLabel,
+                        prefixIcon: const Icon(Icons.badge_outlined),
                       ),
                       validator: (value) => (value ?? '').trim().length < 2
-                          ? 'Введите имя'
+                          ? l10n.setupFullNameRequired
                           : null,
                     ),
                     const SizedBox(height: Insets.md),
                     TextFormField(
                       controller: _usernameController,
                       autocorrect: false,
-                      decoration: const InputDecoration(
-                        labelText: 'Логин администратора',
-                        prefixIcon: Icon(Icons.alternate_email),
+                      decoration: InputDecoration(
+                        labelText: l10n.setupAdminLoginLabel,
+                        prefixIcon: const Icon(Icons.alternate_email),
                       ),
                       validator: (value) {
                         final text = (value ?? '').trim();
-                        if (text.length < 3) return 'Минимум 3 символа';
+                        if (text.length < 3) return l10n.setupLoginMinLength;
                         return null;
                       },
                     ),
@@ -406,7 +414,7 @@ class _ServerSetupWizardScreenState
                       controller: _passwordController,
                       obscureText: _obscure,
                       decoration: InputDecoration(
-                        labelText: 'Пароль',
+                        labelText: l10n.loginPasswordLabel,
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -417,18 +425,18 @@ class _ServerSetupWizardScreenState
                           onPressed: () => setState(() => _obscure = !_obscure),
                         ),
                       ),
-                      validator: _validatePassword,
+                      validator: (value) => _validatePassword(l10n, value),
                     ),
                     const SizedBox(height: Insets.md),
                     TextFormField(
                       controller: _repeatController,
                       obscureText: _obscure,
-                      decoration: const InputDecoration(
-                        labelText: 'Повторите пароль',
-                        prefixIcon: Icon(Icons.lock_reset_outlined),
+                      decoration: InputDecoration(
+                        labelText: l10n.setupRepeatPasswordLabel,
+                        prefixIcon: const Icon(Icons.lock_reset_outlined),
                       ),
                       validator: (value) => value != _passwordController.text
-                          ? 'Пароли не совпадают'
+                          ? l10n.setupPasswordMismatch
                           : null,
                     ),
                     if (_error != null) ...[
@@ -447,7 +455,7 @@ class _ServerSetupWizardScreenState
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Создать администратора'),
+                          : Text(l10n.setupCreateAdmin),
                     ),
                   ],
                 ),
@@ -459,13 +467,13 @@ class _ServerSetupWizardScreenState
     );
   }
 
-  String? _validatePassword(String? value) {
+  String? _validatePassword(AppLocalizations l10n, String? value) {
     final password = value ?? '';
-    if (password.length < 8) return 'Минимум 8 символов';
+    if (password.length < 8) return l10n.setupPasswordMinLength;
     final hasLetters = password.contains(RegExp(r'[a-zA-Zа-яА-Я]'));
     final hasDigits = password.contains(RegExp(r'\d'));
     if (!hasLetters || !hasDigits) {
-      return 'Нужны буквы и цифры';
+      return l10n.setupPasswordNeedsDigits;
     }
     return null;
   }
@@ -477,8 +485,9 @@ class PasswordResetScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Восстановление доступа')),
+      appBar: AppBar(title: Text(l10n.passwordResetTitle)),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(Insets.lg),
@@ -489,22 +498,24 @@ class PasswordResetScreen extends ConsumerWidget {
               children: [
                 const Icon(Icons.lock_person_outlined, size: 48),
                 const SizedBox(height: Insets.md),
-                const Text(
-                  'Обратитесь к главе отдела',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                Text(
+                  l10n.passwordResetHeadline,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: Insets.sm),
-                const Text(
-                  'Он сбросит ваш пароль и выдаст временный. После входа '
-                  'приложение попросит придумать новый.',
+                Text(
+                  l10n.passwordResetMessage,
                   textAlign: TextAlign.center,
-                  style: TextStyle(height: 1.4),
+                  style: const TextStyle(height: 1.4),
                 ),
                 const SizedBox(height: Insets.lg),
                 OutlinedButton.icon(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Icons.arrow_back),
-                  label: const Text('Вернуться ко входу'),
+                  label: Text(l10n.passwordResetBack),
                 ),
               ],
             ),

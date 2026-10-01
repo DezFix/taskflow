@@ -8,6 +8,8 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 
+import '../l10n/error_messages.dart';
+import '../l10n/l10n_scope.dart';
 import 'models.dart';
 import 'trusting_adapter_stub.dart'
     if (dart.library.io) 'trusting_adapter_io.dart' as adapter;
@@ -19,7 +21,12 @@ class ApiException implements Exception {
   final ApiErrorInfo info;
   final int? statusCode;
 
-  String get message => info.friendly;
+  /// Текст ошибки на языке интерфейса.
+  ///
+  /// Переводится по коду: сервер присылает русский текст для отладки,
+  /// а сотрудник должен видеть сообщение на своём языке.
+  String get message =>
+      translateErrorCode(info.code, L10nScope.current, fallback: info.message);
   String get code => info.code;
 
   bool get isUnauthorized => statusCode == 401;
@@ -338,7 +345,7 @@ class ApiClient {
       final data = response.data;
       if (data == null) {
         throw ApiException(
-          const ApiErrorInfo(code: 'empty_file', message: 'Файл пустой'),
+          const ApiErrorInfo(code: 'empty_file'),
         );
       }
       return data;
@@ -369,7 +376,7 @@ class ApiClient {
       throw _convert(error);
     } catch (error) {
       throw ApiException(
-        ApiErrorInfo(code: 'unknown', message: 'Непредвиденная ошибка: $error'),
+        ApiErrorInfo(code: 'unknown', message: '$error'),
       );
     }
   }
@@ -384,7 +391,7 @@ class ApiClient {
         throw ApiException(
           const ApiErrorInfo(
             code: 'token_expired',
-            message: 'Сессия истекла, войдите заново',
+            message: '',
           ),
           statusCode: 401,
         );
@@ -448,7 +455,6 @@ class ApiClient {
       return ApiException(
         const ApiErrorInfo(
           code: 'connection_timeout',
-          message: 'Сервер не отвечает вовремя',
         ),
       );
     }
@@ -459,7 +465,7 @@ class ApiClient {
         return ApiException(
           const ApiErrorInfo(
             code: 'certificate_error',
-            message: 'Сертификат сертификата сервера не вызывает доверия',
+            message: '',
           ),
         );
       }
@@ -469,14 +475,14 @@ class ApiClient {
         return ApiException(
           const ApiErrorInfo(
             code: 'network_unreachable',
-            message: 'Не удалось подключиться к серверу',
+            message: '',
           ),
         );
       }
       return ApiException(
         const ApiErrorInfo(
           code: 'network_unreachable',
-          message: 'Нет связи с сервером',
+          message: '',
         ),
       );
     }
@@ -485,7 +491,7 @@ class ApiClient {
       return ApiException(
         const ApiErrorInfo(
           code: 'certificate_error',
-          message: 'Сертификат сервера не вызывает доверия',
+          message: '',
         ),
       );
     }
@@ -510,7 +516,7 @@ class ApiClient {
       return ApiException(
         const ApiErrorInfo(
           code: 'network_unreachable',
-          message: 'Нет связи с сервером',
+          message: '',
         ),
       );
     }

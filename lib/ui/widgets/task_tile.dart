@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 import '../../data/models.dart';
 import '../theme.dart';
@@ -21,6 +22,7 @@ class TaskTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final done = task.status == TaskStatus.done;
 
     return InkWell(
@@ -135,6 +137,7 @@ class TaskTile extends StatelessWidget {
                       Text(
                         Format.dueLabel(
                           task.dueAt,
+                          l10n,
                           overdue: task.isOverdue,
                         ),
                         style: TextStyle(
@@ -198,6 +201,7 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -243,6 +247,7 @@ class TaskCard extends StatelessWidget {
                       child: Text(
                         Format.dueLabel(
                           task.dueAt,
+                          l10n,
                           overdue: task.isOverdue,
                         ),
                         style: TextStyle(

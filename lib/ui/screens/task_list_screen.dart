@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/api_client.dart';
 import '../../data/models.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
 import '../../state/controllers.dart';
 import '../theme.dart';
@@ -79,6 +80,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen> {
     final state = ref.watch(taskListProvider);
     final user = ref.watch(currentUserProvider);
     final canCreate = user?.can('tasks.create') ?? false;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -86,8 +88,8 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen> {
             ? TextField(
                 controller: _searchController,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Поиск по задачам',
+                decoration: InputDecoration(
+                  hintText: l10n.tasksSearchHint,
                   border: InputBorder.none,
                   filled: false,
                 ),
@@ -98,13 +100,13 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen> {
                               ),
                         ),
               )
-            : const Text('Задачи'),
+            : Text(l10n.tasksTitle),
         actions: [
           if (!_searching) ...[
             IconButton(
               icon: const Icon(Icons.search),
               onPressed: _openSearch,
-              tooltip: 'Поиск',
+              tooltip: l10n.commonSearch,
             ),
             _FilterButton(
               count: state.filter.activeCount,
@@ -114,37 +116,39 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen> {
             IconButton(
               icon: const Icon(Icons.close),
               onPressed: _closeSearch,
-              tooltip: 'Закрыть поиск',
+              tooltip: l10n.tasksSearchCloseTooltip,
             ),
         ],
-        bottom: _buildFilterBar(state),
+        bottom: _buildFilterBar(context, state),
       ),
       floatingActionButton: canCreate
           ? FloatingActionButton.extended(
               onPressed: _createTask,
               icon: const Icon(Icons.add),
-              label: const Text('Задача'),
+              label: Text(l10n.tasksCreateButton),
             )
           : null,
-      body: _buildBody(state),
+      body: _buildBody(context, state),
     );
   }
 
   /// Полоска активных фильтров: видно, что список сужен.
-  PreferredSizeWidget? _buildFilterBar(TaskListState state) {
+  PreferredSizeWidget? _buildFilterBar(
+      BuildContext context, TaskListState state) {
     final filter = state.filter;
     if (filter.activeCount == 0) return null;
+    final l10n = AppLocalizations.of(context);
 
     final labels = <String>[];
     if (filter.search.isNotEmpty) labels.add('«${filter.search}»');
     for (final status in filter.statuses) {
-      labels.add(status.title);
+      labels.add(status.title(l10n));
     }
     for (final priority in filter.priorities) {
-      labels.add(priority.title);
+      labels.add(priority.title(l10n));
     }
-    if (filter.overdueOnly) labels.add('Просроченные');
-    if (filter.showArchived) labels.add('Архив');
+    if (filter.overdueOnly) labels.add(l10n.tasksFilterOverdue);
+    if (filter.showArchived) labels.add(l10n.tasksFilterArchive);
 
     return PreferredSize(
       preferredSize: const Size.fromHeight(44),
@@ -175,7 +179,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen> {
             TextButton(
               onPressed: () =>
                   ref.read(taskListProvider.notifier).clearFilter(),
-              child: const Text('Сбросить'),
+              child: Text(l10n.tasksFilterReset),
             ),
           ],
         ),
@@ -183,7 +187,9 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen> {
     );
   }
 
-  Widget _buildBody(TaskListState state) {
+  Widget _buildBody(BuildContext context, TaskListState state) {
+    final l10n = AppLocalizations.of(context);
+
     if (state.isLoading && state.tasks.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -191,12 +197,12 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen> {
     if (state.error != null && state.tasks.isEmpty) {
       return EmptyState(
         icon: Icons.cloud_off,
-        title: 'Не удалось загрузить задачи',
+        title: l10n.tasksLoadErrorTitle,
         message: state.error,
         action: FilledButton.icon(
           onPressed: () => ref.read(taskListProvider.notifier).load(),
           icon: const Icon(Icons.refresh),
-          label: const Text('Повторить'),
+          label: Text(l10n.commonRetry),
         ),
       );
     }
@@ -205,17 +211,17 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen> {
       return EmptyState(
         icon: Icons.checklist_rtl,
         title: state.filter.activeCount > 0
-            ? 'Ничего не найдено'
-            : 'Задач пока нет',
+            ? l10n.tasksEmptyFilteredTitle
+            : l10n.tasksEmptyTitle,
         message: state.filter.activeCount > 0
-            ? 'Попробуйте изменить условия фильтра'
-            : 'Назначьте первую задачу сотруднику',
+            ? l10n.tasksEmptyFilteredMessage
+            : l10n.tasksEmptyMessage,
         action: state.filter.activeCount > 0
             ? OutlinedButton.icon(
                 onPressed: () =>
                     ref.read(taskListProvider.notifier).clearFilter(),
                 icon: const Icon(Icons.filter_alt_off_outlined),
-                label: const Text('Сбросить фильтры'),
+                label: Text(l10n.tasksEmptyResetFilters),
               )
             : null,
       );
@@ -281,12 +287,14 @@ class _FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Stack(
       children: [
         IconButton(
           icon: const Icon(Icons.tune),
           onPressed: onPressed,
-          tooltip: 'Фильтры',
+          tooltip: l10n.tasksFiltersTooltip,
         ),
         if (count > 0)
           Positioned(
@@ -349,6 +357,8 @@ class _FilterSheetState extends State<_FilterSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -363,15 +373,18 @@ class _FilterSheetState extends State<_FilterSheet> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Фильтры',
+                l10n.tasksFiltersTitle,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
               ),
               const SizedBox(height: Insets.md),
-              const Text(
-                'Статус',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+              Text(
+                l10n.tasksFilterStatusLabel,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: Insets.sm),
               Wrap(
@@ -380,7 +393,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                 children: TaskStatus.values.map((status) {
                   final selected = _statuses.contains(status);
                   return FilterChip(
-                    label: Text(status.title),
+                    label: Text(status.title(l10n)),
                     selected: selected,
                     onSelected: (value) => setState(() {
                       if (value) {
@@ -393,9 +406,12 @@ class _FilterSheetState extends State<_FilterSheet> {
                 }).toList(),
               ),
               const SizedBox(height: Insets.md),
-              const Text(
-                'Приоритет',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+              Text(
+                l10n.tasksFilterPriorityLabel,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: Insets.sm),
               Wrap(
@@ -404,7 +420,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                 children: TaskPriority.values.map((priority) {
                   final selected = _priorities.contains(priority);
                   return FilterChip(
-                    label: Text(priority.title),
+                    label: Text(priority.title(l10n)),
                     selected: selected,
                     onSelected: (value) => setState(() {
                       if (value) {
@@ -417,9 +433,12 @@ class _FilterSheetState extends State<_FilterSheet> {
                 }).toList(),
               ),
               const SizedBox(height: Insets.md),
-              const Text(
-                'Исполнитель',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+              Text(
+                l10n.tasksFilterAssigneeLabel,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: Insets.sm),
               _AssigneePicker(
@@ -436,14 +455,14 @@ class _FilterSheetState extends State<_FilterSheet> {
                 onChanged: (value) => setState(() => _overdue = value),
                 contentPadding: EdgeInsets.zero,
                 dense: true,
-                title: const Text('Только просроченные'),
+                title: Text(l10n.tasksFilterOverdueOnly),
               ),
               SwitchListTile(
                 value: _archived,
                 onChanged: (value) => setState(() => _archived = value),
                 contentPadding: EdgeInsets.zero,
                 dense: true,
-                title: const Text('Показывать архивные'),
+                title: Text(l10n.tasksFilterShowArchived),
               ),
               const SizedBox(height: Insets.md),
               Row(
@@ -451,7 +470,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Отмена'),
+                      child: Text(l10n.commonCancel),
                     ),
                   ),
                   const SizedBox(width: Insets.sm),
@@ -467,7 +486,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                           showArchived: _archived,
                         ),
                       ),
-                      child: const Text('Применить'),
+                      child: Text(l10n.tasksFilterApply),
                     ),
                   ),
                 ],
@@ -501,13 +520,14 @@ class _AssigneePickerState extends ConsumerState<_AssigneePicker> {
   Widget build(BuildContext context) {
     final directory = ref.watch(directoryProvider);
     final activeUsers = directory.users.where((u) => u.isActive).toList();
+    final l10n = AppLocalizations.of(context);
 
     return Wrap(
       spacing: 6,
       runSpacing: 6,
       children: [
         FilterChip(
-          label: const Text('Все'),
+          label: Text(l10n.commonAll),
           selected: widget.selectedId == null,
           onSelected: (_) => widget.onChanged(null, ''),
         ),

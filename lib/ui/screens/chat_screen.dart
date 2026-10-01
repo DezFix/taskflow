@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/api_client.dart';
 import '../../data/models.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../state/app_state.dart';
 import '../../state/controllers.dart';
 import '../file_picking.dart';
@@ -95,7 +96,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     if (!started) {
       setState(() {
-        _error = 'Нет доступа к микрофону. Разрешите запись в настройках.';
+        _error = AppLocalizations.of(context).chatMicPermissionError;
       });
       return;
     }
@@ -132,7 +133,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
 
     if (capture == null) {
-      setState(() => _error = 'Не удалось записать голосовое сообщение');
+      setState(() {
+        _error = AppLocalizations.of(context).chatVoiceRecordError;
+      });
       return;
     }
 
@@ -174,7 +177,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           bytes: picked.first.bytes,
           mimeType: mimeTypeFor(picked.first.name),
         ),
-        body: picked.length > 1 ? 'Файлов: ${picked.length}' : null,
+        body: picked.length > 1
+            ? '${AppLocalizations.of(context).chatFilesAttached}: '
+                '${picked.length}'
+            : null,
       );
       if (!mounted) return;
       ref.read(messagesProvider(widget.chatId).notifier).confirmSent(message);
@@ -191,25 +197,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final state = ref.watch(messagesProvider(widget.chatId));
     final myId = ref.watch(currentUserProvider)?.id;
     final messages = state.ordered.reversed.toList();
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.initialTitle ?? 'Чат',
+          widget.initialTitle ?? l10n.chatTitleFallback,
           style: const TextStyle(fontSize: 17),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () => _showChatInfo(context),
-            tooltip: 'О чате',
+            tooltip: l10n.chatInfoTooltip,
           ),
         ],
       ),
       body: Column(
         children: [
           Expanded(
-            child: _buildMessageList(state, messages, myId),
+            child: _buildMessageList(context, state, messages, myId),
           ),
           if (_error != null)
             Container(
@@ -238,10 +245,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _buildMessageList(
+    BuildContext context,
     MessagesState state,
     List<ChatMessage> messages,
     String? myId,
   ) {
+    final l10n = AppLocalizations.of(context);
+
     if (state.isLoading && messages.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -249,12 +259,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (state.error != null && messages.isEmpty) {
       return EmptyState(
         icon: Icons.cloud_off,
-        title: 'Не удалось загрузить переписку',
+        title: l10n.chatLoadErrorTitle,
         message: state.error,
         action: FilledButton(
           onPressed: () =>
               ref.read(messagesProvider(widget.chatId).notifier).load(),
-          child: const Text('Повторить'),
+          child: Text(l10n.commonRetry),
         ),
       );
     }
@@ -262,9 +272,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (messages.isEmpty) {
       return EmptyState(
         icon: Icons.chat_bubble_outline,
-        title: 'Сообщений пока нет',
-        message: 'Напишите первым или продиктуйте задачу голосом — '
-            'сервер расшифрует её на своей машине.',
+        title: l10n.chatEmptyTitle,
+        message: l10n.chatEmptyMessage,
       );
     }
 
@@ -322,6 +331,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _showChatInfo(BuildContext context) async {
     final repository = ref.read(chatRepositoryProvider);
+    final l10n = AppLocalizations.of(context);
     try {
       final chat = await repository.chat(widget.chatId);
       if (!context.mounted) return;
@@ -343,7 +353,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      chat.displayTitle,
+                      chat.displayTitle(l10n),
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -352,8 +362,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     const SizedBox(height: 4),
                     Text(
                       chat.isGroup
-                          ? 'Группа · участников: ${chat.members.length}'
-                          : 'Личный диалог',
+                          ? '${l10n.chatInfoGroupMembers}: '
+                              '${chat.members.length}'
+                          : l10n.chatInfoDirect,
                       style: const TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary,

@@ -1,0 +1,451 @@
+{
+  "keys": [
+    {
+      "key": "tasksSearchHint",
+      "ru": "Поиск по задачам",
+      "uk": "Пошук по завданнях",
+      "en": "Search tasks",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksTitle",
+      "ru": "Задачи",
+      "uk": "Завдання",
+      "en": "Tasks",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksSearchCloseTooltip",
+      "ru": "Закрыть поиск",
+      "uk": "Закрити пошук",
+      "en": "Close search",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksCreateButton",
+      "ru": "Задача",
+      "uk": "Завдання",
+      "en": "Task",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFilterOverdue",
+      "ru": "Просроченные",
+      "uk": "Прострочені",
+      "en": "Overdue",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFilterArchive",
+      "ru": "Архив",
+      "uk": "Архів",
+      "en": "Archive",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFilterReset",
+      "ru": "Сбросить",
+      "uk": "Скинути",
+      "en": "Reset",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksLoadErrorTitle",
+      "ru": "Не удалось загрузить задачи",
+      "uk": "Не вдалося завантажити завдання",
+      "en": "Failed to load tasks",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksEmptyFilteredTitle",
+      "ru": "Ничего не найдено",
+      "uk": "Нічого не знайдено",
+      "en": "Nothing found",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksEmptyTitle",
+      "ru": "Задач пока нет",
+      "uk": "Завдань ще немає",
+      "en": "No tasks yet",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksEmptyFilteredMessage",
+      "ru": "Попробуйте изменить условия фильтра",
+      "uk": "Спробуйте змінити умови фільтра",
+      "en": "Try changing the filter conditions",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksEmptyMessage",
+      "ru": "Назначьте первую задачу сотруднику",
+      "uk": "Призначте перше завдання співробітнику",
+      "en": "Assign the first task to an employee",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksEmptyResetFilters",
+      "ru": "Сбросить фильтры",
+      "uk": "Скинути фільтри",
+      "en": "Reset filters",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFiltersTooltip",
+      "ru": "Фильтры",
+      "uk": "Фільтри",
+      "en": "Filters",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFiltersTitle",
+      "ru": "Фильтры",
+      "uk": "Фільтри",
+      "en": "Filters",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFilterStatusLabel",
+      "ru": "Статус",
+      "uk": "Статус",
+      "en": "Status",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFilterPriorityLabel",
+      "ru": "Приоритет",
+      "uk": "Пріоритет",
+      "en": "Priority",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFilterAssigneeLabel",
+      "ru": "Исполнитель",
+      "uk": "Виконавець",
+      "en": "Assignee",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFilterOverdueOnly",
+      "ru": "Только просроченные",
+      "uk": "Тільки прострочені",
+      "en": "Overdue only",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFilterShowArchived",
+      "ru": "Показывать архивные",
+      "uk": "Показувати архівні",
+      "en": "Show archived",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "tasksFilterApply",
+      "ru": "Применить",
+      "uk": "Застосувати",
+      "en": "Apply",
+      "source": "lib/ui/screens/task_list_screen.dart"
+    },
+    {
+      "key": "chatListTitle",
+      "ru": "Чаты",
+      "uk": "Чати",
+      "en": "Chats",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatListNewDialogTooltip",
+      "ru": "Новый диалог",
+      "uk": "Новий діалог",
+      "en": "New direct message",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatListUnreadMessages",
+      "ru": "Непрочитанных сообщений",
+      "uk": "Непрочитаних повідомлень",
+      "en": "Unread messages",
+      "note": "number is appended in code after a colon: '{key}: {count}'",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatListLoadErrorTitle",
+      "ru": "Не удалось загрузить чаты",
+      "uk": "Не вдалося завантажити чати",
+      "en": "Failed to load chats",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatListEmptyTitle",
+      "ru": "Чатов пока нет",
+      "uk": "Чатів ще немає",
+      "en": "No chats yet",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatListEmptyMessage",
+      "ru": "Начните диалог с коллегой или создайте группу отдела",
+      "uk": "Почніть діалог із колегою або створіть групу відділу",
+      "en": "Start a conversation with a colleague or create a department group",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatListEmptyAction",
+      "ru": "Начать диалог",
+      "uk": "Почати діалог",
+      "en": "Start a conversation",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatListNoColleagues",
+      "ru": "Нет других сотрудников для диалога",
+      "uk": "Немає інших співробітників для діалогу",
+      "en": "No other employees to talk to",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatListNoMessages",
+      "ru": "Нет сообщений",
+      "uk": "Немає повідомлень",
+      "en": "No messages",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatNewTypeDirect",
+      "ru": "Диалог",
+      "uk": "Діалог",
+      "en": "Direct message",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatNewTypeGroup",
+      "ru": "Группа",
+      "uk": "Група",
+      "en": "Group",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatNewSearchHint",
+      "ru": "Поиск сотрудника",
+      "uk": "Пошук співробітника",
+      "en": "Search employee",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatNewCreateGroup",
+      "ru": "Создать группу",
+      "uk": "Створити групу",
+      "en": "Create group",
+      "note": "member count is appended in code in parentheses: '{key} ({count})'",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatNewOpenDialog",
+      "ru": "Открыть диалог",
+      "uk": "Відкрити діалог",
+      "en": "Open conversation",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatNewGroupDefaultTitle",
+      "ru": "Новая группа",
+      "uk": "Нова група",
+      "en": "New group",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatNewDefaultMemberName",
+      "ru": "Сотрудник",
+      "uk": "Співробітник",
+      "en": "Employee",
+      "source": "lib/ui/screens/chat_list_screen.dart"
+    },
+    {
+      "key": "chatMicPermissionError",
+      "ru": "Нет доступа к микрофону. Разрешите запись в настройках.",
+      "uk": "Немає доступу до мікрофона. Дозвольте запис у налаштуваннях.",
+      "en": "No microphone access. Allow recording in the settings.",
+      "source": "lib/ui/screens/chat_screen.dart"
+    },
+    {
+      "key": "chatVoiceRecordError",
+      "ru": "Не удалось записать голосовое сообщение",
+      "uk": "Не вдалося записати голосове повідомлення",
+      "en": "Failed to record the voice message",
+      "source": "lib/ui/screens/chat_screen.dart"
+    },
+    {
+      "key": "chatFilesAttached",
+      "ru": "Файлов",
+      "uk": "Файлів",
+      "en": "Files",
+      "note": "file count is appended in code after a colon: '{key}: {count}'",
+      "source": "lib/ui/screens/chat_screen.dart"
+    },
+    {
+      "key": "chatTitleFallback",
+      "ru": "Чат",
+      "uk": "Чат",
+      "en": "Chat",
+      "source": "lib/ui/screens/chat_screen.dart"
+    },
+    {
+      "key": "chatInfoTooltip",
+      "ru": "О чате",
+      "uk": "Про чат",
+      "en": "Chat details",
+      "source": "lib/ui/screens/chat_screen.dart"
+    },
+    {
+      "key": "chatLoadErrorTitle",
+      "ru": "Не удалось загрузить переписку",
+      "uk": "Не вдалося завантажити листування",
+      "en": "Failed to load the conversation",
+      "source": "lib/ui/screens/chat_screen.dart"
+    },
+    {
+      "key": "chatEmptyTitle",
+      "ru": "Сообщений пока нет",
+      "uk": "Повідомлень ще немає",
+      "en": "No messages yet",
+      "source": "lib/ui/screens/chat_screen.dart"
+    },
+    {
+      "key": "chatEmptyMessage",
+      "ru": "Напишите первым или продиктуйте задачу голосом — сервер расшифрует её на своей машине.",
+      "uk": "Напишіть першим або продиктуйте завдання голосом — сервер розшифрує її на своєму комп'ютері.",
+      "en": "Write first or dictate a task with your voice — the server will transcribe it on its own machine.",
+      "source": "lib/ui/screens/chat_screen.dart"
+    },
+    {
+      "key": "chatInfoGroupMembers",
+      "ru": "Группа · участников",
+      "uk": "Група · учасників",
+      "en": "Group · members",
+      "note": "member count is appended in code after a colon: '{key}: {count}'",
+      "source": "lib/ui/screens/chat_screen.dart"
+    },
+    {
+      "key": "chatInfoDirect",
+      "ru": "Личный диалог",
+      "uk": "Особистий діалог",
+      "en": "Direct message",
+      "source": "lib/ui/screens/chat_screen.dart"
+    },
+    {
+      "key": "chatMessageDeleted",
+      "ru": "Сообщение удалено",
+      "uk": "Повідомлення видалено",
+      "en": "Message deleted",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatTranscriptManual",
+      "ru": "Исправлено вручную",
+      "uk": "Виправлено вручну",
+      "en": "Edited manually",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatTranscriptServer",
+      "ru": "Распознано сервером",
+      "uk": "Розпізнано сервером",
+      "en": "Recognized by the server",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatTranscriptDisabled",
+      "ru": "Распознавание на сервере выключено",
+      "uk": "Розпізнавання на сервері вимкнено",
+      "en": "Server-side recognition is off",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatTranscriptFailed",
+      "ru": "Не удалось распознать",
+      "uk": "Не вдалося розпізнати",
+      "en": "Failed to recognize",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatTranscriptPending",
+      "ru": "Сервер расшифровывает запись…",
+      "uk": "Сервер розшифровує запис…",
+      "en": "The server is transcribing the recording…",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatMessageNotSent",
+      "ru": "Не отправлено",
+      "uk": "Не надіслано",
+      "en": "Not sent",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatMessageEdited",
+      "ru": "изм.",
+      "uk": "зм.",
+      "en": "edited",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatAttachTooltip",
+      "ru": "Приложить файл",
+      "uk": "Прикріпити файл",
+      "en": "Attach a file",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatInputHint",
+      "ru": "Сообщение",
+      "uk": "Повідомлення",
+      "en": "Message",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatSendTooltip",
+      "ru": "Отправить",
+      "uk": "Надіслати",
+      "en": "Send",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatVoiceSend",
+      "ru": "Записать голосовое",
+      "uk": "Записати голосове",
+      "en": "Record voice message",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatRecordingRemaining",
+      "ru": "Осталось",
+      "uk": "Залишилось",
+      "en": "Left",
+      "note": "seconds and unit are appended in code: '{key} {seconds} {chatRecordingSecondsUnit}'",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatRecordingSecondsUnit",
+      "ru": "с",
+      "uk": "с",
+      "en": "s",
+      "note": "unit of seconds, appended after the number in code",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatRecordingInProgress",
+      "ru": "Запись идёт",
+      "uk": "Запис триває",
+      "en": "Recording…",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    },
+    {
+      "key": "chatRecordingCancelTooltip",
+      "ru": "Отменить запись",
+      "uk": "Скасувати запис",
+      "en": "Cancel recording",
+      "source": "lib/ui/screens/chat_bubbles.dart"
+    }
+  ]
+}

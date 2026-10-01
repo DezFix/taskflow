@@ -88,6 +88,7 @@ class AppStorage {
   static const _sessionKey = 'taskflow.session';
   static const _trustCertificatesKey = 'taskflow.trust_certificates';
   static const _lastUsernameKey = 'taskflow.last_username';
+  static const _localeKey = 'taskflow.locale';
 
   final SharedPreferences _prefs;
 
@@ -247,6 +248,20 @@ class AppStorage {
     if (uri == null || uri.host.isEmpty) return normalized.toLowerCase();
     final port = uri.hasPort ? ':${uri.port}' : '';
     return '${uri.host.toLowerCase()}$port';
+  }
+
+  // --- Язык интерфейса ---
+
+  /// Выбранный язык: 'ru', 'uk', 'en' или null, когда система решает сама.
+  String? get localeCode => _prefs.getString(_localeKey);
+
+  /// Сохраняет выбор языка. Пустое значение означает «как в системе».
+  Future<void> setLocaleCode(String? code) async {
+    if (code == null || code.isEmpty) {
+      await _prefs.remove(_localeKey);
+      return;
+    }
+    await _prefs.setString(_localeKey, code);
   }
 
   Future<void> clearAll() async {

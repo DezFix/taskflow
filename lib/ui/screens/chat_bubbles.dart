@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../theme.dart';
 import '../voice_recorder.dart';
 import '../widgets.dart';
@@ -130,6 +131,8 @@ class BubbleContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     if (message.isDeleted) {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -137,7 +140,7 @@ class BubbleContent extends StatelessWidget {
           Icon(Icons.block, size: 14, color: textColor),
           const SizedBox(width: 6),
           Text(
-            'Сообщение удалено',
+            l10n.chatMessageDeleted,
             style: TextStyle(
               fontSize: 13,
               fontStyle: FontStyle.italic,
@@ -193,6 +196,7 @@ class VoiceBubble extends ConsumerWidget {
     final text = message.transcriptText ?? transcript?.text;
     final pending = transcript?.isPending ?? false;
     final accent = isMine ? Colors.white : AppColors.primary;
+    final l10n = AppLocalizations.of(context);
 
     return SizedBox(
       width: 240,
@@ -258,8 +262,8 @@ class VoiceBubble extends ConsumerWidget {
                 const SizedBox(width: 4),
                 Text(
                   transcript?.isManual == true
-                      ? 'Исправлено вручную'
-                      : 'Распознано сервером',
+                      ? l10n.chatTranscriptManual
+                      : l10n.chatTranscriptServer,
                   style: TextStyle(
                     fontSize: 10,
                     color: isMine ? Colors.white60 : AppColors.textMuted,
@@ -271,8 +275,8 @@ class VoiceBubble extends ConsumerWidget {
             const SizedBox(height: 6),
             Text(
               transcript?.status == 'skipped'
-                  ? 'Распознавание на сервере выключено'
-                  : 'Не удалось распознать',
+                  ? l10n.chatTranscriptDisabled
+                  : l10n.chatTranscriptFailed,
               style: TextStyle(
                 fontSize: 12,
                 color: isMine ? Colors.white70 : AppColors.textMuted,
@@ -281,7 +285,7 @@ class VoiceBubble extends ConsumerWidget {
           ] else if (pending) ...[
             const SizedBox(height: 6),
             Text(
-              'Сервер расшифровывает запись…',
+              l10n.chatTranscriptPending,
               style: TextStyle(
                 fontSize: 12,
                 color: isMine ? Colors.white70 : AppColors.textMuted,
@@ -358,6 +362,7 @@ class FileRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -379,7 +384,7 @@ class FileRow extends StatelessWidget {
                 ),
               ),
               Text(
-                Format.fileSize(attachment.sizeBytes),
+                Format.fileSize(attachment.sizeBytes, l10n),
                 style: TextStyle(
                   fontSize: 11,
                   color: textColor.withValues(alpha: 0.7),
@@ -409,6 +414,7 @@ class MessageMeta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = AppColors.textMuted;
+    final l10n = AppLocalizations.of(context);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -430,7 +436,7 @@ class MessageMeta extends StatelessWidget {
                 ),
                 const SizedBox(width: 3),
                 Text(
-                  'Не отправлено',
+                  l10n.chatMessageNotSent,
                   style: TextStyle(
                     fontSize: 10,
                     color: AppColors.danger,
@@ -449,7 +455,7 @@ class MessageMeta extends StatelessWidget {
         if (message.isEdited) ...[
           const SizedBox(width: 3),
           Text(
-            'изм.',
+            l10n.chatMessageEdited,
             style: TextStyle(fontSize: 9, color: color),
           ),
         ],
@@ -491,6 +497,7 @@ class ChatComposer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     if (isRecording) {
       return RecordingBar(
@@ -515,7 +522,7 @@ class ChatComposer extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.attach_file),
                 onPressed: isSending ? null : onAttach,
-                tooltip: 'Приложить файл',
+                tooltip: l10n.chatAttachTooltip,
               ),
               Expanded(
                 child: ConstrainedBox(
@@ -525,8 +532,8 @@ class ChatComposer extends StatelessWidget {
                     minLines: 1,
                     maxLines: 5,
                     textCapitalization: TextCapitalization.sentences,
-                    decoration: const InputDecoration(
-                      hintText: 'Сообщение',
+                    decoration: InputDecoration(
+                      hintText: l10n.chatInputHint,
                       isDense: true,
                     ),
                   ),
@@ -546,7 +553,8 @@ class ChatComposer extends StatelessWidget {
                         : hasText
                             ? onSend
                             : onRecord,
-                    tooltip: hasText ? 'Отправить' : 'Записать голосовое',
+                    tooltip:
+                        hasText ? l10n.chatSendTooltip : l10n.chatVoiceSend,
                     style: IconButton.styleFrom(
                       backgroundColor:
                           hasText ? AppColors.primary : AppColors.success,
@@ -579,6 +587,7 @@ class RecordingBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final remaining = kMaxVoiceLength - elapsed;
     final nearLimit = remaining.inSeconds < 30;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -606,8 +615,9 @@ class RecordingBar extends StatelessWidget {
               Expanded(
                 child: Text(
                   nearLimit
-                      ? 'Осталось ${remaining.inSeconds} с'
-                      : 'Запись идёт',
+                      ? '${l10n.chatRecordingRemaining} '
+                          '${remaining.inSeconds} ${l10n.chatRecordingSecondsUnit}'
+                      : l10n.chatRecordingInProgress,
                   style: TextStyle(
                     fontSize: 12,
                     color:
@@ -618,14 +628,14 @@ class RecordingBar extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.delete_outline),
                 onPressed: onCancel,
-                tooltip: 'Отменить запись',
+                tooltip: l10n.chatRecordingCancelTooltip,
                 color: AppColors.textSecondary,
               ),
               const SizedBox(width: Insets.xs),
               IconButton.filled(
                 icon: const Icon(Icons.send, size: 20),
                 onPressed: onStop,
-                tooltip: 'Отправить',
+                tooltip: l10n.chatSendTooltip,
                 style: IconButton.styleFrom(backgroundColor: AppColors.primary),
               ),
             ],
