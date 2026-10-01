@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:taskflow/data/models.dart';
+import 'package:taskflow/l10n/data_labels.dart';
 import 'package:taskflow/l10n/generated/app_localizations.dart';
 import 'package:taskflow/l10n/generated/app_localizations_en.dart';
 import 'package:taskflow/l10n/generated/app_localizations_ru.dart';
@@ -85,6 +87,64 @@ void main() {
       L10nScope.update(AppLocalizationsUk());
       expect(L10nScope.current.commonSave, 'Зберегти');
       L10nScope.update(null);
+    });
+  });
+
+  group('Названия из базы', () {
+    test('системная роль переводится по идентификатору', () {
+      final en = AppLocalizationsEn();
+      expect(
+        DataLabels.roleName('Администратор', 'admin', en),
+        'Administrator',
+      );
+      expect(
+          DataLabels.roleName('Глава отдела', 'head', en), 'Department head');
+      expect(DataLabels.roleName('Сотрудник', 'staff', en), 'Staff member');
+    });
+
+    test('своя роль остаётся как названа', () {
+      // Название задал администратор: переводить его нельзя.
+      const custom = 'Наблюдатель дежурной смены';
+      for (final l10n in <AppLocalizations>[
+        AppLocalizationsRu(),
+        AppLocalizationsUk(),
+        AppLocalizationsEn(),
+      ]) {
+        expect(DataLabels.roleName(custom, null, l10n), custom);
+      }
+    });
+
+    test('базовые должности и метки узнаются по названию', () {
+      final en = AppLocalizationsEn();
+      expect(
+        DataLabels.seededLabel('Системный администратор', en),
+        'System administrator',
+      );
+      expect(DataLabels.seededLabel('Рефакторинг', en), 'Refactoring');
+      expect(DataLabels.seededLabel('Джуниор', en), 'Джуниор');
+    });
+
+    test('роль из ответа сервера переводится целиком', () {
+      final role = Role.fromJson({
+        'id': 'r1',
+        'key': 'Сотрудник',
+        'title': 'Сотрудник',
+        'i18n_key': 'staff',
+        'permissions': ['tasks.view'],
+        'is_system': true,
+      });
+      expect(role.localizedTitle(AppLocalizationsEn()), 'Staff member');
+      expect(role.localizedTitle(AppLocalizationsUk()), 'Співробітник');
+    });
+
+    test('у роли без идентификатора перевода нет', () {
+      final role = Role.fromJson({
+        'id': 'r2',
+        'key': 'Наблюдатель',
+        'title': 'Наблюдатель',
+      });
+      expect(role.i18nKey, isNull);
+      expect(role.localizedTitle(AppLocalizationsEn()), 'Наблюдатель');
     });
   });
 }
