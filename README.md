@@ -1,72 +1,75 @@
 # TaskFlow
 
-Клиент TaskFlow — приложение для сотрудников IT-отдела: задачи, фотоотчёты,
-чат с распознаванием голосовых сообщений. Один код собирается и как
-мобильное приложение для Android, и как веб-приложение.
+TaskFlow client — an app for IT department staff: tasks, photo reports, and a
+chat that transcribes voice messages. A single codebase builds both as an
+Android mobile app and as a web app.
 
-Серверная часть — отдельный проект: [DezFix/taskflow-server](https://github.com/DezFix/taskflow-server).
+The server side is a separate project:
+[DezFix/taskflow-server](https://github.com/DezFix/taskflow-server).
 
 ---
 
-## Как это работает
+## How it works
 
-Приложение открывается **без сервера**: сотрудник вводит адрес своего офиса —
-`192.168.1.50:8080`, `https://taskflow.company.ru` или адрес по VPN. Приложение
-проверяет адрес и запоминает его. Дальше работает как обычный мессенджер:
-вход по логину и паролю, задачи, чат, отчёты.
+The app starts **without a server**: a staff member enters the address of their
+own office — `192.168.1.50:8080`, `https://taskflow.company.ru`, or a VPN
+address. The app checks the address and remembers it. After that it works like
+an ordinary messenger: sign in with a login and password, tasks, chat, reports.
 
-Поддерживаются три способа подключения:
+Three connection methods are supported:
 
-| Где стоит сервер | Адрес | Что нужно |
+| Where the server runs | Address | What you need |
 |---|---|---|
-| Домен через Cloudflare или nginx | `https://taskflow.company.ru` | Ничего, сертификат настоящий |
-| VPN внутрь офиса | `https://10.0.0.5:8443` | В настройках включить доверие к сертификату |
-| Локальная сеть | `http://192.168.1.50:8080` | Ничего, в доверенной сети |
+| Domain behind Cloudflare or nginx | `https://taskflow.company.ru` | Nothing, the certificate is genuine |
+| VPN into the office | `https://10.0.0.5:8443` | Enable certificate trust in settings |
+| Local network | `http://192.168.1.50:8080` | Nothing, it is a trusted network |
 
-## Что умеет приложение
+## What the app can do
 
-**Глава отдела**
-- Сотрудники: создание, должности, роли, включение и отключение учётных записей
-- Задачи: создание, назначение, сроки, приоритеты, метки
-- Приём и возврат работы: статус «На проверке» и комментарий
-- Отчёты: сводка по задачам, нагрузка сотрудников, выгрузка в Excel
-- Роли с матрицей прав: 32 права, собираются под свою роль
+**Department head**
+- Staff: creation, positions, roles, enabling and disabling accounts
+- Tasks: creation, assignment, deadlines, priorities, labels
+- Accepting and returning work: the "In review" status and a comment
+- Reports: task summary, staff workload, Excel export
+- Roles with a permission matrix: 32 permissions, assembled per role
 
-**Сотрудник**
-- Свои задачи: фильтры по статусу, приоритету, сроку и исполнителю
-- Отчёт о работе: комментарий с фотографиями, задача уходит на проверку
-- Чат: личные диалоги и группы, файлы, голосовые сообщения
-- Профиль: имя, телефон, смена пароля
+**Staff member**
+- Own tasks: filters by status, priority, deadline and assignee
+- Work report: a comment with photos, the task moves to review
+- Chat: direct dialogs and groups, files, voice messages
+- Profile: name, phone, password change
 
-**Голосовые сообщения**
-Запись идёт на телефон, распознаёт текст сервер. Сотрудник не диктует задачи
-в поле ввода, а просто говорит — текст появляется в чате. Если модель ошиблась,
-отправитель правит расшифровку вручную.
+**Voice messages**
+Recording happens on the phone, the server does the transcription. A staff
+member does not dictate tasks into a text field, they just speak — the text
+appears in the chat. If the model got it wrong, the sender edits the
+transcription by hand.
 
-**Реалтайм**
-Канал WebSocket: новые задачи, сообщения и статусы расшифровки приходят
-мгновенно. При обрыве связи приложение переподключается само, с нарастающими
-паузами, чтобы не долбить сервер.
+**Realtime**
+A WebSocket channel: new tasks, messages and transcription statuses arrive
+instantly. If the connection drops, the app reconnects on its own with
+increasing delays, so it does not hammer the server.
 
-## Возможности рабочих пространств
+## Workspace tabs
 
-Набор вкладок зависит от прав сотрудника, а не от того, кто вошёл:
+The set of tabs depends on what a staff member is allowed to do, not on who
+they are:
 
-| Вкладка | Кому доступна |
+| Tab | Available to |
 |---|---|
-| Задачи | Всем |
-| Чаты | Всем |
-| Отдел | Тем, кто управляет сотрудниками |
-| Отчёты | Тем, кому выдано право на отчёты |
-| Профиль | Всем |
+| Tasks | Everyone |
+| Chats | Everyone |
+| Department | Those who manage staff |
+| Reports | Those granted the reports permission |
+| Profile | Everyone |
 
-## Сборка
+## Build
 
-### Требования
+### Requirements
 
-- Flutter 3.47 или новее (проверено на 3.47.5)
-- Для Android: Android SDK 36, JDK 17
-- Для веба: ничего дополнительно
+- Flutter 3.47 or newer (verified on 3.47.5)
+- For Android: Android SDK 36, JDK 17
+- For the web: nothing extra
 
 ### Android
 
@@ -75,103 +78,103 @@ flutter pub get
 flutter build apk --release
 ```
 
-Готовый файл: `build/app/outputs/flutter-apk/app-release.apk`.
+Result: `build/app/outputs/flutter-apk/app-release.apk`.
 
-Сборка подписывается ключом из `android/key.properties`. Создать его:
+The build is signed with the key from `android/key.properties`. To create it:
 
 ```bash
 powershell -ExecutionPolicy Bypass -File tool/generate_keystore.ps1
 ```
 
-Без `key.properties` сборка подписывается отладочным ключом — такой APK
-подходит для проверки, но не для раздачи сотрудникам: при смене подписи
-приложение не обновится поверх установленного.
+Without `key.properties` the build is signed with the debug key — such an APK
+is fine for testing, but not for handing out to staff: when the signature
+changes, the app will not update over an installed copy.
 
-### Веб
+### Web
 
 ```bash
 flutter build web --release
 ```
 
-Сервер TaskFlow отдаёт результат, если положить его в `data/web`:
+The TaskFlow server serves the result if you put it in `data/web`:
 
 ```bash
 cp -r build/web/* ../taskflow-server/data/web/
 ```
 
-### Установка на устройство
+### Installing on a device
 
 ```bash
 flutter install
-# или вручную
+# or manually
 adb install -r build/app/outputs/flutter-apk/app-release.apk
 ```
 
-## Разработка
+## Development
 
 ```bash
 flutter pub get
-flutter run              # на подключённом устройстве
-flutter run -d chrome    # в браузере
-flutter test             # тесты
-flutter analyze          # статический анализ
+flutter run              # on a connected device
+flutter run -d chrome    # in a browser
+flutter test             # tests
+flutter analyze          # static analysis
 ```
 
-### Структура
+### Structure
 
 ```
 lib/
-├── main.dart               точка входа, маршруты, тема
+├── main.dart               entry point, routes, theme
 ├── data/
-│   ├── models.dart         разбор ответов сервера
-│   ├── api_client.dart     HTTP, обновление токенов, сертификаты
-│   ├── realtime.dart       WebSocket с переподключением
-│   ├── repositories.dart   обращения к API по экранам
-│   └── storage.dart        адреса серверов, токены, доверие сертификату
+│   ├── models.dart         parsing of server responses
+│   ├── api_client.dart     HTTP, token refresh, certificates
+│   ├── realtime.dart       WebSocket with reconnection
+│   ├── repositories.dart   API calls grouped by screen
+│   └── storage.dart        server addresses, tokens, certificate trust
 ├── state/
-│   ├── app_state.dart      сессия, пользователь, реалтайм
-│   └── controllers.dart    состояние списков: задачи, чаты, отдел, отчёты
+│   ├── app_state.dart      session, user, realtime
+│   └── controllers.dart    list state: tasks, chats, department, reports
 └── ui/
-    ├── theme.dart          цвета, темы, форматирование дат
-    ├── widgets.dart        аватары, метки, пустые состояния
-    ├── voice_recorder.dart запись голосовых
-    ├── file_picking.dart   выбор и загрузка файлов
-    └── screens/            экраны приложения
+    ├── theme.dart          colours, themes, date formatting
+    ├── widgets.dart        avatars, labels, empty states
+    ├── voice_recorder.dart voice recording
+    ├── file_picking.dart   file selection and upload
+    └── screens/            app screens
 ```
 
-Слои: `ui` (экраны) → `state` (состояние) → `data` (сеть и модели).
-Экраны не знают про HTTP, а `data` не знает про интерфейс.
+Layers: `ui` (screens) → `state` (state) → `data` (network and models).
+Screens know nothing about HTTP, and `data` knows nothing about the interface.
 
-## Тесты
+## Tests
 
 ```bash
 flutter test
 ```
 
-Покрыты разбор ответов сервера, нормализация адресов, фильтры задач,
-форматирование дат и доступность вкладок по правам. Тесты не требуют сервера.
+Covered: parsing of server responses, address normalisation, task filters,
+date formatting, and tab availability by permission. The tests need no server.
 
-## Права доступа
+## Permissions
 
-Приложение запрашивает только необходимые разрешения:
+The app requests only the permissions it needs:
 
-| Разрешение | Зачем |
+| Permission | Why |
 |---|---|
-| Интернет | Связь с сервером офиса |
-| Микрофон | Голосовые сообщения |
-| Камера | Фотоотчёты |
-| Уведомления | Новые задачи и сообщения (Android 13+) |
+| Internet | Talking to the office server |
+| Microphone | Voice messages |
+| Camera | Photo reports |
+| Notifications | New tasks and messages (Android 13+) |
 
-Микрофон и камера необязательны: приложение устанавливается и работает
-без них, недоступные функции просто отключаются.
+Microphone and camera are optional: the app installs and works without them,
+and the unavailable features are simply disabled.
 
-## Передача данных
+## Data handling
 
-- Приложение не отправляет ничего ни в интернет, ни третьим лицам
-- Голосовые записы и фотографии остаются на сервере вашего офиса
-- Распознавание речи выполняется на вашем сервере, облако не используется
-- Связь с сервером по HTTPS, если он доступен по домену
+- The app sends nothing to the internet or to third parties
+- Voice recordings and photos stay on your own office server
+- Speech recognition runs on your own server, no cloud is used
+- Communication with the server is over HTTPS when it is reachable by domain
 
-## Лицензия
+## Licence
 
-MIT. См. [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

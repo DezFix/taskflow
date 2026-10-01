@@ -1,22 +1,22 @@
-# Иконка приложения TaskFlow
+# TaskFlow app icon
 
-Здесь лежит исходник иконки: `icon.png` размером 1024×1024.
+The icon source lives here: `icon.png`, 1024×1024.
 
-Приложение использует эту иконку для Android (adaptive icon) и веба
-(favicon). Заменить иконку под свой отдел офиса можно так:
+The app uses this icon for Android (adaptive icon) and for the web (favicon).
+To replace it with your own office branding:
 
-1. Подготовьте PNG 1024×1024 с прозрачным фоном.
-2. Положите его как `assets/images/icon.png`.
-3. Запустите генерацию иконок:
+1. Prepare a 1024×1024 PNG with a transparent background.
+2. Put it in place as `assets/images/icon.png`.
+3. Run icon generation:
 
 ```bash
 dart run flutter_launcher_icons
 ```
 
-Без этого шага приложение соберётся со стандартными иконками Flutter.
+Without this step the app builds with the standard Flutter icons.
 
-Требования к иконке:
-- квадратная, 1024×1024
-- важные элементы внутри центрального круга диаметром 66% — края срезаются
-  маской Android при разных форматах экрана
-- без прозрачности в отладочных сборках частично перекрывается надписью
+Icon requirements:
+- square, 1024×1024
+- important elements inside the central circle of 66% diameter — the edges are
+  cut off by the Android mask at different screen shapes
+- no transparency in debug builds, where it is partly covered by the banner

@@ -1,8 +1,8 @@
-# Ресурсы TaskFlow
+# TaskFlow assets
 
-Здесь размещаются изображения, используемые в интерфейсе: логотип,
-иллюстрации пустых состояний, значки статусов.
+Images used in the interface are placed here: logo, empty-state illustrations,
+status icons.
 
-Встроенные иконки Material Icons не требуют файлов, поэтому каталог
-пуст: он зарезервирован под графику проекта и включён в pubspec.yaml,
-чтобы не приходилось править конфигурацию при первом добавлении файла.
+Built-in Material Icons need no files, so the directory is empty: it is reserved
+for project graphics and is already listed in pubspec.yaml, so that adding the
+first file does not require editing the configuration.
