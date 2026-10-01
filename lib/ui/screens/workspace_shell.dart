@@ -11,6 +11,7 @@ import '../../data/models.dart';
 import '../../state/app_state.dart';
 import '../../state/controllers.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../language_selector.dart';
 import '../theme.dart';
 import '../widgets.dart';
 import '../workspace_tab.dart';
@@ -162,6 +163,9 @@ class _ProfileShell extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.tabProfile),
         actions: [
+          // Флаг в шапке профиля — самое заметное место после входа.
+          // Раньше выбор языка был доступен только до входа.
+          const LanguageSelector(compact: true),
           Padding(
             padding: const EdgeInsets.only(right: Insets.md),
             child: Center(
@@ -174,11 +178,16 @@ class _ProfileShell extends ConsumerWidget {
         ],
       ),
       body: const ProfileScreen(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => ref.read(realtimeProvider).reconnect(),
-        tooltip: l10n.commonRetry,
-        child: const Icon(Icons.sync),
-      ),
+      // Кнопку переподключения показываем только при обрыве: постоянный
+      // значок синхронизации выглядел как случайный элемент и закрывал
+      // содержимое профиля.
+      floatingActionButton: online
+          ? null
+          : FloatingActionButton(
+              onPressed: () => ref.read(realtimeProvider).reconnect(),
+              tooltip: l10n.commonRetry,
+              child: const Icon(Icons.refresh),
+            ),
     );
   }
 }

@@ -22,16 +22,10 @@ class ChatListScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.chatListTitle),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            onPressed: () => _startDialog(context, ref),
-            tooltip: l10n.chatListNewDialogTooltip,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(l10n.chatListTitle)),
+      // Кнопка в шапке убрана: новое действие было доступно сразу
+      // тремя способами — в шапке, плавающей кнопкой и в пустом
+      // состоянии. Остались FAB и подсказка в пустом списке.
       body: _buildBody(context, ref, state),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _startDialog(context, ref),
@@ -106,6 +100,9 @@ class ChatListScreen extends ConsumerWidget {
         itemCount: state.chats.length,
         separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (context, index) => _ChatTile(chat: state.chats[index]),
+        // Нижний отступ держит последний диалог над плавающей
+        // кнопкой: без него он уезжал под неё при прокрутке.
+        padding: const EdgeInsets.only(bottom: 88),
       ),
     );
   }
