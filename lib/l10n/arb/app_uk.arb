@@ -412,5 +412,7 @@
   "teamCopyAll": "Копіювати все",
   "teamCopiedAll": "Логін і пароль скопійовано",
   "teamCopyPassword": "Копіювати пароль",
-  "teamCopiedPassword": "Пароль скопійовано"
+  "teamCopiedPassword": "Пароль скопійовано",
+  "profileShowPassword": "Показати пароль",
+  "profilePasswordChangeFailed": "Не вдалося змінити пароль"
 }

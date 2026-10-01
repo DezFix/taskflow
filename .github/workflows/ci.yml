@@ -137,16 +137,26 @@ jobs:
       # вида `if: ${{ secrets.X != '' }}` GitHub отвергает целиком, и
       # сборка падает ещё до первого шага.
       - name: Сборка APK
+        # Секреты передаются через env, а не подставляются прямо в тело
+        # скрипта: значение вида $(...) или `cmd` в секрете выполнилось бы
+        # оболочкой, а производные от секрета не маскируются в логах.
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
-            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/upload-keystore.jks
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > android/upload-keystore.jks
             printf 'key.store=upload-keystore.jks\n' > android/key.properties
-            printf 'key.alias=%s\n' "${{ secrets.KEY_ALIAS }}" >> android/key.properties
-            printf 'key.store.password=%s\n' "${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
-            printf 'key.key.password=%s\n' "${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+            printf 'key.alias=%s\n' "$KEY_ALIAS" >> android/key.properties
+            printf 'key.store.password=%s\n' "$KEYSTORE_PASSWORD" >> android/key.properties
+            printf 'key.key.password=%s\n' "$KEY_PASSWORD" >> android/key.properties
             flutter build apk --release
             $ANDROID_HOME/build-tools/*/apksigner verify --verbose \
               build/app/outputs/flutter-apk/app-release.apk
+            # Ключ не должен оставаться на раннере после сборки.
+            rm -f android/upload-keystore.jks android/key.properties
           else
             flutter build apk --release
           fi

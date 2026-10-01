@@ -21,7 +21,15 @@ class TeamScreen extends ConsumerStatefulWidget {
 
 class _TeamScreenState extends ConsumerState<TeamScreen>
     with SingleTickerProviderStateMixin {
-  late final TabController _tabs = TabController(length: 3, vsync: this);
+  /// Вкладок ровно столько же, сколько детей у TabBarView ниже.
+  ///
+  /// Должности убрали, а длина контроллера осталась прежней: он считал
+  /// третью вкладку, которой нет, и под вкладками появлялась серая
+  /// полоса от индикатора, растянутого по несуществующему элементу.
+  static const _tabCount = 2;
+
+  late final TabController _tabs =
+      TabController(length: _tabCount, vsync: this);
 
   @override
   void dispose() {
@@ -35,6 +43,20 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
     final user = ref.watch(currentUserProvider);
     final canManage = user?.can('users.create') ?? false;
     final l10n = AppLocalizations.of(context);
+
+    // Расхождение числа вкладок и длины контроллера не ломает сборку,
+    // но рисует лишний индикатор и сдвигает подпись активной вкладки.
+    assert(
+      () {
+        if (_tabs.length != _tabCount) {
+          throw FlutterError(
+            'TabController(length: ${_tabs.length}) не совпадает '
+            'с числом вкладок $_tabCount в team_screen.dart',
+          );
+        }
+        return true;
+      }(),
+    );
 
     return Scaffold(
       appBar: AppBar(

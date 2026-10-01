@@ -227,6 +227,20 @@ class RealtimeChannel {
     connect();
   }
 
+  /// Закрывает канал и не даёт ему подняться снова.
+  ///
+  /// Нужно при выходе из аккаунта. Раньше выход вызывал reconnect(), и
+  /// сокет поднимался со старым access-токеном, который на сервере
+  /// проверяется только подписью, — канал продолжал работать после выхода
+  /// и приносить чужие сообщения в фоне.
+  void disconnect() {
+    _disposed = false;
+    _cleanupSocket();
+    _reconnectTimer?.cancel();
+    _attempts = 0;
+    _setStatus(RealtimeStatus.disconnected);
+  }
+
   Future<void> dispose() async {
     _disposed = true;
     _reconnectTimer?.cancel();

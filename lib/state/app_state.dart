@@ -11,6 +11,7 @@ import '../data/models.dart';
 import '../data/realtime.dart';
 import '../data/repositories.dart';
 import '../data/storage.dart';
+import 'controllers.dart';
 
 /// Этап, на котором находится приложение.
 enum AppStage {
@@ -145,7 +146,21 @@ class CurrentUserNotifier extends StateNotifier<AppUser?> {
     await storage.clearSession();
     _ref.read(sessionProvider.notifier).clear();
     state = null;
-    _ref.read(realtimeProvider).reconnect();
+
+    // Токены обнуляются до переподключения. Раньше они оставались в
+    // памяти, и сокет поднимался со старым access-токеном: доступ-токен
+    // на сервере проверяется только подписью, поэтому канал продолжал
+    // работать после выхода и слать чужие сообщения в фоне.
+    _ref.read(tokenProviderProvider)
+      ..accessToken = ''
+      ..refreshToken = '';
+    _ref.read(realtimeProvider).disconnect();
+
+    // Списки очищаются: иначе следующий сотрудник, вошедший в том же
+    // приложении, первым кадром увидит задачи и сообщения предыдущего.
+    _ref.invalidate(taskListProvider);
+    _ref.invalidate(chatListProvider);
+    _ref.invalidate(directoryProvider);
   }
 }
 

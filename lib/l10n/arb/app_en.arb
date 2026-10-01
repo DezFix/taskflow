@@ -479,5 +479,7 @@
   "teamCopyAll": "Copy all",
   "teamCopiedAll": "Login and password copied",
   "teamCopyPassword": "Copy password",
-  "teamCopiedPassword": "Password copied"
+  "teamCopiedPassword": "Password copied",
+  "profileShowPassword": "Show password",
+  "profilePasswordChangeFailed": "Could not change the password"
 }

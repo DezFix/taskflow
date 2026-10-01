@@ -13,6 +13,7 @@ import 'l10n/l10n_scope.dart';
 import 'state/app_state.dart';
 import 'ui/screens/chat_screen.dart';
 import 'ui/screens/login_screen.dart';
+import 'ui/screens/password_change_screen.dart';
 import 'ui/screens/server_settings_screen.dart';
 import 'ui/screens/server_setup_screen.dart';
 import 'ui/screens/workspace_shell.dart';
@@ -161,6 +162,13 @@ class _StageRouter extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stage = ref.watch(appStageProvider);
+    final user = ref.watch(currentUserProvider);
+    // С временным паролем сервер не пускает ни в один раздел, поэтому
+    // экран смены показывается вместо рабочего места, а не баннером
+    // в профиле: иначе сотрудник упирался бы в ошибки на каждом
+    // запросе без понятного объяснения.
+    final mustChangePassword =
+        stage == AppStage.ready && user != null && user.mustChangePassword;
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
@@ -168,7 +176,9 @@ class _StageRouter extends ConsumerWidget {
         AppStage.loading => const SplashScreen(),
         AppStage.needsServer => const ServerSetupScreen(),
         AppStage.needsLogin || AppStage.needsSetup => const LoginScreen(),
-        AppStage.ready => const WorkspaceShell(),
+        AppStage.ready => mustChangePassword
+            ? const PasswordChangeScreen()
+            : const WorkspaceShell(),
       },
     );
   }
